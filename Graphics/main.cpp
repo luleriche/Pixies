@@ -1,7 +1,6 @@
 #include <iostream>
 #include <array>
 
-
 // Structure pour une carte de jeu.
 struct carte{
     char couleur;
@@ -15,7 +14,7 @@ void afficher(carte c){
 
 // Définition de la défausse/pile de cartes.
 struct maillon{
-    carte valeur;
+    carte* valeur;
     maillon* suivant;
 };
 using defausse = maillon*;
@@ -24,11 +23,24 @@ using defausse = maillon*;
 void ajoutFin(defausse& d, carte c){
     if(d == nullptr){
         maillon* nouv = new maillon;
-        nouv->valeur = c;
+        nouv->valeur = new carte(c);
         nouv->suivant = d;
         d = nouv;
     }else{
         ajoutFin(d->suivant, c);
+    }
+}
+
+// Récupère un pointeur vers la première carte de la défausse et l'enlève de celle-ci
+carte* tirerCarteDessus(defausse& d){
+    if(d != nullptr){
+        maillon* premier = d;
+        d = d->suivant;
+        return premier->valeur;
+    }
+    else{
+        std::cout << "Défausse vide impossible de tirer la première carte." << std::endl;
+        return nullptr;
     }
 }
 
@@ -82,26 +94,25 @@ void afficherGrille(grille & g){
 }
 
 // Ajoute une carte à la grille 
-void ajouterCarte(grille& g, carte c){
-    std::cout << "----- Ajout de la carte "; afficher(c); std::cout << " -----" << std::endl;
+void ajouterCarte(grille& g, carte* c){
+    std::cout << "----- Ajout de la carte "; afficher(*c); std::cout << " -----" << std::endl;
     // Si il n'y a pas de carte visible à l'emplacement
-    if(g[c.chiffre-1].faceVisible == nullptr){
+    if(g[c->chiffre-1].faceVisible == nullptr){
         std::cout << "Emplacement de la carte disponible. Carte mise face visible." << std::endl;
-        g[c.chiffre-1].faceVisible = new carte;
-        *g[c.chiffre-1].faceVisible = c;
+        g[c->chiffre-1].faceVisible = c;
 
     // Si il y a une carte visible et pas de cachée
-    }else if(g[c.chiffre-1].faceCachee == nullptr){
+    }else if(g[c->chiffre-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
-        std::cout << "1 ("; afficher(*g[c.chiffre-1].faceVisible);
-        std::cout << ") / 2 ("; afficher(c); std::cout << ")" << std::endl;
+        std::cout << "1 ("; afficher(*g[c->chiffre-1].faceVisible);
+        std::cout << ") / 2 ("; afficher(*c); std::cout << ")" << std::endl;
         std::cout << "Choix: "; std::cin >> choix;
         if(choix == 1){
-            g[c.chiffre-1].faceCachee = new carte(c);
+            g[c->chiffre-1].faceCachee = c;
         }else{
-            g[c.chiffre-1].faceCachee = g[c.chiffre-1].faceVisible;
-            g[c.chiffre-1].faceVisible = new carte(c);
+            g[c->chiffre-1].faceCachee = g[c->chiffre-1].faceVisible;
+            g[c->chiffre-1].faceVisible = c;
         }
     }
     // Si l'emplacement est validé (plein)
@@ -113,13 +124,13 @@ void ajouterCarte(grille& g, carte c){
             std::cout << "Erreur! Emplacement indisponible. Où la mettre ? ";
             std::cin >> choix;
         }
-        g[choix-1].faceCachee = new carte(c);
+        g[choix-1].faceCachee = c;
     }
 }
 
 // Structure pour la pioche
 struct pioche{
-    std::array<carte,5> cartes;
+    std::array<carte,5> cartePointeurs;
     unsigned int taille;
 };
 
@@ -133,11 +144,11 @@ int main()
     carte c3 = {'b', 4, 7};
     carte c4 = {'r', 7, 2};
     afficherGrille(g);
-    ajouterCarte(g, c1);
+    ajouterCarte(g, &c1);
     afficherGrille(g);
-    ajouterCarte(g, c2);
+    ajouterCarte(g, &c2);
     afficherGrille(g);
-    ajouterCarte(g, c3);
+    ajouterCarte(g, &c3);
     afficherGrille(g);
     return 0;
 }
