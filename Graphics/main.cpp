@@ -19,15 +19,19 @@ struct maillon{
 };
 using defausse = maillon*;
 
+void initDefausse(defausse& d){
+    d = nullptr;
+}
+
 // Ajoute une carte à la fin de la défausse.
-void ajoutFin(defausse& d, carte c){
+void ajoutFinDefausse(defausse& d, carte c){
     if(d == nullptr){
         maillon* nouv = new maillon;
         nouv->valeur = new carte(c);
         nouv->suivant = d;
         d = nouv;
     }else{
-        ajoutFin(d->suivant, c);
+        ajoutFinDefausse(d->suivant, c);
     }
 }
 
@@ -130,7 +134,7 @@ void ajouterCarte(grille& g, carte* c){
 
 // Structure pour la pioche
 struct pioche{
-    std::array<carte,5> cartePointeurs;
+    std::array<carte*,5> cartes;
     unsigned int taille;
 };
 
@@ -139,16 +143,20 @@ int main()
 {
     grille g;
     initGrille(g);
-    carte c1 = {'r', 4, 2};
-    carte c2 = {'j', 4, 1};
-    carte c3 = {'b', 4, 7};
-    carte c4 = {'r', 7, 2};
     afficherGrille(g);
-    ajouterCarte(g, &c1);
+
+    defausse d;
+    initDefausse(d);
+    ajoutFinDefausse(d, {'r', 4, 1});
+    ajoutFinDefausse(d, {'b', 4, 1});
+    ajoutFinDefausse(d, {'j', 4, 1});
+    ajoutFinDefausse(d, {'v', 7, 1});
+    
+    ajouterCarte(g, tirerCarteDessus(d));
     afficherGrille(g);
-    ajouterCarte(g, &c2);
+    ajouterCarte(g, tirerCarteDessus(d));
     afficherGrille(g);
-    ajouterCarte(g, &c3);
+    ajouterCarte(g, tirerCarteDessus(d));
     afficherGrille(g);
     return 0;
 }
