@@ -1,43 +1,39 @@
-#include <SFML/Graphics.hpp>
-#include <optional>
 #include <iostream>
+#include <array>
+
+const unsigned int NMaxCartes = 70;
+
+// Structure pour une carte de jeu
+struct carte{
+    char couleur;
+    unsigned int chiffre; // Chiffre sur la carte
+    int spirale; // < 0 : nombre de croix, < 7 : nombre de spirales, 9 : carte spéciale
+};
+
+void afficher(carte c){
+    std::cout << "Carte : " << c.couleur << c.chiffre << c.spirale << std::endl;
+}
+
+// Structure pour la défausse/pile de cartes
+struct defausse{
+    std::array<carte, NMaxCartes> tasDeCartes;
+    unsigned int taille;
+};
+
+// Structure pour un emplacement de la grille d'un joueur
+struct emplacementGrille{
+    carte faceVisible;
+    carte faceCachee;
+};
+
+// Structure pour la grille d'un joueur
+struct grille{
+    std::array<std::array<emplacementGrille, 3>, 3> cases;
+};
+
+
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({1000, 800}), "SFML 3 Image");
-
-    // Chemin relatif vers l'image
-    sf::Texture texture;
-    if (!texture.loadFromFile("../images_pixies/Joker_2.jpg")) {
-        std::cerr << "Erreur : impossible de charger l'image !" << std::endl;
-        return -1;
-    }
-
-    // Créer le sprite à partir de la texture
-    sf::Sprite sprite(texture);
-
-    sf::Vector2u textureSize = texture.getSize();  // largeur et hauteur de l'image originale
-    float targetWidth = 400.f;
-    float targetHeight = 600.f;
-
-    // Calcul du facteur de redimensionnement pour garder les proportions
-    float scaleX = targetWidth / textureSize.x;
-    float scaleY = targetHeight / textureSize.y;
-    float scale = std::min(scaleX, scaleY);  // prend le plus petit pour que l'image tienne dans le cadre
-    sprite.setScale({scale, scale});
-
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }
-
-        window.clear(sf::Color::Black);
-        window.draw(sprite);
-        window.display();
-    }
-
     return 0;
 }
