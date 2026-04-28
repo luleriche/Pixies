@@ -2,16 +2,18 @@
 #include <array>
 #include <fstream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 // Structure pour une carte de jeu.
 struct carte{
-    char couleur;
+    char couleur; 
     unsigned int chiffre; // Chiffre sur la carte
     int spirale; // < 0 : nombre de croix, < 7 : nombre de spirales, 9 : carte spéciale
 };
 
 void afficher(carte c){
-    std::cout << c.chiffre << " " << c.couleur << " " << c.spirale;
+    std::cout << "(" << c.chiffre << " " << c.couleur << " " << c.spirale << ")";
 }
 
 // Définition de la défausse/pile de cartes.
@@ -20,6 +22,13 @@ struct maillon{
     maillon* suivant;
 };
 using defausse = maillon*;
+
+void afficher(defausse d){
+    if(d != nullptr){
+        afficher(*(d->valeur));
+        afficher(d->suivant);
+    }
+}
 
 // Initialise une défausse vide
 void initDefausse(defausse& d){
@@ -51,6 +60,22 @@ carte* tirerCarteDessus(defausse& d){
     }
 }
 
+// Récupère un pointeur vers la n-ième carte de la défausse et l'enlève de celle-ci
+carte* tirerCarteIndice(defausse& d, int indice){
+    if(indice == 0 or d == nullptr)
+        return tirerCarteDessus(d);
+    else
+        return tirerCarteIndice(d->suivant, indice-1);
+}
+
+// Mélange une défausse de manière aléatoire.
+void melanger(defausse& d){
+    for(int i = 71; i > 0; --i){
+        ajoutFinDefausse(d, *tirerCarteIndice(d, rand()%i));
+    };
+}
+
+// Remplie une défausse a partir d'un fichier
 void lireFichierDefausse(std::string nomFic, defausse& d){
     std::ifstream fic;
     fic.open(nomFic);
@@ -127,8 +152,8 @@ void ajouterCarte(grille& g, carte* c){
     }else if(g[c->chiffre-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
-        std::cout << "1 ("; afficher(*g[c->chiffre-1].faceVisible);
-        std::cout << ") / 2 ("; afficher(*c); std::cout << ")" << std::endl;
+        std::cout << "1 "; afficher(*g[c->chiffre-1].faceVisible);
+        std::cout << " / 2 "; afficher(*c); std::cout << std::endl;
         std::cout << "Choix: "; std::cin >> choix;
         if(choix == 1){
             g[c->chiffre-1].faceCachee = c;
@@ -169,38 +194,16 @@ bool finJeu(grille g){
 
 int main()
 {
-    grille g;
-    initGrille(g);
-    afficherGrille(g);
-    carte c1 = {'b', 1, 1}, c2 = {'b',2, 1}, c3 = {'b',3, 1},c4 = {'b',4, 1},c5 = {'b',5,  1},c6 = {'b',6,  1},c7 = {'b',7,  1},c8 = {'b',8,  1},c9 = {'b',9,  1} ;
-    defausse d;
-    initDefausse(d);
-    lireFichierDefausse("cartes_pixies.txt", d);
+    srand(time(nullptr));
+    grille ma_grille;
+    initGrille(ma_grille);
+    afficherGrille(ma_grille);
 
-    ajouterCarte(g, &c1);
-    ajouterCarte(g, &c2);
-    ajouterCarte(g, &c3);
-    ajouterCarte(g, &c4);
-    ajouterCarte(g, &c5);
-    ajouterCarte(g, &c6);
-    ajouterCarte(g, &c7);
-    ajouterCarte(g, &c8);
-    ajouterCarte(g, &c9);
-    ajouterCarte(g, &c1);
-    ajouterCarte(g, &c2);
-    ajouterCarte(g, &c3);
-    ajouterCarte(g, &c4);
-    ajouterCarte(g, &c5);
-    ajouterCarte(g, &c6);
-    ajouterCarte(g, &c7);
-    ajouterCarte(g, &c8);
-    ajouterCarte(g, &c9);
-    afficherGrille(g);
-    if (finJeu(g)){
-        std::cout<<"good";
-    }
-    else{
-        std::cout<<"pas good";
-    }
+    defausse ma_def;
+    initDefausse(ma_def);
+    lireFichierDefausse("cartes_pixies.txt", ma_def);
+    melanger(ma_def);
+    afficher(ma_def);
+
     return 0;
 }
