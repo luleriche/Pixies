@@ -156,22 +156,51 @@ struct pioche{
     unsigned int taille;
 };
 
+// Fonction qui regarde si la grille à min une carte par emplacement si oui renvoie true
+bool finJeu(grille g){
+    for (int i = 0; i < 9; ++i){
+        if(g[i].faceCachee == nullptr and g[i].faceVisible == nullptr){
+            return false;
+        }
+    
+    }
+    return true;
+}
 
 int main()
 {
     grille g;
     initGrille(g);
     afficherGrille(g);
-
+    carte c1 = {'b', 1, 1}, c2 = {'b',2, 1}, c3 = {'b',3, 1},c4 = {'b',4, 1},c5 = {'b',5,  1},c6 = {'b',6,  1},c7 = {'b',7,  1},c8 = {'b',8,  1},c9 = {'b',9,  1} ;
     defausse d;
     initDefausse(d);
     lireFichierDefausse("cartes_pixies.txt", d);
-    
-    ajouterCarte(g, tirerCarteDessus(d));
+
+    ajouterCarte(g, &c1);
+    ajouterCarte(g, &c2);
+    ajouterCarte(g, &c3);
+    ajouterCarte(g, &c4);
+    ajouterCarte(g, &c5);
+    ajouterCarte(g, &c6);
+    ajouterCarte(g, &c7);
+    ajouterCarte(g, &c8);
+    ajouterCarte(g, &c9);
+    ajouterCarte(g, &c1);
+    ajouterCarte(g, &c2);
+    ajouterCarte(g, &c3);
+    ajouterCarte(g, &c4);
+    ajouterCarte(g, &c5);
+    ajouterCarte(g, &c6);
+    ajouterCarte(g, &c7);
+    ajouterCarte(g, &c8);
+    ajouterCarte(g, &c9);
     afficherGrille(g);
-    ajouterCarte(g, tirerCarteDessus(d));
-    afficherGrille(g);
-    ajouterCarte(g, tirerCarteDessus(d));
-    afficherGrille(g);
+    if (finJeu(g)){
+        std::cout<<"good";
+    }
+    else{
+        std::cout<<"pas good";
+    }
     return 0;
 }
