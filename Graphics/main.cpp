@@ -1,5 +1,7 @@
 #include <iostream>
 #include <array>
+#include <fstream>
+#include <string>
 
 // Structure pour une carte de jeu.
 struct carte{
@@ -19,6 +21,7 @@ struct maillon{
 };
 using defausse = maillon*;
 
+// Initialise une défausse vide
 void initDefausse(defausse& d){
     d = nullptr;
 }
@@ -45,6 +48,21 @@ carte* tirerCarteDessus(defausse& d){
     else{
         std::cout << "Défausse vide impossible de tirer la première carte." << std::endl;
         return nullptr;
+    }
+}
+
+void lireFichierDefausse(std::string nomFic, defausse& d){
+    std::ifstream fic;
+    fic.open(nomFic);
+    if(fic.is_open()){
+        while(fic.good()){
+            carte c;
+            fic >> c.chiffre >> c.couleur  >> c.spirale;
+            ajoutFinDefausse(d, c);
+        }
+    }
+    else{
+        std::cout << "Le fichier des cartes n'a pas pu être lu.";
     }
 }
 
@@ -147,10 +165,7 @@ int main()
 
     defausse d;
     initDefausse(d);
-    ajoutFinDefausse(d, {'r', 4, 1});
-    ajoutFinDefausse(d, {'b', 4, 1});
-    ajoutFinDefausse(d, {'j', 4, 1});
-    ajoutFinDefausse(d, {'v', 7, 1});
+    lireFichierDefausse("cartes_pixies.txt", d);
     
     ajouterCarte(g, tirerCarteDessus(d));
     afficherGrille(g);
