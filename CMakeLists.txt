@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-
+ 
 # Nom du projet
 project(Pixies)
 
@@ -19,8 +19,15 @@ find_package(SFML 3.0.2 REQUIRED COMPONENTS Graphics Audio Network)
 
 add_compile_options(-Wall)
 
-add_executable(${PROJECT_NAME} main.cpp)
+set(SOURCES 
+    sources/main.cpp 
+    sources/Carte.cpp
+    sources/Grille.cpp
+    sources/Defausse.cpp
+)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/headers)
 target_link_libraries(${PROJECT_NAME} PRIVATE SFML::Graphics SFML::Window SFML::System)
 
 # Pour que l'exécutable trouve les .so ou .dylib au lancement
