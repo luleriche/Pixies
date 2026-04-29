@@ -3,30 +3,30 @@
 #include <string>
 #include "Carte.hpp"
 
-// Définition de la défausse/pile de cartes.
+// Définition de la défausse/pile de Cartes.
 struct maillon{
-    carte* valeur;
+    Carte* valeur;
     maillon* suivant;
 };
-using defausse = maillon*;
+using Defausse = maillon*;
 
-// Affichr les cartes d'une défausse en partant de celle du dessus
-void afficher(defausse d);
+// Affichr les Cartes d'une défausse en partant de celle du dessus
+void afficher(Defausse d);
 
 // Initialise une défausse vide
-void initDefausse(defausse& d);
+void initDefausse(Defausse& d);
 
-// Ajoute une carte à la fin de la défausse.
-void ajoutFinDefausse(defausse& d, carte c);
+// Ajoute une Carte à la fin de la défausse.
+void ajoutFinDefausse(Defausse& d, Carte c);
 
-// Récupère un pointeur vers la première carte de la défausse et l'enlève de celle-ci
-carte* tirerCarteDessus(defausse& d);
+// Récupère un pointeur vers la première Carte de la défausse et l'enlève de celle-ci
+Carte* tirerCarteDessus(Defausse& d);
 
-// Récupère un pointeur vers la n-ième carte de la défausse et l'enlève de celle-ci
-carte* tirerCarteIndice(defausse& d, int indice);
+// Récupère un pointeur vers la n-ième Carte de la défausse et l'enlève de celle-ci
+Carte* tirerCarteIndice(Defausse& d, int indice);
 
 // Mélange une défausse de manière aléatoire.
-void melanger(defausse& d);
+void melanger(Defausse& d);
 
 // Remplie une défausse a partir d'un fichier
-void lireFichierDefausse(std::string nomFic, defausse& d);
+void lireFichierDefausse(std::string nomFic, Defausse& d);

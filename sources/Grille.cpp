@@ -3,13 +3,13 @@
 #include "Grille.hpp"
 #include "Carte.hpp"
 
-// Initialise un emplacement de grille comme étant vide.
+// Initialise un emplacement de Grille comme étant vide.
 void initEmplacement(emplacementGrille & emplGrille){
     emplGrille.faceCachee = nullptr;
     emplGrille.faceVisible = nullptr;
 }
 
-// Affiche un emplacement de grille sous la forme : c. cachée / c. visible.
+// Affiche un emplacement de Grille sous la forme : c. cachée / c. visible.
 void afficher(emplacementGrille emplGrille){
     if(emplGrille.faceCachee == nullptr)
         std::cout << "     ";
@@ -23,15 +23,15 @@ void afficher(emplacementGrille emplGrille){
     std::cout<<std::endl;
 }
 
-// Initialise une grille vide
-void initGrille(grille & g){
+// Initialise une Grille vide
+void initGrille(Grille & g){
     for( int i = 0; i<9; ++i){
         initEmplacement(g[i]);
     }
 }
 
-// Affiche une grille
-void afficherGrille(grille & g){
+// Affiche une Grille
+void afficherGrille(Grille & g){
     std::cout << std::endl;
     std::cout << "  |Cachée | Visible" << std::endl;
     std::cout << "-------------------" << std::endl;
@@ -42,15 +42,15 @@ void afficherGrille(grille & g){
     std::cout << std::endl;
 }
 
-// Ajoute une carte à la grille 
-void ajouterCarte(grille& g, carte* c){
-    std::cout << "----- Ajout de la carte "; afficher(*c); std::cout << " -----" << std::endl;
-    // Si il n'y a pas de carte visible à l'emplacement
+// Ajoute une Carte à la Grille 
+void ajouterCarte(Grille& g, Carte* c){
+    std::cout << "----- Ajout de la Carte "; afficher(*c); std::cout << " -----" << std::endl;
+    // Si il n'y a pas de Carte visible à l'emplacement
     if(g[c->chiffre-1].faceVisible == nullptr){
-        std::cout << "Emplacement de la carte disponible. Carte mise face visible." << std::endl;
+        std::cout << "Emplacement de la Carte disponible. Carte mise face visible." << std::endl;
         g[c->chiffre-1].faceVisible = c;
 
-    // Si il y a une carte visible et pas de cachée
+    // Si il y a une Carte visible et pas de cachée
     }else if(g[c->chiffre-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
@@ -77,8 +77,8 @@ void ajouterCarte(grille& g, carte* c){
     }
 }
 
-// Fonction qui regarde si la grille à min une carte par emplacement si oui renvoie true
-bool finJeu(grille g){
+// Fonction qui regarde si la Grille à min une Carte par emplacement si oui renvoie true
+bool finJeu(Grille g){
     for (int i = 0; i < 9; ++i){
         if(g[i].faceCachee == nullptr and g[i].faceVisible == nullptr){
             return false;

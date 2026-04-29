@@ -10,20 +10,15 @@
 #include "Defausse.hpp"
 #include "Grille.hpp"
 
-// Structure pour la pioche
-struct pioche{
-    std::array<carte*,5> cartes;
-    unsigned int taille;
-};
 
 int main()
 {
     srand(time(nullptr));
-    grille ma_grille;
-    initGrille(ma_grille);
-    afficherGrille(ma_grille);
+    Grille ma_Grille;
+    initGrille(ma_Grille);
+    afficherGrille(ma_Grille);
 
-    defausse ma_def;
+    Defausse ma_def;
     initDefausse(ma_def);
     lireFichierDefausse("assets/cartes_pixies.txt", ma_def);
     melanger(ma_def);

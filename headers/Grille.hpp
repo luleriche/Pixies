@@ -3,29 +3,29 @@
 #include <array>
 #include "Carte.hpp"
 
-// Structure pour un emplacement de la grille d'un joueur.
+// Structure pour un emplacement de la Grille d'un joueur.
 struct emplacementGrille{
-    carte* faceVisible;
-    carte* faceCachee;
+    Carte* faceVisible;
+    Carte* faceCachee;
 };
 
-// Initialise un emplacement de grille comme étant vide.
+// Initialise un emplacement de Grille comme étant vide.
 void initEmplacement(emplacementGrille & emplGrille);
 
-// Affiche un emplacement de grille sous la forme : c. cachée / c. visible.
+// Affiche un emplacement de Grille sous la forme : c. cachée / c. visible.
 void afficher(emplacementGrille emplGrille);
 
-// Définition de la grille d'un joueur
-using grille = std::array<emplacementGrille, 9>;
+// Définition de la Grille d'un joueur
+using Grille = std::array<emplacementGrille, 9>;
 
-// Initialise une grille vide
-void initGrille(grille & g);
+// Initialise une Grille vide
+void initGrille(Grille & g);
 
-// Affiche une grille
-void afficherGrille(grille & g);
+// Affiche une Grille
+void afficherGrille(Grille & g);
 
-// Ajoute une carte à la grille 
-void ajouterCarte(grille& g, carte* c);
+// Ajoute une Carte à la Grille 
+void ajouterCarte(Grille& g, Carte* c);
 
-// Fonction qui regarde si la grille à min une carte par emplacement si oui renvoie true
-bool finJeu(grille g);
+// Fonction qui regarde si la Grille à min une Carte par emplacement si oui renvoie true
+bool finJeu(Grille g);
