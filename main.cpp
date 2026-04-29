@@ -4,6 +4,8 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <SFML/Graphics.hpp>
+#include <optional>
 
 // Structure pour une carte de jeu.
 struct carte{
@@ -27,6 +29,8 @@ void afficher(defausse d){
     if(d != nullptr){
         afficher(*(d->valeur));
         afficher(d->suivant);
+    }else{
+        std::cout << std::endl;
     }
 }
 
@@ -187,7 +191,6 @@ bool finJeu(grille g){
         if(g[i].faceCachee == nullptr and g[i].faceVisible == nullptr){
             return false;
         }
-    
     }
     return true;
 }
@@ -201,9 +204,44 @@ int main()
 
     defausse ma_def;
     initDefausse(ma_def);
-    lireFichierDefausse("cartes_pixies.txt", ma_def);
+    lireFichierDefausse("assets/cartes_pixies.txt", ma_def);
     melanger(ma_def);
     afficher(ma_def);
+
+    sf::RenderWindow window(sf::VideoMode({1000, 800}), "SFML 3 Image");
+
+    // Chemin relatif vers l'image
+    sf::Texture texture;
+    if (!texture.loadFromFile("assets/images_pixies/1_b_6.jpg")) {
+        std::cerr << "Erreur : impossible de charger l'image !" << std::endl;
+        return -1;
+    }
+
+    // Créer le sprite à partir de la texture
+    sf::Sprite sprite(texture);
+
+    sf::Vector2u textureSize = texture.getSize();  // largeur et hauteur de l'image originale
+    float targetWidth = 400.f;
+    float targetHeight = 600.f;
+
+    // Calcul du facteur de redimensionnement pour garder les proportions
+    float scaleX = targetWidth / textureSize.x;
+    float scaleY = targetHeight / textureSize.y;
+    float scale = std::min(scaleX, scaleY);  // prend le plus petit pour que l'image tienne dans le cadre
+    sprite.setScale({scale, scale});
+
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
+
+        window.clear(sf::Color::Black);
+        window.draw(sprite);
+        window.display();
+    }
 
     return 0;
 }

@@ -1,5 +1,6 @@
-Graphics/main.out
-Graphics/main
-Graphics/main.o
+build/
 
-.DS_Store
+.DS_Store               # Fichiers invisibles macOS
+Thumbs.db               # Fichiers invisibles Windows apparement
+
+.vscode
