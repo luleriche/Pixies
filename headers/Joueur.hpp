@@ -14,4 +14,18 @@ struct Joueur{
     int nbPoints;
 };
 
+// Initialise un joueur 
+void initJoueur(Joueur & j, Pioche* p, std::string surnom);
 
+//Creer un nombre de joueur precis 
+void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune);
+
+// Changement de joueur 
+void changerDeJoueur(int& joueurCourant, int nbJoueurs);
+
+// Change de joueur apres la fin du tour, le dernier joueur commence
+void finDeTour(int& joueurDebut, int nbJoueurs);
+
+// Change de manche, donc le premier joueur redeviens le premier
+// Et la grille de chaque joueur se vide
+void changerDeManche(std::array<Joueur, 5>& joueurs, int nbJoueurs, int& mancheCourante, int& joueurDebut);

@@ -10,6 +10,7 @@
 #include "Defausse.hpp"
 #include "Grille.hpp"
 #include "Pioche.hpp"
+#include "Joueur.hpp"
 
 int main()
 {
@@ -36,7 +37,28 @@ int main()
     afficher(ma_def);
     prendrePioche(p,ma_Grille);
     afficherGrille(ma_Grille);
-    
+
+
+    std::array<Joueur, 5> joueurs;
+    int nbJoueurs = 3;
+    creerJoueurs(joueurs, nbJoueurs, &p);
+
+    for (int i = 0; i < nbJoueurs; i++) {
+        std::cout << "Joueur " << i+1 << " : " << joueurs[i].surnom
+                << " | points : " << joueurs[i].nbPoints << std::endl;
+    }
+
+    int joueurCourant = 0;
+    std::cout << "--- changement de tour ---" << std::endl;
+    for (int i = 0; i < nbJoueurs; i++) {
+        std::cout << "C'est au tour de : " << joueurs[joueurCourant].surnom << std::endl;
+        changerDeJoueur(joueurCourant, nbJoueurs);
+    }
+
+    int joueurDebut = 0;
+    finDeTour(joueurDebut, nbJoueurs);
+    std::cout << "Prochain tour commence avec : " << joueurs[joueurDebut].surnom << std::endl;
+        
     sf::RenderWindow window(sf::VideoMode({1000, 800}), "SFML 3 Image");
 
     // Chemin relatif vers l'image
