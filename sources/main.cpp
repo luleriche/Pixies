@@ -27,10 +27,6 @@ int main()
         ajouterCarte(ma_Grille, tirerCarteDessus(ma_def));
         afficherGrille(ma_Grille);
     }
-    
-    std::cout << comptePointsZone(ma_Grille, 2) << std::endl;
-    std::cout << compteCarteCouleur(ma_Grille, 'r') << std::endl;
-    std::cout << comptePointsAvecValidation(ma_Grille) << std::endl;
 
 
     Pioche p;

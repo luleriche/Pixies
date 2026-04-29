@@ -8,3 +8,5 @@ struct Carte{
 };
 
 void afficher(Carte c);
+
+void afficherEnCouleur(Carte c);

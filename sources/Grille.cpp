@@ -32,13 +32,40 @@ void initGrille(Grille & g){
 
 // Affiche une Grille
 void afficherGrille(Grille & g){
+
+    // \033[90m : Gris foncé
+    // \033[0m  : Réinitialise la couleur
+
     std::cout << std::endl;
-    std::cout << "  |Cachée | Visible" << std::endl;
-    std::cout << "-------------------" << std::endl;
-    for(int i = 0; i < 9; ++i){
-        std::cout<< i+1 << " | ";
-        afficher(g[i]);
+    std::cout << "------------------------------------" << std::endl;
+
+    for(int ligne = 0; ligne < 3; ++ligne)
+    {
+        for(int col = 0; col < 3; ++col){
+            if(col == 0)
+                std::cout << " |";
+            std::cout << ligne*3 + col + 1;
+            if(g[ligne*3+col].faceVisible == nullptr)
+                std::cout <<"         |";
+            else{
+                afficherEnCouleur(*g[ligne*3+col].faceVisible); std::cout << " |";
+            }
+        }
+        std::cout << std::endl;
+        for(int col = 0; col < 3; ++col){
+            if(col == 0)
+                std::cout << " | ";
+            if(g[ligne*3+col].faceCachee == nullptr)
+                std::cout <<"         | ";
+            else{
+                std::cout << "\033[90m";afficher(*g[ligne*3+col].faceCachee); std::cout << "\033[0m | ";
+            }
+        }
+        std::cout << std::endl;
+        std::cout << "------------------------------------" << std::endl;
     }
+    
+    
     std::cout << std::endl;
 }
 
