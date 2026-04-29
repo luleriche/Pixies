@@ -24,6 +24,7 @@ set(SOURCES
     sources/Carte.cpp
     sources/Grille.cpp
     sources/Defausse.cpp
+    sources/Pioche.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 

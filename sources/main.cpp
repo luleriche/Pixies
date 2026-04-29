@@ -9,7 +9,7 @@
 #include "Carte.hpp"
 #include "Defausse.hpp"
 #include "Grille.hpp"
-
+#include "Pioche.hpp"
 
 int main()
 {
@@ -24,6 +24,14 @@ int main()
     melanger(ma_def);
     afficher(ma_def);
 
+    Pioche p;
+    initPioche(p);
+    remplirPioche(p, ma_def, 3);
+    afficher(p);
+    afficher(ma_def);
+    prendrePioche(p,ma_Grille);
+    afficherGrille(ma_Grille);
+    
     sf::RenderWindow window(sf::VideoMode({1000, 800}), "SFML 3 Image");
 
     // Chemin relatif vers l'image
