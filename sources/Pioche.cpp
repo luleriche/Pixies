@@ -55,7 +55,7 @@ void supprimerCartePioche(Pioche & p, unsigned int i){
     p.cartes[i] = nullptr;
 }
 
-void prendrePioche(Pioche& p, Grille& g){
+Carte* prendrePioche(Pioche& p, Grille& g){
     unsigned int choix;
     std::cout<<"Piocher une carte :"<< std::endl;
     for (int i = 0; i<5; ++i){
@@ -70,7 +70,7 @@ void prendrePioche(Pioche& p, Grille& g){
             std::cin>> choix;
         }
     }
-    
-    ajouterCarte(g,p.cartes[choix - 1]);
+    Carte* temp = p.cartes[choix - 1];
     supprimerCartePioche(p, choix-1);
+    return p.cartes[choix -1];
 }
