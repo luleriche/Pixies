@@ -15,3 +15,12 @@ struct Partie{
 
 // Lance une nouvelle partie a partir de zéro 
 void lancerUneNouvellePartie();
+
+// Renvoie un booléen qui indique si un des joueurs à rempli sa grille
+bool unJoueurAFinit(Partie partie);
+
+// Lance une manche précise du jeu
+void lancerManche(Partie& partie, unsigned int numeroManche);
+
+// Fais jouer un joueur
+void tourDeJeu(Partie& partie, unsigned int joueur);

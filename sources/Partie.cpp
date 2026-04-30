@@ -36,5 +36,41 @@ void lancerUneNouvellePartie(){
 
     partie.numeroManche = 1;
 
-    std::cout << "Le jeu est prêt à être lancé !" << std::endl;
+    lancerManche(partie, 1);
+}
+
+void lancerManche(Partie& partie, unsigned int numeroManche){
+    while(not unJoueurAFinit(partie)){
+        remplirPioche(partie.pioche, partie.defausse, partie.nombreJoueurs);
+        if(partie.nombreJoueurs == 2){
+            for(unsigned int i = 0; i < 4; ++i){
+                tourDeJeu(partie, i%2);
+            }
+        }else{
+            for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+                tourDeJeu(partie, i);
+            }
+        }
+    }
+    std::cout << "Manche Terminée" << std::endl;
+}
+
+// Fais piocher un joueur dans la pioche et mets sa carte dans sa grille
+void tourDeJeu(Partie& partie, unsigned int joueur){
+    std::cout << std::endl;
+    std::cout << "Au tour de " << partie.joueurs[joueur].surnom << ". Voici votre grille : " << std::endl;
+    afficherGrille(partie.joueurs[joueur].grilleDeJeu);
+    Carte* carteChoisi = prendrePioche(partie.pioche);
+    ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
+    std::cout << "Voici votre grille maintenant :" << std::endl;
+    afficherGrille(partie.joueurs[joueur].grilleDeJeu);
+    std::cout << std::endl;
+}
+
+// Renvoie un booléen qui indique si un des joueurs à rempli sa grille
+bool unJoueurAFinit(Partie partie){
+    unsigned int i = 0;
+    while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
+        ++i;
+    return i != partie.nombreJoueurs;
 }
