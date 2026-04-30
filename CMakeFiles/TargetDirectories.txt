@@ -1,3 +1,0 @@
-/Users/simongrosse/Concretisation/CMakeFiles/Pixies.dir
-/Users/simongrosse/Concretisation/CMakeFiles/edit_cache.dir
-/Users/simongrosse/Concretisation/CMakeFiles/rebuild_cache.dir
