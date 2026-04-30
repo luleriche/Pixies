@@ -5,12 +5,13 @@
 #include "Joueur.hpp"
 
 struct Partie{
-    unsigned numeroManche;
     Defausse defausse;
     Pioche pioche;
     std::array<Joueur, 5> joueurs;
     unsigned int nombreJoueurs;
     unsigned int joueurActuel;
+    unsigned numeroManche;
 };
 
-void nouvellePartie(Partie& p, unsigned int nbJoueurs);
+// Lance une nouvelle partie a partir de zéro 
+void lancerUneNouvellePartie();
