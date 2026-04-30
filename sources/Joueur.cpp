@@ -13,12 +13,11 @@ void initJoueur(Joueur & j, Pioche* p, std::string surnom){
 }
 
 void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune) {
+    std::string surnom;
     for (int i = 0; i < nbJoueurs; i++) {
         std::cout << "Surnom du joueur " << i+1 << " : ";
-        std::cin >> joueurs[i].surnom;
-        initGrille(joueurs[i].grilleDeJeu);
-        joueurs[i].piocheCommune = piocheCommune;
-        joueurs[i].nbPoints = 0;
+        std::cin >> surnom;
+        initJoueur(joueurs[i], piocheCommune, surnom);
     }
 }
 

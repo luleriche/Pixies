@@ -70,6 +70,7 @@ void prendrePioche(Pioche& p, Grille& g){
             std::cin>> choix;
         }
     }
+    
     ajouterCarte(g,p.cartes[choix - 1]);
     supprimerCartePioche(p, choix-1);
 }
