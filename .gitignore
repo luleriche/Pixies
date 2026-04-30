@@ -4,3 +4,8 @@ build/
 Thumbs.db               # Fichiers invisibles Windows apparement
 
 .vscode
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake_install
+MakeFile
