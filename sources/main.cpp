@@ -12,6 +12,6 @@ int main()
 {
     srand(time(nullptr));
     Partie maPartie;
-    nouvellePartie(maPartie, 3);
+    nouvellePartie(maPartie, 2);
     return 0;
 }

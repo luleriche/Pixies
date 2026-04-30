@@ -28,4 +28,4 @@ bool estVidePioche(Pioche p);
 void supprimerCartePioche(Pioche & p, unsigned int i);
 
 // Ajoute une carte dans une grille g de la pioche p
-Carte* prendrePioche(Pioche& p, Grille& g);
+Carte* prendrePioche(Pioche& p);

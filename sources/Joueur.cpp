@@ -21,11 +21,11 @@ void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheC
     }
 }
 
-void changerDeJoueur(int& joueurCourant, int nbJoueurs){
+void changerDeJoueur(unsigned int& joueurCourant, unsigned int nbJoueurs){
     joueurCourant = (joueurCourant +1) % nbJoueurs;
 }
 
-void finDeTour(int& joueurDebut, int nbJoueurs) {
+void finDeTour(unsigned int& joueurDebut, unsigned int nbJoueurs) {
     joueurDebut = (joueurDebut - 1 + nbJoueurs) % nbJoueurs;
 }
 

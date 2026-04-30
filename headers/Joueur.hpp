@@ -21,10 +21,10 @@ void initJoueur(Joueur & j, Pioche* p, std::string surnom);
 void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune);
 
 // Changement de joueur 
-void changerDeJoueur(int& joueurCourant, int nbJoueurs);
+void changerDeJoueur(unsigned int& joueurCourant, unsigned int nbJoueurs);
 
 // Change de joueur apres la fin du tour, le dernier joueur commence
-void finDeTour(int& joueurDebut, int nbJoueurs);
+void finDeTour(unsigned int& joueurDebut, unsigned int nbJoueurs);
 
 // Change de manche, donc le premier joueur redeviens le premier
 // Et la grille de chaque joueur se vide
