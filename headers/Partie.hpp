@@ -9,7 +9,7 @@ struct Partie{
     Pioche pioche;
     std::array<Joueur, 5> joueurs;
     unsigned int nombreJoueurs;
-    unsigned int joueurActuel;
+    unsigned int dernierJoueur;
     unsigned numeroManche;
 };
 
@@ -20,7 +20,7 @@ void lancerUneNouvellePartie();
 bool unJoueurAFinit(Partie partie);
 
 // Lance une manche précise du jeu
-void lancerManche(Partie& partie, unsigned int numeroManche);
+void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premierJoueur);
 
 // Fais jouer un joueur
 void tourDeJeu(Partie& partie, unsigned int joueur);
