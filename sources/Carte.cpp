@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
+
 #include "Carte.hpp"
+#include "Console.hpp"
 
 void afficher(Carte c){
     std::cout << "(" << c.chiffre << " " << c.couleur << " ";
@@ -14,26 +16,18 @@ void afficherEnCouleur(Carte c){
     // \033[0m reset la couleur
     std::string codeCouleur;
     if(c.couleur == 'r')
-        codeCouleur = "\033[31m"; // Couleur du rouge
+        codeCouleur = SETCOUL_ROUGE; // Couleur du rouge
     else if(c.couleur == 'b')
-        codeCouleur = "\033[34m"; // Couleur du bleu
+        codeCouleur = SETCOUL_BLEU; // Couleur du bleu
     else if(c.couleur == 'j')
-        codeCouleur = "\033[33m"; // Couleur du jaune
+        codeCouleur = SETCOUL_JAUNE; // Couleur du jaune
     else if(c.couleur == 'v')
-        codeCouleur = "\033[32m"; // Couleur du vert
+        codeCouleur = SETCOUL_VERT; // Couleur du vert
+    else
+        codeCouleur = "";
     
-    // Si la carte est spéciale
-    if(c.couleur == 'n'){
-        std::cout << "\033[31m(\033[34m" << c.chiffre << " \033[33m" << c.couleur << " \033[32m";
-        if(c.spirale > -1)
-            std::cout <<" ";
-        std::cout << c.spirale << "\033[31m)" << "\033[0m";
-    }
-    else{
-        std::cout << codeCouleur << "(" << c.chiffre << " " << c.couleur << " ";
-        if(c.spirale > -1)
-            std::cout <<" ";
-        std::cout << c.spirale << ")" << "\033[0m"; 
-    }
-    
+    std::cout << codeCouleur << "(" << c.chiffre << " " << c.couleur << " ";
+    if(c.spirale > -1)
+        std::cout <<" ";
+    std::cout << c.spirale << ")" << RESET_COUL; 
 }

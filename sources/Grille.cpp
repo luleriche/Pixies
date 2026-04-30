@@ -71,18 +71,17 @@ void afficherGrille(Grille & g){
 
 // Ajoute une Carte à la Grille 
 void ajouterCarte(Grille& g, Carte* c){
-    std::cout << "----- Ajout de la Carte "; afficher(*c); std::cout << " -----" << std::endl;
     // Si il n'y a pas de Carte visible à l'emplacement
     if(g[c->chiffre-1].faceVisible == nullptr){
-        std::cout << "Emplacement de la Carte disponible. Carte mise face visible." << std::endl;
+        std::cout << "L'emplacement de la carte était disponible." << std::endl;
+        std::cout << "La carte y a été mise face visible." << std::endl;
         g[c->chiffre-1].faceVisible = c;
-
-    // Si il y a une Carte visible et pas de cachée
+    // Si il y a une carte visible et pas de carte cachée
     }else if(g[c->chiffre-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
-        std::cout << "1 "; afficher(*g[c->chiffre-1].faceVisible);
-        std::cout << " / 2 "; afficher(*c); std::cout << std::endl;
+        std::cout << "1 "; afficherEnCouleur(*g[c->chiffre-1].faceVisible);; std::cout << std::endl;
+        std::cout << "2 "; afficherEnCouleur(*c); std::cout << std::endl;
         std::cout << "Choix: "; std::cin >> choix;
         if(choix == 1){
             g[c->chiffre-1].faceCachee = c;
@@ -94,10 +93,11 @@ void ajouterCarte(Grille& g, Carte* c){
     // Si l'emplacement est validé (plein)
     else{
         unsigned int choix;
-        std::cout << "Emplacement validé ! Où la mettre ? ";
+        std::cout << "Emplacement validé !" << std::endl;
+        std::cout <<  "Choisissez dans quelle case la mettre : ";
         std::cin >> choix;
         while(g[choix-1].faceCachee != nullptr and g[choix-1].faceVisible){
-            std::cout << "Erreur! Emplacement indisponible. Où la mettre ? ";
+            std::cout << "Erreur! Emplacement déja occupé. Réessayez : ";
             std::cin >> choix;
         }
         g[choix-1].faceCachee = c;

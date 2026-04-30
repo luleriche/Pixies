@@ -55,20 +55,23 @@ void supprimerCartePioche(Pioche & p, unsigned int i){
     p.cartes[i] = nullptr;
 }
 
-Carte* prendrePioche(Pioche& p){
+Carte* prendrePioche(Pioche& p, unsigned int taillePioche){
     unsigned int choix;
-    std::cout<<"Piocher une carte :"<< std::endl;
-    for (int i = 0; i<5; ++i){
+    std::cout << "Pioche :" << std::endl;
+    for (unsigned int i = 0; i < taillePioche; ++i){
+        std::cout<< i+1 << "   ";
         if (p.cartes[i] != nullptr){
-            std::cout<< i +1; afficher(*p.cartes[i]); std::cout<<" / ";
+            afficherEnCouleur(*p.cartes[i]);
         }
+        std::cout << std::endl;
     }
+    std::cout << std::endl;
+    std::cout << "Votre choix : ";
     std::cin >> choix;
-    if (p.cartes[choix-1] == nullptr){
-        while (p.cartes[choix - 1] == nullptr){
-            std::cout<< "Erreur! La carte n'existe pas, veuillez choisir une autre carte" << std::endl;
-            std::cin>> choix;
-        }
+    
+    while (choix > taillePioche or choix < 0 or p.cartes[choix - 1] == nullptr){
+        std::cout<< "Erreur! Il n'y a pas de carte ici, réessayer : ";
+        std::cin>> choix;
     }
     Carte* temp = p.cartes[choix - 1];
     supprimerCartePioche(p, choix-1);

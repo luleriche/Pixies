@@ -27,6 +27,7 @@ set(SOURCES
     sources/Pioche.cpp
     sources/Joueur.cpp
     sources/Partie.cpp
+    sources/Console.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 
