@@ -39,6 +39,10 @@ void lancerUneNouvellePartie(){
     partie.numeroManche = 1;
 
     lancerManche(partie, 1, partie.dernierJoueur);
+    lancerManche(partie, 2, partie.dernierJoueur);
+    lancerManche(partie, 3, partie.dernierJoueur);
+    
+    std::cout << "La partie est terminée." << std::endl;
 }
 
 void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premierJoueur){

@@ -215,7 +215,6 @@ unsigned int comptePointsZone(Grille g, unsigned int numManche){
     
     // Des points sont données seulement si il y a un endroit où deux cartes adjacentes sont de la même couleur
     if(taille_max > 1){
-        std::cout << "Points avec zone :" << taille_max*(numManche+1) << std::endl;
         // On applique le multiplicateur selon la manche
         return taille_max*(numManche+1);
     }
