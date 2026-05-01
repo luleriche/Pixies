@@ -68,14 +68,20 @@ void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premie
             joueurActuel = partie.dernierJoueur;
         }
     }
-    std::cout << "Manche Terminée" << std::endl;
+    std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
+    // Comptage des points
+    for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+        ajoutePointsDeGrille(partie.joueurs[i], numeroManche);
+        // Affiche les nouveaux points
+        std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
+    }
 }
 
 // Fais piocher un joueur dans la pioche et mets sa carte dans sa grille
 void tourDeJeu(Partie& partie, unsigned int joueur){
     // Affichage avant de choisir la carte a prendre
     std::cout << std::endl; // Si le efface console ne marche pas au moins on n'est pas collé à avant
-    effaceConsole();
+    //effaceConsole();
     std::cout << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     

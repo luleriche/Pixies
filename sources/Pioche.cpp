@@ -59,7 +59,7 @@ Carte* prendrePioche(Pioche& p, unsigned int taillePioche){
     unsigned int choix;
     std::cout << "Pioche :" << std::endl;
     for (unsigned int i = 0; i < taillePioche; ++i){
-        std::cout<< i+1 << "   ";
+        std::cout << " " << i+1 << "   ";
         if (p.cartes[i] != nullptr){
             afficherEnCouleur(*p.cartes[i]);
         }

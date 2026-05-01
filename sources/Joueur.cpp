@@ -36,3 +36,7 @@ void changerDeManche(std::array<Joueur, 5>& joueurs, int nbJoueurs, int& mancheC
         initGrille(joueurs[i].grilleDeJeu);
     }
 }
+
+void ajoutePointsDeGrille(Joueur& j, unsigned int numeroManche){
+    j.nbPoints += comptePoints(j.grilleDeJeu, numeroManche);
+}

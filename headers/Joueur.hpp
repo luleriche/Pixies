@@ -29,3 +29,6 @@ void finDeTour(unsigned int& joueurDebut, unsigned int nbJoueurs);
 // Change de manche, donc le premier joueur redeviens le premier
 // Et la grille de chaque joueur se vide
 void changerDeManche(std::array<Joueur, 5>& joueurs, int nbJoueurs, int& mancheCourante, int& joueurDebut);
+
+// Ajoute les points de la grille d'un joueur à celui-ci
+void ajoutePointsDeGrille(Joueur& j, unsigned int numeroManche);

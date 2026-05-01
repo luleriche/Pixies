@@ -146,8 +146,10 @@ int compteSpirales(Grille g){
 
 unsigned int compteCarteCouleur(Grille g, char couleur){
     unsigned int nombre = 0;
+    // On parcourts les cartes de la grille
     for(int i = 0; i<9; ++i){
-        if(g[i].faceVisible != nullptr and g[i].faceVisible->couleur == couleur)
+        // Si il y a une carte face visible et qu'elle est de la couleur demandé ou multicolore
+        if(g[i].faceVisible != nullptr and (g[i].faceVisible->couleur == couleur or g[i].faceVisible->couleur == 's'))
             ++nombre;
     }
     return nombre;
@@ -165,16 +167,27 @@ unsigned int comptePointsAvecValidation(Grille g){
 unsigned int comptePointsZone(Grille g, unsigned int numManche){
     // Création d'un tableau de caractères qui représente les couleurs à la grille
     std::array<std::array<char, 3>, 3> tCouleurs;
-    for(int i = 0; i < 9; ++i){
-        if(g[i].faceVisible == nullptr)
-            tCouleurs[i%3][i/3] = 'x';
-        else
-            tCouleurs[i%3][i/3] = g[i].faceVisible->couleur;
-    }
-
+    // Création d'un tableau qui va garder la position des cartes multicolores
+    std::array<std::array<unsigned int, 2>, 9> posMulti;
+    unsigned int nbMulti = 0;
     // Création d'un tableau de booléens qui va garder l'information des cases déja visitées
     std::array<std::array<bool, 3>, 3> tVisites;
-    for(int i = 0; i < 9; ++i){
+
+    // On parcourts les 9 cases de la grille
+    for(unsigned int i = 0; i < 9; ++i){
+        // Si il n'y a pas de cartes visible on met x
+        if(g[i].faceVisible == nullptr)
+            tCouleurs[i%3][i/3] = 'x';
+        // Sinon on met la couleur de cette carte
+        else{
+            tCouleurs[i%3][i/3] = g[i].faceVisible->couleur;
+            // Si la carte est multicolore on stock sa position
+            if(tCouleurs[i%3][i/3] == 's'){
+                posMulti[nbMulti] = {i%3, i/3};
+                ++nbMulti;
+            }
+        }
+        // On initialise cette case comme non visitée
         tVisites[i%3][i/3] = false;
     }
 
@@ -184,19 +197,28 @@ unsigned int comptePointsZone(Grille g, unsigned int numManche){
     for (int col = 0; col < 3; ++col){
         for (int ligne = 0; ligne < 3; ++ligne){
             // Si la case n'a pas encore été visitée alors on débute une recherche à partir de celle-ci
-            if (!tVisites[col][ligne]){
+            // Ce n'est pas grave de commencer une zone dans une carte multicolore au contraire
+            // La plus grande zone peut en être une de cartes uniquement multicolores
+            if(not tVisites[col][ligne]){
                 int taille = tailleExpansionCouleur(tCouleurs, tVisites, col, ligne, tCouleurs[col][ligne]);
                 // On met a jour la taille maximum si la zone parcourue était plus grande
                 if(taille > taille_max)
                     taille_max = taille;
+                // On remet les cartes multicolores comme non visitées
+                for(unsigned int i = 0; i < nbMulti; ++i){
+                    tVisites[posMulti[i][0]][posMulti[i][1]] = false;
+                }
             }
+            
         }
     }
     
     // Des points sont données seulement si il y a un endroit où deux cartes adjacentes sont de la même couleur
-    if(taille_max > 1)
+    if(taille_max > 1){
+        std::cout << "Points avec zone :" << taille_max*(numManche+1) << std::endl;
         // On applique le multiplicateur selon la manche
         return taille_max*(numManche+1);
+    }
     else
         return 0;
 }
@@ -205,8 +227,9 @@ unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleu
     // Si la case de départ est hors grille, 
     // OU Si la case a deja été visitée
     // OU Si la couleur de la case de départ n'est pas celle demandée et qu'elle n'est pas multicolore
+    // OU Si la carte n'a pas de couleur
     // Alors on arrête la recherche
-    if(col < 0 or col > 2 or ligne < 0 or ligne > 2 or dejaVisite[col][ligne] or (tabCouleurs[col][ligne] != couleur and tabCouleurs[col][ligne] != 'n'))
+    if(col < 0 or col > 2 or ligne < 0 or ligne > 2 or dejaVisite[col][ligne] or (tabCouleurs[col][ligne] != couleur and tabCouleurs[col][ligne] != 's') or tabCouleurs[col][ligne]=='x')
        return 0;
 
     // Sinon la case actuelle devient déja visitée
