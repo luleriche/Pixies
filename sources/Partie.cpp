@@ -39,14 +39,22 @@ void lancerUneNouvellePartie(){
     partie.numeroManche = 1;
 
     lancerManche(partie, 1, partie.dernierJoueur);
+    toutRemettreDansDefausse(partie);
+    afficher(partie.defausse);
+    melanger(partie.defausse);
+
     lancerManche(partie, 2, partie.dernierJoueur);
+    toutRemettreDansDefausse(partie);
+    melanger(partie.defausse);
+
     lancerManche(partie, 3, partie.dernierJoueur);
-    
+
     std::cout << "La partie est terminée." << std::endl;
 }
 
 void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premierJoueur){
     unsigned int joueurActuel = premierJoueur;
+    std::cout << "DEBUT DE LA MANCHE " << numeroManche << std::endl;
     // Si il n'y a que deux joueurs la manche peut se finir si il reste deux cartes dans la pioche
     if(partie.nombreJoueurs == 2){
         // Tant qu'un joueur n'a pas rempli sa grille
@@ -110,4 +118,25 @@ bool unJoueurAFinit(Partie partie){
     while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
         ++i;
     return i != partie.nombreJoueurs;
+}
+
+// Parcours chaque grille et la pioche et envoie les cartes dans la défausse
+void toutRemettreDansDefausse(Partie& partie){
+    // Parcours des grilles des joueurs
+    for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+        // Parcours de chaque case de sa grille
+        for(unsigned int j = 0; j < 9; ++j){
+            // On met les cartes dans la defausse et on vide la grille
+            deplacerDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
+            partie.joueurs[i].grilleDeJeu[j].faceCachee = nullptr;
+            deplacerDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceVisible);
+            partie.joueurs[i].grilleDeJeu[j].faceVisible = nullptr;
+        }
+    }
+
+    // Parcours des cartes de la pioche
+    for(unsigned int i = 0; i < 5; ++i){
+        deplacerDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
+        partie.pioche.cartes[i] = nullptr;
+    }
 }

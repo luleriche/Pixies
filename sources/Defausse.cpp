@@ -16,6 +16,16 @@ void initDefausse(Defausse& d){
     d = nullptr;
 }
 
+// Deplace un pointeur de carte au debut de la défausse
+void deplacerDebutDefausse(Defausse& defausse, Carte* ptrCarte){
+    if(ptrCarte != nullptr){
+        maillon* nouv = new maillon;
+        nouv->suivant = defausse;
+        nouv->valeur = ptrCarte;
+        defausse = nouv;
+    }
+}
+
 // Ajoute une Carte à la fin de la défausse.
 void ajoutFinDefausse(Defausse& d, Carte c){
     if(d == nullptr){
@@ -31,9 +41,11 @@ void ajoutFinDefausse(Defausse& d, Carte c){
 // Récupère un pointeur vers la première Carte de la défausse et l'enlève de celle-ci
 Carte* tirerCarteDessus(Defausse& d){
     if(d != nullptr){
-        maillon* premier = d;
+        maillon* premierMaillon = d;
+        Carte* premiereCarte = premierMaillon->valeur;
         d = d->suivant;
-        return premier->valeur;
+        delete premierMaillon;
+        return premiereCarte;
     }
     else{
         std::cout << "Défausse vide impossible de tirer la première Carte." << std::endl;

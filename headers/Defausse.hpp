@@ -19,6 +19,8 @@ void initDefausse(Defausse& d);
 // Ajoute une Carte à la fin de la défausse.
 void ajoutFinDefausse(Defausse& d, Carte c);
 
+void deplacerDebutDefausse(Defausse& defausse, Carte* ptrCarte);
+
 // Récupère un pointeur vers la première Carte de la défausse et l'enlève de celle-ci
 Carte* tirerCarteDessus(Defausse& d);
 

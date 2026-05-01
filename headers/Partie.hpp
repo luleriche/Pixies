@@ -24,3 +24,6 @@ void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premie
 
 // Fais jouer un joueur
 void tourDeJeu(Partie& partie, unsigned int joueur);
+
+// Parcours chaque grille et la pioche et envoie les cartes dans la défausse
+void toutRemettreDansDefausse(Partie& partie);
