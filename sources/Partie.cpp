@@ -26,14 +26,18 @@ void lancerUneNouvellePartie(){
     partie.pioche = pioche;
     
     // On demande à l'utilisateur le nombre de joueurs à la partie.
-    unsigned int nbJoueurs;
     std::cout << "Le jeu se joue de 2 à 5 joueurs !" << std::endl << "Nombre de joueurs: ";
-    std::cin >> nbJoueurs;
-    while(nbJoueurs > 5 and nbJoueurs < 2){
+    std::cin >> partie.nombreJoueurs;
+    while(partie.nombreJoueurs > 5 and partie.nombreJoueurs < 2){
         std::cout << "Impossible. Le jeu se joue de 2 à 5 joueurs ! Nombre de joueurs: ";
-        std::cin >> nbJoueurs;
+        std::cin >> partie.nombreJoueurs;
     }
-    partie.nombreJoueurs = nbJoueurs;
+
+    if(partie.nombreJoueurs == 2)
+        partie.pioche.taille = 4;
+    else
+        partie.pioche.taille = partie.nombreJoueurs;
+    
     // On demande à l'utilisateur d'entrer le nom des joueurs
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
     
@@ -69,12 +73,12 @@ void lancerManche(Partie& partie){
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     // Si il n'y a que deux joueurs la manche peut se finir si il reste deux cartes dans la pioche
     if(partie.nombreJoueurs == 2){
-        remplirPioche(partie.pioche, partie.defausse, 4);
+        remplirPioche(partie.pioche, partie.defausse);
         // Tant qu'un joueur n'a pas rempli sa grille
         while(not unJoueurAFinit(partie)){
             // On remplit la pioche si elle est vide
             if(estVidePioche(partie.pioche)){
-                remplirPioche(partie.pioche, partie.defausse, 4);
+                remplirPioche(partie.pioche, partie.defausse);
                 // Le prochain joueur devient le dernier
                 finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
             }
@@ -90,7 +94,7 @@ void lancerManche(Partie& partie){
         // Tant qu'un joueur n'a pas rempli sa grille
         while(not unJoueurAFinit(partie)){
             // On remplie la pioche et faisons un tour de table
-            remplirPioche(partie.pioche, partie.defausse, partie.nombreJoueurs);
+            remplirPioche(partie.pioche, partie.defausse);
             for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
                 tourDeJeu(partie, partie.prochainJoueur);
             }
@@ -153,7 +157,7 @@ void toutRemettreDansDefausse(Partie& partie){
     }
 
     // Parcours des cartes de la pioche
-    for(unsigned int i = 0; i < 5; ++i){
+    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
         ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
         partie.pioche.cartes[i] = nullptr;
     }

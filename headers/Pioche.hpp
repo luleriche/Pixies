@@ -19,7 +19,7 @@ void initPioche(Pioche& p);
 void afficher(Pioche p);
 
 // Rempli la pioche de 3 à 5 cartes en focntion du nombre de joueur
-void remplirPioche(Pioche &p, Defausse& d, unsigned int nb_joueur);
+void remplirPioche(Pioche &p, Defausse& d);
 
 //Renvoie vrai si la pioche est vide et faux sinon
 bool estVidePioche(Pioche p);
