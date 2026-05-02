@@ -5,29 +5,38 @@
 #include "Console.hpp"
 
 void afficher(Carte c){
+    // Affichage des premières information : (4 r
     std::cout << "(" << c.chiffre << " " << c.couleur << " ";
-    if(c.spirale > -1)
-        std::cout <<" " << c.spirale << ")";
-    else
-        std::cout << c.spirale << ")";
+
+    // Affichage des spirales, gestion du cas ou c'est une valeur spéciale
+    if(c.spirale == 9){
+        std::cout <<" +";
+    }else{
+        if(c.spirale > -1)
+            std::cout <<" ";
+        std::cout << c.spirale;            
+    }
+
+    std::cout << ")"; 
 }
 
 void afficherEnCouleur(Carte c){
-    // \033[0m reset la couleur
     std::string codeCouleur;
     if(c.couleur == 'r')
-        codeCouleur = SETCOUL_ROUGE; // Couleur du rouge
+        std::cout << SETCOUL_ROUGE;
     else if(c.couleur == 'b')
-        codeCouleur = SETCOUL_BLEU; // Couleur du bleu
+        std::cout << SETCOUL_BLEU;
     else if(c.couleur == 'j')
-        codeCouleur = SETCOUL_JAUNE; // Couleur du jaune
+        std::cout << SETCOUL_JAUNE;
     else if(c.couleur == 'v')
-        codeCouleur = SETCOUL_VERT; // Couleur du vert
-    else
-        codeCouleur = "";
-    
-    std::cout << codeCouleur << "(" << c.chiffre << " " << c.couleur << " ";
-    if(c.spirale > -1)
-        std::cout <<" ";
-    std::cout << c.spirale << ")" << RESET_COUL; 
+        std::cout << SETCOUL_VERT;
+
+    afficher(c);
+    std::cout << RESET_COUL;
+}
+
+void afficherEnGris(Carte c){
+    std::cout << SETCOUL_GRIS;
+    afficher(c);
+    std::cout << RESET_COUL;
 }

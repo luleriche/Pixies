@@ -32,10 +32,6 @@ void initGrille(Grille & g){
 
 // Affiche une Grille
 void afficherGrille(Grille & g){
-
-    // \033[90m : Gris foncé
-    // \033[0m  : Réinitialise la couleur
-
     std::cout << std::endl;
     std::cout << "------------------------------------" << std::endl;
 
@@ -58,7 +54,7 @@ void afficherGrille(Grille & g){
             if(g[ligne*3+col].faceCachee == nullptr)
                 std::cout <<"         | ";
             else{
-                std::cout << "\033[90m";afficher(*g[ligne*3+col].faceCachee); std::cout << "\033[0m | ";
+                afficherEnGris(*g[ligne*3+col].faceVisible); std::cout << " | ";
             }
         }
         std::cout << std::endl;
