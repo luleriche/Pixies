@@ -50,3 +50,6 @@ unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleu
 
 // Renvoie vrai si l'emplacement est validé
 bool emplacementEstValide(Grille g, unsigned int numeroEmpl);
+
+// Renvoie vrai si l'emplacement ne contient aucune carte
+bool estVideEmplacement(Grille g, unsigned int indice);

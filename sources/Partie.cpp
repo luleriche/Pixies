@@ -3,6 +3,7 @@
 
 #include "Partie.hpp"
 #include "Console.hpp"
+#include "Ordinateur.hpp"
 
 void lancerUneNouvellePartie(){
     // Création de la partie
@@ -116,6 +117,7 @@ void tourDeJeu(Partie& partie, unsigned int joueur){
     std::cout << std::endl; // Si le efface console ne marche pas au moins on n'est pas collé à avant
     //effaceConsole();
     std::cout << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
+    afficher(recupChoix(partie));
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     
     // Choix de la carte et ajout de celle-ci à la grille

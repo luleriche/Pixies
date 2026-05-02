@@ -28,6 +28,7 @@ set(SOURCES
     sources/Joueur.cpp
     sources/Partie.cpp
     sources/Console.cpp
+    sources/Ordinateur.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 
