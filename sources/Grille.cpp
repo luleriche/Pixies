@@ -2,6 +2,7 @@
 
 #include "Grille.hpp"
 #include "Carte.hpp"
+#include "Console.hpp"
 
 // Initialise un emplacement de Grille comme étant vide.
 void initEmplacement(emplacementGrille & emplGrille){
@@ -40,7 +41,9 @@ void afficherGrille(Grille & g){
         for(int col = 0; col < 3; ++col){
             if(col == 0)
                 std::cout << " |";
-            std::cout << ligne*3 + col + 1;
+            if(emplacementEstValide(g, ligne*3 + col))
+                std::cout << SETCOUL_MAGENTA;
+            std::cout << ligne*3 + col + 1 << RESET_COUL;
             if(g[ligne*3+col].faceVisible == nullptr)
                 std::cout <<"         |";
             else{
@@ -236,4 +239,9 @@ unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleu
              + tailleExpansionCouleur(tabCouleurs, dejaVisite, col, ligne+1, couleur) // En bas
              + tailleExpansionCouleur(tabCouleurs, dejaVisite, col-1, ligne-1, couleur); // Au dessus
    
+}
+
+// Renvoie vrai si l'emplacement est validé
+bool emplacementEstValide(Grille g, unsigned int numeroEmpl){
+    return g[numeroEmpl].faceCachee != nullptr and g[numeroEmpl].faceVisible != nullptr;
 }

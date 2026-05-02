@@ -47,3 +47,6 @@ unsigned int comptePointsZone(Grille g, unsigned int numManche);
 
 // Fonction récursive qui explore le tableaux de couleurs en restant sur une meme couleur, renvoie la taille de la zone en question
 unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleurs, std::array<std::array<bool, 3>, 3>& dejaVisite, int col, int ligne, char couleur);
+
+// Renvoie vrai si l'emplacement est validé
+bool emplacementEstValide(Grille g, unsigned int numeroEmpl);
