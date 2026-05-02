@@ -69,6 +69,7 @@ void lancerManche(Partie& partie){
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     // Si il n'y a que deux joueurs la manche peut se finir si il reste deux cartes dans la pioche
     if(partie.nombreJoueurs == 2){
+        remplirPioche(partie.pioche, partie.defausse, 4);
         // Tant qu'un joueur n'a pas rempli sa grille
         while(not unJoueurAFinit(partie)){
             // On remplit la pioche si elle est vide
