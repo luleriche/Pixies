@@ -54,7 +54,7 @@ void afficherGrille(Grille & g){
             if(g[ligne*3+col].faceCachee == nullptr)
                 std::cout <<"         | ";
             else{
-                afficherEnGris(*g[ligne*3+col].faceVisible); std::cout << " | ";
+                afficherEnGris(*g[ligne*3+col].faceCachee); std::cout << " | ";
             }
         }
         std::cout << std::endl;
@@ -92,7 +92,7 @@ void ajouterCarte(Grille& g, Carte* c){
         std::cout << "Emplacement validé !" << std::endl;
         std::cout <<  "Choisissez dans quelle case la mettre : ";
         std::cin >> choix;
-        while(g[choix-1].faceCachee != nullptr and g[choix-1].faceVisible){
+        while(g[choix-1].faceCachee != nullptr and g[choix-1].faceVisible != nullptr){
             std::cout << "Erreur! Emplacement déja occupé. Réessayez : ";
             std::cin >> choix;
         }

@@ -8,10 +8,15 @@ void lancerUneNouvellePartie(){
     // Création de la partie
     Partie partie;
 
+    // Création des cartes dans la mémoire à l'aide d'une boite de cartes
+    BoiteCartes boite;
+    unsigned int nbCartes;
+    creerCartesAvecFichier("assets/cartes_pixies.txt", boite, nbCartes);
+
     // Chargement des cartes et mélange
     Defausse defausse;
     initDefausse(defausse);
-    lireFichierDefausse("assets/cartes_pixies.txt", defausse);
+    remplir(boite, nbCartes, defausse);
     melanger(defausse);
     partie.defausse = defausse;
 
@@ -50,6 +55,8 @@ void lancerUneNouvellePartie(){
     lancerManche(partie, 3, partie.dernierJoueur);
 
     std::cout << "La partie est terminée." << std::endl;
+    
+    supprimerBoite(boite);
 }
 
 void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premierJoueur){
@@ -127,16 +134,16 @@ void toutRemettreDansDefausse(Partie& partie){
         // Parcours de chaque case de sa grille
         for(unsigned int j = 0; j < 9; ++j){
             // On met les cartes dans la defausse et on vide la grille
-            deplacerDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
+            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
             partie.joueurs[i].grilleDeJeu[j].faceCachee = nullptr;
-            deplacerDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceVisible);
+            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceVisible);
             partie.joueurs[i].grilleDeJeu[j].faceVisible = nullptr;
         }
     }
 
     // Parcours des cartes de la pioche
     for(unsigned int i = 0; i < 5; ++i){
-        deplacerDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
+        ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
         partie.pioche.cartes[i] = nullptr;
     }
 }
