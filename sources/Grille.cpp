@@ -82,6 +82,9 @@ void ajouterCarte(Grille& g, Carte* c){
         std::cout << "1 "; afficherEnCouleur(*g[c->chiffre-1].faceVisible);; std::cout << std::endl;
         std::cout << "2 "; afficherEnCouleur(*c); std::cout << std::endl;
         std::cout << "Choix: "; std::cin >> choix;
+        while(choix != 1 and choix != 2){
+            std::cout << "On a dit 1 ou 2 ! Réessayer : "; std::cin >> choix;
+        }
         if(choix == 1){
             g[c->chiffre-1].faceCachee = c;
         }else{
