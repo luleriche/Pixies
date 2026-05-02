@@ -19,6 +19,9 @@ void afficher(Defausse d);
 // Initialise une défausse vide
 void initDefausse(Defausse& d);
 
+// Vide une défausse en désallouant tous ses maillons
+void viderDefausse(Defausse& d);
+
 // Ajoute une carte au début d'une défausse.
 void ajoutDebutDefausse(Defausse& defausse, Carte* ptrCarte);
 

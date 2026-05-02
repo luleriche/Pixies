@@ -38,30 +38,35 @@ void lancerUneNouvellePartie(){
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
     
     // Génération aléatoire du premier joueur.
-    partie.dernierJoueur = rand()%partie.nombreJoueurs;
-    std::cout << "Le premier joueur sera " << partie.joueurs[partie.dernierJoueur].surnom << std::endl;
+    partie.prochainJoueur = rand()%partie.nombreJoueurs;
+    std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
 
     partie.numeroManche = 1;
+    // Manche 1
+    lancerManche(partie);
 
-    lancerManche(partie, 1, partie.dernierJoueur);
-    toutRemettreDansDefausse(partie);
-    afficher(partie.defausse);
-    melanger(partie.defausse);
-
-    lancerManche(partie, 2, partie.dernierJoueur);
     toutRemettreDansDefausse(partie);
     melanger(partie.defausse);
+    ++partie.numeroManche;
 
-    lancerManche(partie, 3, partie.dernierJoueur);
+    // Manche 2
+    lancerManche(partie);
+
+    toutRemettreDansDefausse(partie);
+    melanger(partie.defausse);
+    ++partie.numeroManche;
+
+    // Manche 3
+    lancerManche(partie);
 
     std::cout << "La partie est terminée." << std::endl;
-    
+    toutRemettreDansDefausse(partie);
+    viderDefausse(partie.defausse);
     supprimerBoite(boite);
 }
 
-void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premierJoueur){
-    unsigned int joueurActuel = premierJoueur;
-    std::cout << "DEBUT DE LA MANCHE " << numeroManche << std::endl;
+void lancerManche(Partie& partie){
+    std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     // Si il n'y a que deux joueurs la manche peut se finir si il reste deux cartes dans la pioche
     if(partie.nombreJoueurs == 2){
         // Tant qu'un joueur n'a pas rempli sa grille
@@ -69,28 +74,32 @@ void lancerManche(Partie& partie, unsigned int numeroManche, unsigned int premie
             // On remplit la pioche si elle est vide
             if(estVidePioche(partie.pioche)){
                 remplirPioche(partie.pioche, partie.defausse, 4);
-                joueurActuel = partie.dernierJoueur;
+                // Le prochain joueur devient le dernier
+                finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
             }
             // On fait jouer les deux joueurs
-            tourDeJeu(partie, joueurActuel);
-            tourDeJeu(partie, (joueurActuel + 1)%2);
+            tourDeJeu(partie, partie.prochainJoueur);
+            tourDeJeu(partie, partie.prochainJoueur);
         }
+        // On change le prochain joueur car on a finit une manche (équivalent à la fin d'un tour à plus de deux joueurs)
+        finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
+    }
     // Si le nombre de joueur est supérieur à 2
-    }else{
+    else{
         // Tant qu'un joueur n'a pas rempli sa grille
         while(not unJoueurAFinit(partie)){
             // On remplie la pioche et faisons un tour de table
             remplirPioche(partie.pioche, partie.defausse, partie.nombreJoueurs);
             for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-                tourDeJeu(partie, (joueurActuel + i)%partie.nombreJoueurs);
+                tourDeJeu(partie, partie.prochainJoueur);
             }
-            joueurActuel = partie.dernierJoueur;
+            finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
         }
     }
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
     // Comptage des points
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-        ajoutePointsDeGrille(partie.joueurs[i], numeroManche);
+        ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
         // Affiche les nouveaux points
         std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
     }
@@ -116,7 +125,8 @@ void tourDeJeu(Partie& partie, unsigned int joueur){
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     std::cout << std::endl;
 
-    partie.dernierJoueur = joueur;
+    // On change le prochain joueur
+    changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
 }
 
 // Renvoie un booléen qui indique si un des joueurs à rempli sa grille

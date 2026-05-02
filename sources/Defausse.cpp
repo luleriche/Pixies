@@ -16,6 +16,15 @@ void initDefausse(Defausse& d){
     d = nullptr;
 }
 
+// Vide un défausse en désallouant tous ses maillons
+void viderDefausse(Defausse& d){
+    if(d != nullptr){
+        viderDefausse(d->suivant);
+        delete d;
+        d = nullptr;
+    }
+}
+
 // Ajoute une carte au début d'une défausse.
 void ajoutDebutDefausse(Defausse& d, Carte* c){
     if(c != nullptr){
