@@ -18,11 +18,14 @@ void initPioche(Pioche& p);
 // Affiche les cartes de la pioche 
 void afficher(Pioche p);
 
-// Rempli la pioche de 3 à 5 cartes en focntion du nombre de joueur
+// Fonction qui remplit une pioche en prenant les cartes au dessus de la défausse
 void remplirPioche(Pioche &p, Defausse& d);
 
-//Renvoie vrai si la pioche est vide et faux sinon
+//Renvoie vrai si une pioche est vide et faux sinon
 bool estVidePioche(Pioche p);
+
+//Renvoie vrai si une pioche est vide et faux sinon
+bool estPleinePioche(Pioche p);
 
 // Supprime une carte d'indice i de la pioche 
 void supprimerCartePioche(Pioche & p, unsigned int i);

@@ -16,27 +16,32 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
     ListeDeCoups coupsPossibles;
     coupsPossibles.nombre = 0;
 
-    // Raccourci pour après, pour pas avoir à tout réecrire à chaque foix
+    // Raccourcis pour après, pour pas avoir à tout réecrire à chaque foix
     const Grille& griJoueur = partie.joueurs[partie.prochainJoueur].grilleDeJeu;
 
     Carte* carteChoisi;
-    // Parcours des cartes de la pioche
+    // Indice dans la grille ou sera envoyé la carte
+    unsigned int indiceDestGrille;
+    
+    // Parcours des cases de la pioche
     for(unsigned int i = 0; i < partie.pioche.taille; ++i){
+        // Si il y a une carte à cet endroit
         if(partie.pioche.cartes[i] != nullptr){
             carteChoisi = partie.pioche.cartes[i];
-            // Si la carte sera place directement, c'est a dire son emplacement est vide
-            if(estVideEmplacement(griJoueur, carteChoisi->chiffre-1)){
-                ajouterCoup(coupsPossibles, std::to_string(i+1)+" d");
-            
-            }// Sinon si il y a seulement une carte face visible, les deux choix sont : garder la piochée visible ou pas
-            else if(griJoueur[carteChoisi->chiffre-1].faceCachee == nullptr and griJoueur[carteChoisi->chiffre-1].faceVisible != nullptr){
-                ajouterCoup(coupsPossibles, std::to_string(i+1)+" v");
-                ajouterCoup(coupsPossibles, std::to_string(i+1)+" c");
-            }// Sinon les choix sont les différentes cases vides où on peut mettre la carte
+            // La destination de base est le chiffre de la carte
+            indiceDestGrille = carteChoisi->chiffre-1;
+            // Si à cette destination il n'y a pas de carte visible, il n'y a qu'un coup possible
+            if(griJoueur[indiceDestGrille].faceVisible == nullptr){
+                ajouterCoup(coupsPossibles, std::to_string(i)+"d"+std::to_string(indiceDestGrille));
+            }// Sinon si il y a seulement une carte face visible, deux coups sont possibles : garder la carte piochée visible ou pas
+            else if(griJoueur[indiceDestGrille].faceCachee == nullptr){
+                ajouterCoup(coupsPossibles, std::to_string(i)+"v"+std::to_string(indiceDestGrille));
+                ajouterCoup(coupsPossibles, std::to_string(i)+"c"+std::to_string(indiceDestGrille));
+            }// Sinon les coups possibles sont les différentes cases vides où on peut mettre la carte
             else{
                 for(unsigned int j = 0; j < 9; ++j){
-                    if(j!=carteChoisi->chiffre and estVideEmplacement(griJoueur, j))
-                        ajouterCoup(coupsPossibles, std::to_string(i+1)+" m "+ std::to_string(j+1));
+                    if(j!=indiceDestGrille and estVideEmplacement(griJoueur, j))
+                        ajouterCoup(coupsPossibles, std::to_string(i)+"m"+std::to_string(j));
                 }
             }
         }
@@ -45,36 +50,96 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
 }
 
 void jouerCoup(Partie& partie, std::string coup){
-    // Indice de la carte choisi par le coup dans la pioche
-    unsigned int indiceCarteChoisi = coup[0] - '1';
-    std::cout << indiceCarteChoisi;
-    // Pointeur vers la carte choisie
-    Carte* cartePiochee = partie.pioche.cartes[indiceCarteChoisi];
-    // Type de coup voulant être joué
-    char typeCoup = coup[2];
+    // Indice de la carte à prendre dans la pioche
+    unsigned int indiceCartePioche = coup[0] - '0';
+    // Pointeur vers la carte à jouer
+    Carte* cartePiochee = partie.pioche.cartes[indiceCartePioche];
+    // Type du coup voulant être joué
+    char typeCoup = coup[1];
+    // Indice où la carte sera mise dans la grille
+    unsigned int indiceDestGrille = coup[2] - '0';
     
     // Référence vers la grille du joueur qui va jouer
     Grille& griJoueur = partie.joueurs[partie.prochainJoueur].grilleDeJeu;
 
-    // On enlève la carte piochée de la pioche
-    partie.pioche.cartes[indiceCarteChoisi] = nullptr;
+    // On enlève la carte à jouer de la pioche
+    partie.pioche.cartes[indiceCartePioche] = nullptr;
 
-    // Si le coup est de la mettre directement dans sa case.
+    // Si le coup est de la mettre directement dans sa case face visible.
     if(typeCoup == 'd'){
-        griJoueur[cartePiochee->chiffre-1].faceVisible = cartePiochee;
+        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
     }
-    // Si le coup eest de choisir la carte piochée comme cachée face à celle qui était la avant
+    // Si le coup est de choisir la carte choisie comme cachée face à celle qui était la avant
     else if(typeCoup == 'c'){
-        griJoueur[cartePiochee->chiffre-1].faceCachee = cartePiochee;
+        // La carte face visible reste la même (celle qui était là avant)
+        // On met la carte face cachée
+        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
     }
-    // Si le coup eest de choisir la carte piochée comme visible face à celle qui était la avant
+    // Si le coup est de choisir la carte choisie comme visible face à celle qui était la avant
     else if(typeCoup == 'v'){
-        griJoueur[cartePiochee->chiffre-1].faceCachee = griJoueur[cartePiochee->chiffre-1].faceVisible;
-        griJoueur[cartePiochee->chiffre-1].faceVisible = cartePiochee;
+        // La carte qui était visible avant devient cachée et on mets celle choisis en tant que visible
+        griJoueur[indiceDestGrille].faceCachee = griJoueur[indiceDestGrille].faceVisible;
+        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
     }
     // Si le coup est de la mettre dans une autre case vide
     else{
-        unsigned int caseChoisie = coup[4] - '0';
-        griJoueur[caseChoisie-1].faceVisible = cartePiochee;
+        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
     }
+    partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
+}
+
+void annulerCoup(Partie& partie, std::string coup){
+    unsigned int joueurPrecedent;
+    // Type du coup qui a été joué
+    char typeCoup = coup[1];
+    // Indice où se trouvait la carte jouée dans la pioche avant
+    unsigned int indiceDestPioche = coup[0] - '0';
+    // Indice où a été mise la carte joué dans la grille
+    unsigned int indiceCarteGrille = coup[2] - '0';
+
+    // Si la pioche est pleine, avant elle ne contenait qu'une seule carte. Il faut donc remettre les cartes de la pioche dans la défausse.
+    if(estPleinePioche(partie.pioche)){
+        // On prends les cartes de la pioche en partant de la dernière et on les remets au dessus de la défausse.
+        for(unsigned int i = partie.pioche.taille; i >= 0; --i){
+            ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
+            partie.pioche.cartes[i] = nullptr;
+        }
+        // Cela veut aussi dire qu'on est au début d'une manche alors le joueur précédent est le suivant
+        joueurPrecedent = partie.prochainJoueur;
+    }else{
+        // Sinon c'est le joueur avant dans la liste des joueurs qui a joué avant
+        joueurPrecedent = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
+    }
+
+    // Référence vers la grille du joueur qui a joué avant
+    Grille& griJoueur = partie.joueurs[joueurPrecedent].grilleDeJeu;
+
+    // Si le coup était de la mettre directement dans sa case.
+    if(typeCoup == 'd'){
+        // On la met dans la pioche à son ancienne place et on l'enlève de la grille
+        partie.pioche.cartes[indiceDestPioche] = griJoueur[indiceCarteGrille].faceVisible;
+        griJoueur[indiceCarteGrille].faceVisible = nullptr;
+    }
+    // Si le coup était de choisir la carte jouée comme cachée face à celle qui était là avant
+    else if(typeCoup == 'c'){
+        // On la met dans la pioche à son ancienne place et on l'enlève de la grille
+        partie.pioche.cartes[indiceDestPioche] = griJoueur[indiceCarteGrille].faceCachee;
+        griJoueur[indiceCarteGrille].faceCachee = nullptr;
+    }
+    // Si le coup était de choisir la carte jouée comme visible face à celle qui était la avant
+    else if(typeCoup == 'v'){
+        // On la met dans la pioche à son ancienne place, remet l'ancienne carte visible et on l'enlève de la grille
+        partie.pioche.cartes[indiceDestPioche] = griJoueur[indiceCarteGrille].faceVisible;
+        griJoueur[indiceCarteGrille].faceVisible = griJoueur[indiceCarteGrille].faceCachee;
+        griJoueur[indiceCarteGrille].faceCachee = nullptr;
+    }
+    // Si le coup était de la mettre dans une autre case vide
+    else{
+        // On la met dans la pioche à son ancienne place et l'enlève de la grille
+        partie.pioche.cartes[indiceDestPioche] = griJoueur[indiceCarteGrille].faceCachee;
+        griJoueur[indiceCarteGrille].faceCachee = nullptr;
+    }
+
+    // On remets à jour le joueur suivant de la partie
+    partie.prochainJoueur = joueurPrecedent;
 }

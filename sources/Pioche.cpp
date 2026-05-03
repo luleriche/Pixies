@@ -33,6 +33,14 @@ bool estVidePioche(Pioche p){
     return i == p.taille;
 }
 
+bool estPleinePioche(Pioche p){
+    unsigned int i = 0;
+    while(i < p.taille and p.cartes[i] != nullptr){
+        ++i;
+    }
+    return i == p.taille;
+}
+
 void supprimerCartePioche(Pioche & p, unsigned int i){
     p.cartes[i] = nullptr;
 }

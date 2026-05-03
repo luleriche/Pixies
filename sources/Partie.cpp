@@ -119,26 +119,35 @@ void tourDeJeu(Partie& partie){
     std::cout << std::endl << std::endl << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     
-    // Ya que le joueur 3 qui joue les autres c'est des ordis
-    if(joueur == 3){
+    // Ya que le joueur 4 qui joue les autres c'est des ordis
+    if(joueur == 4){
         // Choix de la carte et ajout de celle-ci à la grille
         Carte* carteChoisi = prendrePioche(partie.pioche);
         ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
+        // On change le prochain joueur
+        changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
     }else{
+        afficher(partie.pioche);
         ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
         afficher(coupsPossibles);
         std::cout << "L'ordi joue le premier coup" << std::endl;
         jouerCoup(partie, coupsPossibles.coups[0]);
+        if(coupsPossibles.nombre > 1){
+            afficherGrille(partie.joueurs[joueur].grilleDeJeu);
+            std::cout << "Annulation du premier coup" << std::endl;
+            annulerCoup(partie, coupsPossibles.coups[0]);
+            afficherGrille(partie.joueurs[joueur].grilleDeJeu);
+            afficher(partie.pioche);
+            std::cout << "L'ordi joue le second coup" << std::endl;
+            jouerCoup(partie, coupsPossibles.coups[1]);
+        }
     }
-    
+
 
     // Affichage après avoir rajouter la carte à la grille
     std::cout << "Voici votre grille maintenant :" << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     std::cout << std::endl;
-
-    // On change le prochain joueur
-    changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
 }
 
 // Renvoie un booléen qui indique si un des joueurs à rempli sa grille
