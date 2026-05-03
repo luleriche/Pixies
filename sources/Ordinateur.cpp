@@ -49,7 +49,7 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
     return coupsPossibles;
 }
 
-void jouerCoup(Partie& partie, std::string coup){
+void jouerCoup(Partie& partie, std::string coup, unsigned int joueur){
     // Indice de la carte à prendre dans la pioche
     unsigned int indiceCartePioche = coup[0] - '0';
     // Pointeur vers la carte à jouer
@@ -60,7 +60,7 @@ void jouerCoup(Partie& partie, std::string coup){
     unsigned int indiceDestGrille = coup[2] - '0';
     
     // Référence vers la grille du joueur qui va jouer
-    Grille& griJoueur = partie.joueurs[partie.prochainJoueur].grilleDeJeu;
+    Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
 
     // On enlève la carte à jouer de la pioche
     partie.pioche.cartes[indiceCartePioche] = nullptr;
@@ -85,11 +85,9 @@ void jouerCoup(Partie& partie, std::string coup){
     else{
         griJoueur[indiceDestGrille].faceCachee = cartePiochee;
     }
-    partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
 }
 
-void annulerCoup(Partie& partie, std::string coup){
-    unsigned int joueurPrecedent;
+void annulerCoup(Partie& partie, std::string coup, unsigned int joueurPrecedent){
     // Type du coup qui a été joué
     char typeCoup = coup[1];
     // Indice où se trouvait la carte jouée dans la pioche avant
@@ -104,11 +102,6 @@ void annulerCoup(Partie& partie, std::string coup){
             ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
             partie.pioche.cartes[i] = nullptr;
         }
-        // Cela veut aussi dire qu'on est au début d'une manche alors le joueur précédent est le suivant
-        joueurPrecedent = partie.prochainJoueur;
-    }else{
-        // Sinon c'est le joueur avant dans la liste des joueurs qui a joué avant
-        joueurPrecedent = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
     }
 
     // Référence vers la grille du joueur qui a joué avant
@@ -139,7 +132,4 @@ void annulerCoup(Partie& partie, std::string coup){
         partie.pioche.cartes[indiceDestPioche] = griJoueur[indiceCarteGrille].faceCachee;
         griJoueur[indiceCarteGrille].faceCachee = nullptr;
     }
-
-    // On remets à jour le joueur suivant de la partie
-    partie.prochainJoueur = joueurPrecedent;
 }

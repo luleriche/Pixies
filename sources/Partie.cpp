@@ -40,6 +40,7 @@ void lancerUneNouvellePartie(){
         partie.pioche.taille = partie.nombreJoueurs;
     
     // On demande à l'utilisateur d'entrer le nom des joueurs
+    std::cout << "Si le nom d'un joueur commence par $ alors il sera considéré comme un ordi et jouera automatiquement." << std::endl;
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
     
     // Génération aléatoire du premier joueur.
@@ -84,8 +85,10 @@ void lancerManche(Partie& partie){
                 finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
             }
             // On fait jouer les deux joueurs
-            tourDeJeu(partie);
-            tourDeJeu(partie);
+            faireJouer(partie, partie.prochainJoueur);
+            changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
+            faireJouer(partie, partie.prochainJoueur);
+            changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
         }
         // On change le prochain joueur car on a finit une manche (équivalent à la fin d'un tour à plus de deux joueurs)
         finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
@@ -97,7 +100,8 @@ void lancerManche(Partie& partie){
             // On remplie la pioche et faisons un tour de table
             remplirPioche(partie.pioche, partie.defausse);
             for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-                tourDeJeu(partie);
+                faireJouer(partie, partie.prochainJoueur);
+                changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
             }
             finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
         }
@@ -112,37 +116,33 @@ void lancerManche(Partie& partie){
 }
 
 // Fais piocher un joueur dans la pioche et mets sa carte dans sa grille
-void tourDeJeu(Partie& partie){
-    unsigned int joueur = partie.prochainJoueur;
-    
+void faireJouer(Partie& partie, unsigned int joueur){
     // Affichage avant de choisir la carte a prendre
     std::cout << std::endl << std::endl << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
-    
-    // Ya que le joueur 4 qui joue les autres c'est des ordis
-    if(joueur == 4){
-        // Choix de la carte et ajout de celle-ci à la grille
-        Carte* carteChoisi = prendrePioche(partie.pioche);
-        ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
-        // On change le prochain joueur
-        changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
-    }else{
-        afficher(partie.pioche);
+    std::cout << "Pioche :" << std::endl;
+    afficher(partie.pioche);
+
+    // Si le nom du joueur commence par $ c'est un ordinateur
+    if(partie.joueurs[joueur].surnom[0] == '$'){
         ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
         afficher(coupsPossibles);
         std::cout << "L'ordi joue le premier coup" << std::endl;
-        jouerCoup(partie, coupsPossibles.coups[0]);
+        jouerCoup(partie, coupsPossibles.coups[0], joueur);
         if(coupsPossibles.nombre > 1){
             afficherGrille(partie.joueurs[joueur].grilleDeJeu);
             std::cout << "Annulation du premier coup" << std::endl;
-            annulerCoup(partie, coupsPossibles.coups[0]);
+            annulerCoup(partie, coupsPossibles.coups[0], joueur);
             afficherGrille(partie.joueurs[joueur].grilleDeJeu);
             afficher(partie.pioche);
             std::cout << "L'ordi joue le second coup" << std::endl;
-            jouerCoup(partie, coupsPossibles.coups[1]);
+            jouerCoup(partie, coupsPossibles.coups[1], joueur);
         }
+    }else{
+        // Choix de la carte et ajout de celle-ci à la grille
+        Carte* carteChoisi = prendrePioche(partie.pioche);
+        ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
     }
-
 
     // Affichage après avoir rajouter la carte à la grille
     std::cout << "Voici votre grille maintenant :" << std::endl;

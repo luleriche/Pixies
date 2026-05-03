@@ -22,7 +22,7 @@ void afficher(ListeDeCoups lc);
 ListeDeCoups recupCoupsPossibles(const Partie&);
 
 // Change l'état d'une partie comme si quelqu'un jouait un coup donné en paramètre.
-void jouerCoup(Partie& partie, std::string coup);
+void jouerCoup(Partie& partie, std::string coup, unsigned int joueur);
 
-// Change l'état d'une partie comme si on annulait un coup passé en paramètre.
-void annulerCoup(Partie& partie, std::string coup);
+// Change l'état d'une partie comme si on annulait un coup passé en paramètre. Change également du 
+void annulerCoup(Partie& partie, std::string coup, unsigned int joueurPrecedent);

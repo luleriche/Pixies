@@ -47,8 +47,6 @@ void supprimerCartePioche(Pioche & p, unsigned int i){
 
 Carte* prendrePioche(Pioche& p){
     unsigned int choix;
-    std::cout << "Pioche :" << std::endl;
-    afficher(p);
     std::cout << "Votre choix : ";
     std::cin >> choix;
     while (choix > p.taille or choix < 0 or p.cartes[choix - 1] == nullptr){
