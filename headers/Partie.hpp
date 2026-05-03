@@ -27,3 +27,10 @@ void faireJouer(Partie& partie, unsigned int joueur);
 
 // Parcours chaque grille et la pioche et envoie les cartes dans la défausse
 void toutRemettreDansDefausse(Partie& partie);
+
+// Change la valeur du joueur suivant en la mettant au joueur après l'actuel dans la liste
+void changerDeJoueur(Partie& partie);
+
+// Change la valeur du joueur suivant en la mettant au joueur avant l'actuel dans la liste
+void remettreDernierJoueurCommeSuivant(Partie& partie);
+

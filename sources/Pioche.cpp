@@ -41,10 +41,6 @@ bool estPleinePioche(Pioche p){
     return i == p.taille;
 }
 
-void supprimerCartePioche(Pioche & p, unsigned int i){
-    p.cartes[i] = nullptr;
-}
-
 Carte* prendrePioche(Pioche& p){
     unsigned int choix;
     std::cout << "Votre choix : ";
@@ -54,6 +50,6 @@ Carte* prendrePioche(Pioche& p){
         std::cin>> choix;
     }
     Carte* temp = p.cartes[choix - 1];
-    supprimerCartePioche(p, choix-1);
+    p.cartes[choix - 1] = nullptr;
     return temp;
 }

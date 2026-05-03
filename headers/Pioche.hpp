@@ -27,8 +27,5 @@ bool estVidePioche(Pioche p);
 //Renvoie vrai si une pioche est vide et faux sinon
 bool estPleinePioche(Pioche p);
 
-// Supprime une carte d'indice i de la pioche 
-void supprimerCartePioche(Pioche & p, unsigned int i);
-
 // Ajoute une carte dans une grille g de la pioche p
 Carte* prendrePioche(Pioche& p);

@@ -82,16 +82,16 @@ void lancerManche(Partie& partie){
             if(estVidePioche(partie.pioche)){
                 remplirPioche(partie.pioche, partie.defausse);
                 // Le prochain joueur devient le dernier
-                finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
+                remettreDernierJoueurCommeSuivant(partie);
             }
             // On fait jouer les deux joueurs
             faireJouer(partie, partie.prochainJoueur);
-            changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
+            changerDeJoueur(partie);
             faireJouer(partie, partie.prochainJoueur);
-            changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
+            changerDeJoueur(partie);
         }
         // On change le prochain joueur car on a finit une manche (équivalent à la fin d'un tour à plus de deux joueurs)
-        finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
+        remettreDernierJoueurCommeSuivant(partie);
     }
     // Si le nombre de joueur est supérieur à 2
     else{
@@ -101,9 +101,9 @@ void lancerManche(Partie& partie){
             remplirPioche(partie.pioche, partie.defausse);
             for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
                 faireJouer(partie, partie.prochainJoueur);
-                changerDeJoueur(partie.prochainJoueur, partie.nombreJoueurs);
+                changerDeJoueur(partie);
             }
-            finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
+            remettreDernierJoueurCommeSuivant(partie);
         }
     }
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
@@ -177,4 +177,14 @@ void toutRemettreDansDefausse(Partie& partie){
         ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
         partie.pioche.cartes[i] = nullptr;
     }
+}
+
+// Change la valeur du joueur suivant en la mettant au joueur après l'actuel dans la liste
+void changerDeJoueur(Partie& partie){
+    partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
+}
+
+// Change la valeur du joueur suivant en la mettant au joueur avant l'actuel dans la liste
+void remettreDernierJoueurCommeSuivant(Partie& partie){
+    partie.prochainJoueur = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
 }

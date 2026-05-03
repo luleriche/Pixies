@@ -21,22 +21,6 @@ void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheC
     }
 }
 
-void changerDeJoueur(unsigned int& joueurCourant, unsigned int nbJoueurs){
-    joueurCourant = (joueurCourant +1) % nbJoueurs;
-}
-
-void finDeTour(unsigned int& joueurDebut, unsigned int nbJoueurs) {
-    joueurDebut = (joueurDebut - 1 + nbJoueurs) % nbJoueurs;
-}
-
-void changerDeManche(std::array<Joueur, 5>& joueurs, int nbJoueurs, int& mancheCourante, int& joueurDebut) {
-    mancheCourante++;
-    joueurDebut = 0;
-    for (int i = 0; i < nbJoueurs; i++) {
-        initGrille(joueurs[i].grilleDeJeu);
-    }
-}
-
 void ajoutePointsDeGrille(Joueur& j, unsigned int numeroManche){
     j.nbPoints += comptePoints(j.grilleDeJeu, numeroManche);
 }
