@@ -122,23 +122,9 @@ void faireJouer(Partie& partie, unsigned int joueur){
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     std::cout << "Pioche :" << std::endl;
     afficher(partie.pioche);
-
-    // Si le nom du joueur commence par $ c'est un ordinateur
-    if(partie.joueurs[joueur].surnom[0] == '$'){
-        ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
-        afficher(coupsPossibles);
-        std::cout << "L'ordi joue le premier coup" << std::endl;
-        jouerCoup(partie, coupsPossibles.coups[0], joueur);
-        if(coupsPossibles.nombre > 1){
-            afficherGrille(partie.joueurs[joueur].grilleDeJeu);
-            std::cout << "Annulation du premier coup" << std::endl;
-            annulerCoup(partie, coupsPossibles.coups[0], joueur);
-            afficherGrille(partie.joueurs[joueur].grilleDeJeu);
-            afficher(partie.pioche);
-            std::cout << "L'ordi joue le second coup" << std::endl;
-            jouerCoup(partie, coupsPossibles.coups[1], joueur);
-        }
-    }else{
+    if(partie.joueurs[joueur].surnom[0]=='$')
+        faireChoisirOrdi(partie, joueur);
+    else{
         // Choix de la carte et ajout de celle-ci à la grille
         Carte* carteChoisi = prendrePioche(partie.pioche);
         ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
@@ -148,6 +134,13 @@ void faireJouer(Partie& partie, unsigned int joueur){
     std::cout << "Voici votre grille maintenant :" << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     std::cout << std::endl;
+}
+
+void faireChoisirOrdi(Partie& partie, unsigned int joueur){
+    ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+    afficher(coupsPossibles);
+    std::cout << "L'ordi joue le premier coup" << std::endl;
+    jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre], joueur);
 }
 
 // Renvoie un booléen qui indique si un des joueurs à rempli sa grille
