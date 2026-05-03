@@ -5,17 +5,17 @@
 
 #include "Partie.hpp"
 
-const int NbMaxChoix = 32;
+const int NbMaxCoups = 32;
 
-struct ListeDeChoix{
-    std::array<std::string, NbMaxChoix> choix;
-    unsigned int nbChoix;
+struct ListeDeCoups{
+    std::array<std::string, NbMaxCoups> coups;
+    unsigned int nombre;
 };
 
-void ajouterChoix(ListeDeChoix& listeChoix, std::string choix);
+void ajouterCoup(ListeDeCoups& lc, std::string coup);
 
-void afficher(ListeDeChoix choix);
+void afficher(ListeDeCoups lc);
 
-ListeDeChoix recupChoix(const Partie&);
+ListeDeCoups recupCoupsPossibles(const Partie&);
 
 void jouerCoup(Partie& partie, std::string coup);

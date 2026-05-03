@@ -2,19 +2,19 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-void ajouterChoix(ListeDeChoix& listeChoix, std::string choix){
-    listeChoix.choix[listeChoix.nbChoix] = choix;
-    ++listeChoix.nbChoix;
+void ajouterCoup(ListeDeCoups& lc, std::string coup){
+    lc.coups[lc.nombre] = coup;
+    ++lc.nombre;
 }
 
-void afficher(ListeDeChoix listeChoix){
-    for(unsigned int i = 0; i < listeChoix.nbChoix; ++i)
-        std::cout << listeChoix.choix[i] << std::endl;
+void afficher(ListeDeCoups lc){
+    for(unsigned int i = 0; i < lc.nombre; ++i)
+        std::cout << lc.coups[i] << std::endl;
 }
 
-ListeDeChoix recupChoix(const Partie& partie){
-    ListeDeChoix choixPossible;
-    choixPossible.nbChoix = 0;
+ListeDeCoups recupCoupsPossibles(const Partie& partie){
+    ListeDeCoups coupsPossibles;
+    coupsPossibles.nombre = 0;
 
     // Raccourci pour après, pour pas avoir à tout réecrire à chaque foix
     const Grille& griJoueur = partie.joueurs[partie.prochainJoueur].grilleDeJeu;
@@ -26,22 +26,22 @@ ListeDeChoix recupChoix(const Partie& partie){
             carteChoisi = partie.pioche.cartes[i];
             // Si la carte sera place directement, c'est a dire son emplacement est vide
             if(estVideEmplacement(griJoueur, carteChoisi->chiffre-1)){
-                ajouterChoix(choixPossible, std::to_string(i+1)+" d");
+                ajouterCoup(coupsPossibles, std::to_string(i+1)+" d");
             
             }// Sinon si il y a seulement une carte face visible, les deux choix sont : garder la piochée visible ou pas
             else if(griJoueur[carteChoisi->chiffre-1].faceCachee == nullptr and griJoueur[carteChoisi->chiffre-1].faceVisible != nullptr){
-                ajouterChoix(choixPossible, std::to_string(i+1)+" v");
-                ajouterChoix(choixPossible, std::to_string(i+1)+" c");
+                ajouterCoup(coupsPossibles, std::to_string(i+1)+" v");
+                ajouterCoup(coupsPossibles, std::to_string(i+1)+" c");
             }// Sinon les choix sont les différentes cases vides où on peut mettre la carte
             else{
                 for(unsigned int j = 0; j < 9; ++j){
                     if(j!=carteChoisi->chiffre and estVideEmplacement(griJoueur, j))
-                        ajouterChoix(choixPossible, std::to_string(i+1)+" m "+ std::to_string(j+1));
+                        ajouterCoup(coupsPossibles, std::to_string(i+1)+" m "+ std::to_string(j+1));
                 }
             }
         }
     }
-    return choixPossible;
+    return coupsPossibles;
 }
 
 void jouerCoup(Partie& partie, std::string coup){

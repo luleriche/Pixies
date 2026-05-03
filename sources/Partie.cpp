@@ -125,10 +125,10 @@ void tourDeJeu(Partie& partie){
         Carte* carteChoisi = prendrePioche(partie.pioche);
         ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
     }else{
-        ListeDeChoix choixPossible = recupChoix(partie);
-        afficher(choixPossible);
+        ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+        afficher(coupsPossibles);
         std::cout << "L'ordi joue le premier coup" << std::endl;
-        jouerCoup(partie, choixPossible.choix[0]);
+        jouerCoup(partie, coupsPossibles.coups[0]);
     }
     
 
