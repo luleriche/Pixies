@@ -17,3 +17,5 @@ void ajouterChoix(ListeDeChoix& listeChoix, std::string choix);
 void afficher(ListeDeChoix choix);
 
 ListeDeChoix recupChoix(const Partie&);
+
+void jouerCoup(Partie& partie, std::string coup);

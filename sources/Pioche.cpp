@@ -37,13 +37,13 @@ void supprimerCartePioche(Pioche & p, unsigned int i){
     p.cartes[i] = nullptr;
 }
 
-Carte* prendrePioche(Pioche& p, unsigned int taillePioche){
+Carte* prendrePioche(Pioche& p){
     unsigned int choix;
     std::cout << "Pioche :" << std::endl;
     afficher(p);
     std::cout << "Votre choix : ";
     std::cin >> choix;
-    while (choix > taillePioche or choix < 0 or p.cartes[choix - 1] == nullptr){
+    while (choix > p.taille or choix < 0 or p.cartes[choix - 1] == nullptr){
         std::cout<< "Erreur! Il n'y a pas de carte ici, réessayer : ";
         std::cin>> choix;
     }

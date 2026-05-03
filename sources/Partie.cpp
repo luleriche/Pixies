@@ -84,8 +84,8 @@ void lancerManche(Partie& partie){
                 finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
             }
             // On fait jouer les deux joueurs
-            tourDeJeu(partie, partie.prochainJoueur);
-            tourDeJeu(partie, partie.prochainJoueur);
+            tourDeJeu(partie);
+            tourDeJeu(partie);
         }
         // On change le prochain joueur car on a finit une manche (équivalent à la fin d'un tour à plus de deux joueurs)
         finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
@@ -97,7 +97,7 @@ void lancerManche(Partie& partie){
             // On remplie la pioche et faisons un tour de table
             remplirPioche(partie.pioche, partie.defausse);
             for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-                tourDeJeu(partie, partie.prochainJoueur);
+                tourDeJeu(partie);
             }
             finDeTour(partie.prochainJoueur, partie.nombreJoueurs);
         }
@@ -112,20 +112,25 @@ void lancerManche(Partie& partie){
 }
 
 // Fais piocher un joueur dans la pioche et mets sa carte dans sa grille
-void tourDeJeu(Partie& partie, unsigned int joueur){
+void tourDeJeu(Partie& partie){
+    unsigned int joueur = partie.prochainJoueur;
+    
     // Affichage avant de choisir la carte a prendre
-    std::cout << std::endl; // Si le efface console ne marche pas au moins on n'est pas collé à avant
-    //effaceConsole();
-    std::cout << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
-    afficher(recupChoix(partie));
+    std::cout << std::endl << std::endl << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
     afficherGrille(partie.joueurs[joueur].grilleDeJeu);
     
-    // Choix de la carte et ajout de celle-ci à la grille
-    unsigned int taillePioche = partie.nombreJoueurs;
-    if(partie.nombreJoueurs == 2)
-        taillePioche = 4;
-    Carte* carteChoisi = prendrePioche(partie.pioche, taillePioche);
-    ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
+    // Ya que le joueur 3 qui joue les autres c'est des ordis
+    if(joueur == 3){
+        // Choix de la carte et ajout de celle-ci à la grille
+        Carte* carteChoisi = prendrePioche(partie.pioche);
+        ajouterCarte(partie.joueurs[joueur].grilleDeJeu, carteChoisi);
+    }else{
+        ListeDeChoix choixPossible = recupChoix(partie);
+        afficher(choixPossible);
+        std::cout << "L'ordi joue le premier coup" << std::endl;
+        jouerCoup(partie, choixPossible.choix[0]);
+    }
+    
 
     // Affichage après avoir rajouter la carte à la grille
     std::cout << "Voici votre grille maintenant :" << std::endl;
