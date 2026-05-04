@@ -22,12 +22,12 @@ bool unJoueurAFinit(Partie partie);
 // Lance une manche du jeu
 void lancerManche(Partie& partie);
 
-// Fais jouer un joueur
+// Fais jouer le prochain joueur de la partie
 void faireJouer(Partie& partie, unsigned int joueur);
 
-// Fais choisir un ordinateur à la place d'un joueur
-void faireChoisirOrdi(Partie& partie);
+std::string demanderCoupJoueur(const Partie& partie);
 
+std::string demanderCoupOrdi(Partie& partie);
 
 // Parcours chaque grille et la pioche et envoie les cartes dans la défausse
 void toutRemettreDansDefausse(Partie& partie);

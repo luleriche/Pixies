@@ -32,7 +32,7 @@ void initGrille(Grille & g){
 }
 
 // Affiche une Grille
-void afficherGrille(Grille & g){
+void afficherGrille(Grille g){
     std::cout << std::endl;
     std::cout << "------------------------------------" << std::endl;
 

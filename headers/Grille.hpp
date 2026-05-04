@@ -22,7 +22,7 @@ using Grille = std::array<emplacementGrille, 9>;
 void initGrille(Grille & g);
 
 // Affiche une Grille
-void afficherGrille(Grille & g);
+void afficherGrille(Grille g);
 
 // Ajoute une Carte à la Grille 
 void ajouterCarte(Grille& g, Carte* c);
