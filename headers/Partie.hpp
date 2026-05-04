@@ -26,7 +26,7 @@ void lancerManche(Partie& partie);
 void faireJouer(Partie& partie, unsigned int joueur);
 
 // Fais choisir un ordinateur à la place d'un joueur
-void faireChoisirOrdi(Partie& partie, unsigned int joueur);
+void faireChoisirOrdi(Partie& partie);
 
 
 // Parcours chaque grille et la pioche et envoie les cartes dans la défausse

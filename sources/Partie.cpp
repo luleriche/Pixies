@@ -123,7 +123,7 @@ void faireJouer(Partie& partie, unsigned int joueur){
     std::cout << "Pioche :" << std::endl;
     afficher(partie.pioche);
     if(partie.joueurs[joueur].surnom[0]=='$')
-        faireChoisirOrdi(partie, joueur);
+        faireChoisirOrdi(partie);
     else{
         // Choix de la carte et ajout de celle-ci à la grille
         Carte* carteChoisi = prendrePioche(partie.pioche);
@@ -136,11 +136,11 @@ void faireJouer(Partie& partie, unsigned int joueur){
     std::cout << std::endl;
 }
 
-void faireChoisirOrdi(Partie& partie, unsigned int joueur){
+void faireChoisirOrdi(Partie& partie){
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
     afficher(coupsPossibles);
     std::cout << "L'ordi joue le premier coup" << std::endl;
-    jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre], joueur);
+    jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
 }
 
 // Renvoie un booléen qui indique si un des joueurs à rempli sa grille
