@@ -28,6 +28,16 @@ void remplirPioche(Pioche &p, Defausse& d){
     p.nombreCartesRestantes = p.taille;
 }
 
+void mettrePiocheDansDefausse(Pioche &p, Defausse& d){
+    for(int i = p.taille-1; i >= 0; --i){
+        if(p.cartes[i] != nullptr){
+            ajoutDebutDefausse(d, p.cartes[i]);
+            p.cartes[i] = nullptr;
+        }
+    }
+    p.nombreCartesRestantes = 0;
+}
+
 bool estVidePioche(Pioche p){
     return p.nombreCartesRestantes == 0;
 }

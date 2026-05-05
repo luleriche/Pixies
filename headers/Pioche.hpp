@@ -22,6 +22,8 @@ void afficher(Pioche p);
 // Fonction qui remplit une pioche en prenant les cartes au dessus de la défausse
 void remplirPioche(Pioche &p, Defausse& d);
 
+void mettrePiocheDansDefausse(Pioche &p, Defausse& d);
+
 //Renvoie vrai si une pioche est vide et faux sinon
 bool estVidePioche(Pioche p);
 

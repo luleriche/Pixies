@@ -23,6 +23,9 @@ void ajouterCoup(ListeDeCoups& lc, std::string coup);
 // Affiche une liste de coup, une ligne par coup.
 void afficher(ListeDeCoups lc);
 
+// Supprime le dernier coup
+void supprimeDernierCoup(ListeDeCoups& lc);
+
 struct Partie{
     Defausse defausse;
     Pioche pioche;
@@ -60,6 +63,9 @@ void changerDeJoueur(Partie& partie);
 void remettreDernierJoueurCommeSuivant(Partie& partie);
 
 void jouerCoup(Partie& partie, std::string coup);
+
+// Annule le dernier coup de la manche en cours
+void annulerDernierCoup(Partie& partie);
 
 // Renvoie le dernier coup joué dans une manche. "NULL" si aucun coup.
 std::string recupDernierCoup(Partie partie);
