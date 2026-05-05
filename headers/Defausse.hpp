@@ -51,4 +51,6 @@ void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int
 // Désalloue toute la mémoire prise par les cartes d'une boite
 void supprimerBoite(BoiteCartes& boite);
 
+// Afficher les n premières cartes de la défausse en une ligne.
+void afficherNCartes(const Defausse d, unsigned int n);
 

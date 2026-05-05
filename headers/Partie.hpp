@@ -81,3 +81,9 @@ std::string recupDernierCoup(Partie partie);
 
 // Renvoyer l'indice du joueur du dernier coup de la manche. 10 si aucun.
 unsigned int joueurDuDernierCoup(Partie partie);
+
+//  Récupérer le joueur qui a le plus de points d'une partie.
+unsigned int recupLeader(const Partie& partie);
+
+// Afficher la pioche , les 5 premières cartes de la défausse et les grilles des joueurs d'une partie.
+void afficher(const Partie& partie);

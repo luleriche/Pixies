@@ -52,6 +52,8 @@ void annulerDernierCoup(Partie& partie){
     supprimeDernierCoup(partie.coupsManche);
     // On remet le joueur au joueur précédent
     partie.prochainJoueur = joueurPrecedent;
+    // On met la partie comme non terminé
+    partie.estMancheFinie = false;
 }
 
 ListeDeCoups recupCoupsPossibles(const Partie& partie){
@@ -91,3 +93,53 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
     }
     return coupsPossibles;
 }
+
+void jouerCoupAlea(Partie& partie){
+    ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+    jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
+    std::cout << "------------- COUP ALEA JOUE -------------" << std::endl;
+}
+
+void finirMancheAleatoirement(Partie& partie){
+    while(not partie.estMancheFinie){
+        jouerCoupAlea(partie);
+    }
+}
+
+unsigned int recupLeaderFinMancheAleatoire(Partie& partie){
+    // On stock le nombre de coups joués pour y revenir après
+    unsigned int nbCoupsInitial = partie.coupsManche.nombre;
+    // On va au bout de la manche et on stock le leader
+    finirMancheAleatoirement(partie);
+    unsigned int leader = recupLeader(partie);
+    // On remets à l'état initial
+    while(partie.coupsManche.nombre > nbCoupsInitial){
+        annulerDernierCoup(partie);
+        std::cout << "------------- COUP ANNULE -------------" << std::endl;
+    }
+    return leader;
+}
+
+/*
+
+CODE POUR PAS PERDRE LA DEFAUSSE DU DEBUT
+
+// On stock les pointeurs de la défausse initiale pour la reconstruire après
+    unsigned int tailleDefausse = recupTaille(partie.defausse);
+    Carte* * ptrDefausseInitiale = new Carte*[tailleDefausse];
+    maillon* tmp = partie.defausse;
+    for(unsigned int i = 0; i < tailleDefausse; ++i){
+        ptrDefausseInitiale[i] = tmp->valeur;
+        tmp = tmp->suivant;
+    }
+
+
+    // On remet la défausse comme avant
+    tmp = partie.defausse;
+    for(unsigned int i = 0; i < tailleDefausse; ++i){
+        tmp->valeur = ptrDefausseInitiale[i];
+        tmp = tmp->suivant;
+    }
+    delete[] ptrDefausseInitiale;
+
+*/

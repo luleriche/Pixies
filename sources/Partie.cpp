@@ -88,6 +88,9 @@ void lancerManche(Partie& partie){
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     while(not partie.estMancheFinie){
         faireJouerProchain(partie);
+        if(partie.coupsManche.nombre == 3){
+            std:: cout << recupLeaderFinMancheAleatoire(partie);
+        }
     }
 
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
@@ -109,20 +112,7 @@ void faireJouerProchain(Partie& partie){
     }
     jouerCoup(partie, coup);
     // Affichage après avoir rajouter la carte à la grille
-    std::cout << "Voici votre grille maintenant :" << std::endl;
-    afficherGrille(partie.joueurs[joueurDuDernierCoup(partie)].grilleDeJeu);
-    std::cout << "annulation de votre coup. rejouez" << std::endl;
-    annulerDernierCoup(partie);
-    if(partie.joueurs[partie.prochainJoueur].surnom[0]=='$')
-        coup = demanderCoupOrdi(partie);
-    else{
-        coup = demanderCoupJoueur(partie);
-    }
-    jouerCoup(partie, coup);
-    // Affichage après avoir rajouter la carte à la grille
-    std::cout << "Voici votre grille maintenant :" << std::endl;
-    afficherGrille(partie.joueurs[joueurDuDernierCoup(partie)].grilleDeJeu);
-    std::cout << std::endl;
+    afficher(partie);
 }
 
 std::string demanderCoupOrdi(Partie& partie){
@@ -135,11 +125,8 @@ std::string demanderCoupJoueur(const Partie& partie){
     const unsigned int& joueur = partie.prochainJoueur;
     const Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
     
-    // Affichage de la grille et de la pioche avant de choisir
-    std::cout << ". Votre grille : " << std::endl;
-    afficherGrille(griJoueur);
-    std::cout << "Pioche :" << std::endl;
-    afficher(partie.pioche);
+    // Affichage de la partie avant de choisir
+    afficher(partie);
     
     //  -------- Choix de la carte parmi celle de la pioche --------
     unsigned int indiceCartePioche;
@@ -316,4 +303,26 @@ unsigned int joueurDuDernierCoup(Partie partie){
         return 10;
     else
         return dernierCoup[0] - '0';
+}
+
+unsigned int recupLeader(const Partie& partie){
+    int leader = 0;
+    for(unsigned int i = 1; i < partie.nombreJoueurs; ++i){
+        if(partie.joueurs[i].nbPoints > partie.joueurs[leader].nbPoints)
+            leader = i;
+    }
+    return leader;
+}
+
+void afficher(const Partie& partie){
+    
+    for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+        std::cout << "Grille de " << partie.joueurs[i].surnom << std::endl;
+        afficherGrille(partie.joueurs[i].grilleDeJeu);
+    }
+
+    std::cout <<" Pioche :" << std::endl;
+    afficherNCartes(partie.defausse, 5);
+    std::cout << std::endl;
+    afficher(partie.pioche);
 }
