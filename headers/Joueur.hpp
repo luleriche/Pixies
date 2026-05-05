@@ -17,7 +17,7 @@ struct Joueur{
 // Initialise un joueur 
 void initJoueur(Joueur & j, Pioche* p, std::string surnom);
 
-//Creer un nombre de joueur precis 
+//Créer un nombre de joueur precis 
 void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune);
 
 // Ajoute les points de la grille d'un joueur à celui-ci

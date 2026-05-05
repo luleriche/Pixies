@@ -4,13 +4,11 @@
 #include "Carte.hpp"
 #include "Console.hpp"
 
-// Initialise un emplacement de Grille comme étant vide.
 void initEmplacement(emplacementGrille & emplGrille){
     emplGrille.faceCachee = nullptr;
     emplGrille.faceVisible = nullptr;
 }
 
-// Affiche un emplacement de Grille sous la forme : c. cachée / c. visible.
 void afficher(emplacementGrille emplGrille){
     if(emplGrille.faceCachee == nullptr)
         std::cout << "     ";
@@ -24,14 +22,12 @@ void afficher(emplacementGrille emplGrille){
     std::cout<<std::endl;
 }
 
-// Initialise une Grille vide
 void initGrille(Grille & g){
     for( int i = 0; i<9; ++i){
         initEmplacement(g[i]);
     }
 }
 
-// Affiche une Grille
 void afficherGrille(Grille g){
     std::cout << std::endl;
     std::cout << "------------------------------------" << std::endl;
@@ -68,7 +64,6 @@ void afficherGrille(Grille g){
     std::cout << std::endl;
 }
 
-// Ajoute une Carte à la Grille 
 void ajouterCarte(Grille& g, Carte* c){
     // Si il n'y a pas de Carte visible à l'emplacement
     if(g[c->chiffre-1].faceVisible == nullptr){
@@ -106,7 +101,6 @@ void ajouterCarte(Grille& g, Carte* c){
     }
 }
 
-// Fonction qui regarde si la Grille à min une Carte par emplacement si oui renvoie true
 bool finJeu(Grille g){
     for (int i = 0; i < 9; ++i){
         if(g[i].faceCachee == nullptr and g[i].faceVisible == nullptr){
@@ -116,7 +110,6 @@ bool finJeu(Grille g){
     return true;
 }
 
-// Retourne le nombre de points sur la grille actuelle selon la manche
 int comptePoints(Grille g, unsigned int numeroManche){
     int points = 0;
 
@@ -130,7 +123,6 @@ int comptePoints(Grille g, unsigned int numeroManche){
     return points;
 }
 
-// Retourne le nombre de points sur une grille obtenus avec les spirales et les croix
 int compteSpirales(Grille g){
     int points = 0;
     for(int i = 0; i < 9; ++i){
@@ -244,12 +236,10 @@ unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleu
    
 }
 
-// Renvoie vrai si l'emplacement est validé
 bool emplacementEstValide(Grille g, unsigned int indice){
     return g[indice].faceCachee != nullptr and g[indice].faceVisible != nullptr;
 }
 
-// Renvoie vrai si l'emplacement ne contient aucune carte
 bool estVideEmplacement(Grille g, unsigned int indice){
     return g[indice].faceCachee == nullptr and g[indice].faceVisible == nullptr;
 }

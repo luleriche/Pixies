@@ -7,7 +7,7 @@
 void afficher(Carte c){
     // Affichage des premières information : (4 r
     std::cout << "(" << c.chiffre << " " << c.couleur << " ";
-
+    
     // Affichage des spirales, gestion du cas ou c'est une valeur spéciale
     if(c.spirale == 9){
         std::cout <<" +";

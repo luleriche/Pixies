@@ -11,12 +11,10 @@ void afficher(Defausse d){
     }
 }
 
-// Initialise une défausse vide
 void initDefausse(Defausse& d){
     d = nullptr;
 }
 
-// Vide un défausse en désallouant tous ses maillons
 void viderDefausse(Defausse& d){
     if(d != nullptr){
         viderDefausse(d->suivant);
@@ -25,7 +23,6 @@ void viderDefausse(Defausse& d){
     }
 }
 
-// Ajoute une carte au début d'une défausse.
 void ajoutDebutDefausse(Defausse& d, Carte* c){
     if(c != nullptr){
         maillon* nouv = new maillon;
@@ -35,7 +32,6 @@ void ajoutDebutDefausse(Defausse& d, Carte* c){
     }
 }
 
-// Ajoute une carte à la fin d'une défausse.
 void ajoutFinDefausse(Defausse& d, Carte* c){
     if(d == nullptr){
         maillon* nouv = new maillon;
@@ -47,8 +43,6 @@ void ajoutFinDefausse(Defausse& d, Carte* c){
     }
 }
 
-// Récupère un pointeur vers la première carte d'une défausse et l'enlève de celle-ci
-// Renvoie nullptr si il n'y a pas de carte
 Carte* tirerCarteDessus(Defausse& d){
     if(d != nullptr){
         maillon* premierMaillon = d;
@@ -63,7 +57,6 @@ Carte* tirerCarteDessus(Defausse& d){
     }
 }
 
-// Récupère un pointeur vers la n-ième carte d'une défausse et l'enlève de celle-ci
 Carte* tirerCarteIndice(Defausse& d, int indice){
     if(indice == 0 or d == nullptr)
         return tirerCarteDessus(d);
@@ -71,22 +64,19 @@ Carte* tirerCarteIndice(Defausse& d, int indice){
         return tirerCarteIndice(d->suivant, indice-1);
 }
 
-// Mélange une défausse de manière aléatoire.
 void melanger(Defausse& d){
-    for(int i = 71; i > 0; --i){
-        ajoutFinDefausse(d, tirerCarteIndice(d, rand()%i));
+    unsigned int taille = recupTaille(d);
+    for(int i = taille; i > 0; --i){
+        ajoutFinDefausse(d, tirerCarteIndice(d, rand()%taille));
     };
 }
 
-// Mets toutes les cartes d'une boite dans une défausse
 void remplir(BoiteCartes boite, unsigned int nbCartes, Defausse& defausse){
     for(unsigned int i = 0; i < nbCartes; ++i){
         ajoutFinDefausse(defausse, &boite[i]);
     }
 }
 
-// Créer les emplacements pour les cartes dans la mémoire à partir d'un fichier texte
-// Et mets les pointeurs vers ces emplacements dans la boite
 void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int &nbCartes){
     std::ifstream fic;
     fic.open(nomFic);
@@ -103,8 +93,17 @@ void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int
     }
 }
 
-// Désalloue toute la mémoire prise par une boite
 void supprimerBoite(BoiteCartes& boite){
     delete[] boite;
     boite = nullptr;
+}
+
+unsigned int recupTaille(Defausse d){
+    maillon* tmp = d;
+    unsigned int taille = 0;
+    while(tmp != nullptr){
+        ++taille;
+        tmp = tmp->suivant;
+    }
+    return taille;
 }

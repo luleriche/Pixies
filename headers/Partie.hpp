@@ -4,8 +4,8 @@
 #include "Pioche.hpp"
 #include "Joueur.hpp"
 
+// Structure pour une liste de de coups.
 const int NbMaxCoups = 32;
-
 struct ListeDeCoups{
     /* Un coup se construit ainsi :
     - indice du joueur qui a joué le coup
@@ -17,58 +17,67 @@ struct ListeDeCoups{
     unsigned int nombre;
 };
 
-// Ajoute un coup à une liste de coups.
+// Ajouter un coup à une liste de coups.
 void ajouterCoup(ListeDeCoups& lc, std::string coup);
 
-// Affiche une liste de coup, une ligne par coup.
+// Afficher une liste de coup, autant de lignes que de coups.
 void afficher(ListeDeCoups lc);
 
-// Supprime le dernier coup
+// Supprimer le dernier coup d'une liste de coups.
 void supprimeDernierCoup(ListeDeCoups& lc);
 
+
+// Structure pour une partie de Pixies
 struct Partie{
+    // Défausse de la partie
     Defausse defausse;
+    // Pioche de la partie
     Pioche pioche;
+    // Joueurs de la partie
     std::array<Joueur, 5> joueurs;
     unsigned int nombreJoueurs;
+    // Indice du prochain joueurs dans la liste des joueurs de la partie
     unsigned int prochainJoueur;
+    // Numéro de la manche actuelle
     unsigned int numeroManche;
+    // Si la manche actuelle est terminée ou non
     bool estMancheFinie;
+    // Liste des coups joués depuis le début de la manche actuelle
     ListeDeCoups coupsManche;
 };
 
-// Lance une nouvelle partie a partir de zéro 
+// Lance une nouvelle partie à partir de zéro.
 void lancerUneNouvellePartie();
 
-// Renvoie un booléen qui indique si un des joueurs à rempli sa grille
+// Savoir si un joueur d'une partie a sa grille de remplie.
 bool unJoueurAFinit(Partie partie);
 
-// Lance une manche du jeu
+// Lancer une manche d'une partie en utilisant la valeur actuelle de numeroManche.
 void lancerManche(Partie& partie);
 
-// Fais jouer le prochain joueur de la partie
+// Faire jouer le prochain joueur de la partie.
 void faireJouerProchain(Partie& partie);
 
+// Demander à l'utilisateur le coup qu'il jouerait si il était le prochain joueur 
 std::string demanderCoupJoueur(const Partie& partie);
 
+// Demander à l'ordinateur le coup qu'il jouerait si il était le prochain joueur
 std::string demanderCoupOrdi(Partie& partie);
 
-// Parcours chaque grille et la pioche et envoie les cartes dans la défausse
+// Remettre les cartes de la pioche et des grilles des joueurs dans la défausse d'une partie.
 void toutRemettreDansDefausse(Partie& partie);
 
-// Change la valeur du joueur suivant en la mettant au joueur après l'actuel dans la liste
+// Changer la valeur du joueur suivant en la mettant au joueur après lui dans la liste des joueurs.
 void changerDeJoueur(Partie& partie);
 
-// Change la valeur du joueur suivant en la mettant au joueur avant l'actuel dans la liste
+// Changer la valeur du joueur suivant en la mettant au joueur après lui dans la liste des joueurs.
 void remettreDernierJoueurCommeSuivant(Partie& partie);
 
+// Jouer un coup sur une partie, le coup est supposé possibl et valide.
 void jouerCoup(Partie& partie, std::string coup);
 
-// Annule le dernier coup de la manche en cours
-void annulerDernierCoup(Partie& partie);
-
-// Renvoie le dernier coup joué dans une manche. "NULL" si aucun coup.
+// Renvoyer le dernier coup joué dans une manche. "NULL" si aucun coup.
 std::string recupDernierCoup(Partie partie);
 
-// Renvoie l'indice du joueur du dernier coup de la manche. 10 si aucun.
+// Renvoyer l'indice du joueur du dernier coup de la manche. 10 si aucun.
 unsigned int joueurDuDernierCoup(Partie partie);

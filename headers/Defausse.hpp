@@ -22,17 +22,21 @@ void initDefausse(Defausse& d);
 // Vide une défausse en désallouant tous ses maillons
 void viderDefausse(Defausse& d);
 
+// Renvoie le nombre de cartes dans la défausse
+unsigned int recupTaille(Defausse d);
+
 // Ajoute une carte au début d'une défausse.
 void ajoutDebutDefausse(Defausse& defausse, Carte* ptrCarte);
 
 // Ajoute une carte à la fin d'une défausse.
-void ajoutFinDefausse(Defausse& d, Carte* c);
+void ajoutFinDefausse(Defausse& defausse, Carte* ptrCarte);
 
 // Récupère un pointeur vers la première carte d'une défausse et l'enlève de celle-ci
 // Renvoie nullptr si il n'y a pas de carte
 Carte* tirerCarteDessus(Defausse& d);
 
 // Récupère un pointeur vers la n-ième carte d'une défausse et l'enlève de celle-ci
+// Renvoie nullptr si il n'y a pas de carte
 Carte* tirerCarteIndice(Defausse& d, int indice);
 
 // Mélange une défausse de manière aléatoire.
@@ -41,8 +45,10 @@ void melanger(Defausse& d);
 // Mets toutes les cartes d'une boite dans une défausse.
 void remplir(BoiteCartes boite, unsigned int nbCartes, Defausse& defausse);
 
-// Remplie une défausse a partir d'un fichier
+// Créer les cartes de jeu et les mets dans une boite 
 void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int &nbCartes);
 
 // Désalloue toute la mémoire prise par les cartes d'une boite
 void supprimerBoite(BoiteCartes& boite);
+
+
