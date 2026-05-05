@@ -10,10 +10,11 @@
 struct Pioche{
     std::array<Carte*,5> cartes;
     unsigned int taille;
+    unsigned int nombreCartesRestantes;
 };
 
 // Initialise une pioche par nullptr
-void initPioche(Pioche& p);
+void initPioche(Pioche& p, unsigned int taille);
 
 // Affiche les cartes de la pioche 
 void afficher(Pioche p);
@@ -27,5 +28,5 @@ bool estVidePioche(Pioche p);
 //Renvoie vrai si une pioche est vide et faux sinon
 bool estPleinePioche(Pioche p);
 
-// Ajoute une carte dans une grille g de la pioche p
-Carte* prendrePioche(Pioche& p);
+// Renvoie un pointeur vers une carte de la pioche et l'enlève de celle-ci
+Carte* tierCartePioche(Pioche& p, unsigned int indice);

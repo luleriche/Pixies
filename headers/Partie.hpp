@@ -4,13 +4,34 @@
 #include "Pioche.hpp"
 #include "Joueur.hpp"
 
+const int NbMaxCoups = 32;
+
+struct ListeDeCoups{
+    /* Un coup se construit ainsi :
+    - indice du joueur qui a joué le coup
+    - indice de la carte prise dans la pioche
+    - type du coup (d/v/c/m)
+    - indice dans la grille ou a finit la carte
+    */ 
+    std::array<std::string, NbMaxCoups> coups;
+    unsigned int nombre;
+};
+
+// Ajoute un coup à une liste de coups.
+void ajouterCoup(ListeDeCoups& lc, std::string coup);
+
+// Affiche une liste de coup, une ligne par coup.
+void afficher(ListeDeCoups lc);
+
 struct Partie{
     Defausse defausse;
     Pioche pioche;
     std::array<Joueur, 5> joueurs;
     unsigned int nombreJoueurs;
     unsigned int prochainJoueur;
-    unsigned numeroManche;
+    unsigned int numeroManche;
+    bool estMancheFinie;
+    ListeDeCoups coupsManche;
 };
 
 // Lance une nouvelle partie a partir de zéro 
@@ -23,7 +44,7 @@ bool unJoueurAFinit(Partie partie);
 void lancerManche(Partie& partie);
 
 // Fais jouer le prochain joueur de la partie
-void faireJouer(Partie& partie, unsigned int joueur);
+void faireJouerProchain(Partie& partie);
 
 std::string demanderCoupJoueur(const Partie& partie);
 
@@ -38,3 +59,10 @@ void changerDeJoueur(Partie& partie);
 // Change la valeur du joueur suivant en la mettant au joueur avant l'actuel dans la liste
 void remettreDernierJoueurCommeSuivant(Partie& partie);
 
+void jouerCoup(Partie& partie, std::string coup);
+
+// Renvoie le dernier coup joué dans une manche. "NULL" si aucun coup.
+std::string recupDernierCoup(Partie partie);
+
+// Renvoie l'indice du joueur du dernier coup de la manche. 10 si aucun.
+unsigned int joueurDuDernierCoup(Partie partie);

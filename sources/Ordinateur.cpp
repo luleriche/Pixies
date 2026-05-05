@@ -2,15 +2,6 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-void ajouterCoup(ListeDeCoups& lc, std::string coup){
-    lc.coups[lc.nombre] = coup;
-    ++lc.nombre;
-}
-
-void afficher(ListeDeCoups lc){
-    for(unsigned int i = 0; i < lc.nombre; ++i)
-        std::cout << lc.coups[i] << std::endl;
-}
 
 ListeDeCoups recupCoupsPossibles(const Partie& partie){
     ListeDeCoups coupsPossibles;
@@ -48,46 +39,6 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
         }
     }
     return coupsPossibles;
-}
-
-void jouerCoup(Partie& partie, std::string coup){
-    // Joueur qui joue le coup
-    unsigned int joueur = coup[0] - '0';
-    // Indice de la carte à prendre dans la pioche
-    unsigned int indiceCartePioche = coup[1] - '0';
-    // Pointeur vers la carte à jouer
-    Carte* cartePiochee = partie.pioche.cartes[indiceCartePioche];
-    // Type du coup voulant être joué
-    char typeCoup = coup[2];
-    // Indice où la carte sera mise dans la grille
-    unsigned int indiceDestGrille = coup[3] - '0';
-    
-    // Référence vers la grille du joueur qui va jouer
-    Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
-
-    // On enlève la carte à jouer de la pioche
-    partie.pioche.cartes[indiceCartePioche] = nullptr;
-
-    // Si le coup est de la mettre directement dans sa case face visible.
-    if(typeCoup == 'd'){
-        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
-    }
-    // Si le coup est de choisir la carte choisie comme cachée face à celle qui était la avant
-    else if(typeCoup == 'c'){
-        // La carte face visible reste la même (celle qui était là avant)
-        // On met la carte face cachée
-        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
-    }
-    // Si le coup est de choisir la carte choisie comme visible face à celle qui était la avant
-    else if(typeCoup == 'v'){
-        // La carte qui était visible avant devient cachée et on mets celle choisis en tant que visible
-        griJoueur[indiceDestGrille].faceCachee = griJoueur[indiceDestGrille].faceVisible;
-        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
-    }
-    // Si le coup est de la mettre dans une autre case vide
-    else{
-        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
-    }
 }
 
 void annulerCoup(Partie& partie, std::string coup){

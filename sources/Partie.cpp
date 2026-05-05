@@ -5,6 +5,16 @@
 #include "Console.hpp"
 #include "Ordinateur.hpp"
 
+void ajouterCoup(ListeDeCoups& lc, std::string coup){
+    lc.coups[lc.nombre] = coup;
+    ++lc.nombre;
+}
+
+void afficher(ListeDeCoups lc){
+    for(unsigned int i = 0; i < lc.nombre; ++i)
+        std::cout << lc.coups[i] << std::endl;
+}
+
 void lancerUneNouvellePartie(){
     // Création de la partie
     Partie partie;
@@ -23,30 +33,29 @@ void lancerUneNouvellePartie(){
 
     // Création de la pioche
     Pioche pioche;
-    initPioche(pioche);
     partie.pioche = pioche;
     
     // On demande à l'utilisateur le nombre de joueurs à la partie.
     std::cout << "Le jeu se joue de 2 à 5 joueurs !" << std::endl << "Nombre de joueurs: ";
     std::cin >> partie.nombreJoueurs;
-    while(partie.nombreJoueurs > 5 and partie.nombreJoueurs < 2){
+    while(partie.nombreJoueurs > 5 or partie.nombreJoueurs < 2){
         std::cout << "Impossible. Le jeu se joue de 2 à 5 joueurs ! Nombre de joueurs: ";
         std::cin >> partie.nombreJoueurs;
     }
-
-    if(partie.nombreJoueurs == 2)
-        partie.pioche.taille = 4;
-    else
-        partie.pioche.taille = partie.nombreJoueurs;
-    
     // On demande à l'utilisateur d'entrer le nom des joueurs
     std::cout << "Si le nom d'un joueur commence par $ alors il sera considéré comme un ordi et jouera automatiquement." << std::endl;
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
+
+    // On initialise la pioche
+    if(partie.nombreJoueurs == 2)
+        initPioche(partie.pioche, 4);
+    else
+        initPioche(partie.pioche, partie.nombreJoueurs);
     
     // Génération aléatoire du premier joueur.
     partie.prochainJoueur = rand()%partie.nombreJoueurs;
-    std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
 
+    std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     partie.numeroManche = 1;
     // Manche 1
     lancerManche(partie);
@@ -72,42 +81,17 @@ void lancerUneNouvellePartie(){
 }
 
 void lancerManche(Partie& partie){
+    partie.estMancheFinie = false;
+    partie.coupsManche.nombre = 0;
+
+    remplirPioche(partie.pioche, partie.defausse);
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
-    // Si il n'y a que deux joueurs la manche peut se finir si il reste deux cartes dans la pioche
-    if(partie.nombreJoueurs == 2){
-        remplirPioche(partie.pioche, partie.defausse);
-        // Tant qu'un joueur n'a pas rempli sa grille
-        while(not unJoueurAFinit(partie)){
-            // On remplit la pioche si elle est vide
-            if(estVidePioche(partie.pioche)){
-                remplirPioche(partie.pioche, partie.defausse);
-                // Le prochain joueur devient le dernier
-                remettreDernierJoueurCommeSuivant(partie);
-            }
-            // On fait jouer les deux joueurs
-            faireJouer(partie, partie.prochainJoueur);
-            changerDeJoueur(partie);
-            faireJouer(partie, partie.prochainJoueur);
-            changerDeJoueur(partie);
-        }
-        // On change le prochain joueur car on a finit une manche (équivalent à la fin d'un tour à plus de deux joueurs)
-        remettreDernierJoueurCommeSuivant(partie);
+    while(not partie.estMancheFinie){
+        faireJouerProchain(partie);
     }
-    // Si le nombre de joueur est supérieur à 2
-    else{
-        // Tant qu'un joueur n'a pas rempli sa grille
-        while(not unJoueurAFinit(partie)){
-            // On remplie la pioche et faisons un tour de table
-            remplirPioche(partie.pioche, partie.defausse);
-            for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-                faireJouer(partie, partie.prochainJoueur);
-                changerDeJoueur(partie);
-            }
-            remettreDernierJoueurCommeSuivant(partie);
-        }
-    }
+
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
-    // Comptage des points
+    // Comptage des points et affichage des points
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
         ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
         // Affiche les nouveaux points
@@ -115,77 +99,40 @@ void lancerManche(Partie& partie){
     }
 }
 
-void faireJouer(Partie& partie, unsigned int joueur){
+void faireJouerProchain(Partie& partie){
+    std::cout << "Tour de " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     std::string coup;
-    if(partie.joueurs[joueur].surnom[0]=='$')
+    if(partie.joueurs[partie.prochainJoueur].surnom[0]=='$')
         coup = demanderCoupOrdi(partie);
     else{
         coup = demanderCoupJoueur(partie);
     }
     jouerCoup(partie, coup);
-    
+
     // Affichage après avoir rajouter la carte à la grille
     std::cout << "Voici votre grille maintenant :" << std::endl;
-    afficherGrille(partie.joueurs[joueur].grilleDeJeu);
+    afficherGrille(partie.joueurs[joueurDuDernierCoup(partie)].grilleDeJeu);
     std::cout << std::endl;
 }
 
+
+
 std::string demanderCoupOrdi(Partie& partie){
+    std::cout << "L'ordinateur choisi son coup." << std::endl;
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
-    afficher(coupsPossibles);
     return coupsPossibles.coups[0];
 }
 
-// Renvoie un booléen qui indique si un des joueurs à rempli sa grille
-bool unJoueurAFinit(Partie partie){
-    unsigned int i = 0;
-    while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
-        ++i;
-    return i != partie.nombreJoueurs;
-}
-
-// Parcours chaque grille et la pioche et envoie les cartes dans la défausse
-void toutRemettreDansDefausse(Partie& partie){
-    // Parcours des grilles des joueurs
-    for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-        // Parcours de chaque case de sa grille
-        for(unsigned int j = 0; j < 9; ++j){
-            // On met les cartes dans la defausse et on vide la grille
-            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
-            partie.joueurs[i].grilleDeJeu[j].faceCachee = nullptr;
-            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceVisible);
-            partie.joueurs[i].grilleDeJeu[j].faceVisible = nullptr;
-        }
-    }
-
-    // Parcours des cartes de la pioche
-    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
-        ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
-        partie.pioche.cartes[i] = nullptr;
-    }
-}
-
-// Change la valeur du joueur suivant en la mettant au joueur après l'actuel dans la liste
-void changerDeJoueur(Partie& partie){
-    partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
-}
-
-// Change la valeur du joueur suivant en la mettant au joueur avant l'actuel dans la liste
-void remettreDernierJoueurCommeSuivant(Partie& partie){
-    partie.prochainJoueur = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
-}
-
 std::string demanderCoupJoueur(const Partie& partie){
-
     const unsigned int& joueur = partie.prochainJoueur;
     const Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
-
+    
     // Affichage de la grille et de la pioche avant de choisir
-    std::cout << std::endl << std::endl << "Tour de " << partie.joueurs[joueur].surnom << ". Votre grille : " << std::endl;
+    std::cout << ". Votre grille : " << std::endl;
     afficherGrille(griJoueur);
     std::cout << "Pioche :" << std::endl;
     afficher(partie.pioche);
-
+    
     //  -------- Choix de la carte parmi celle de la pioche --------
     unsigned int indiceCartePioche;
     std::cout << "Votre choix : ";
@@ -196,24 +143,22 @@ std::string demanderCoupJoueur(const Partie& partie){
         std::cin>> indiceCartePioche;
         --indiceCartePioche;
     }
-
-
+    
     //  -------- Choix de la destination de la carte dans la grille --------
     
     // Pointeur vers la carte choisie juste avnt
     const Carte* carteChoisi = partie.pioche.cartes[indiceCartePioche];
     // Chiffre de la carte
-    const unsigned int& chiffreCarte = carteChoisi->chiffre-1;
+    const unsigned int& chiffreCarte = carteChoisi->chiffre;
     
-
     // L'emplacement de la carte dans la grille est disponible, le coup est direct
     if(griJoueur[chiffreCarte-1].faceVisible == nullptr){
         std::cout << "L'emplacement de la carte est disponible." << std::endl;
         std::cout << "La carte y a est sera visible." << std::endl;
         return std::to_string(joueur)+std::to_string(indiceCartePioche)+'d'+std::to_string(chiffreCarte-1);
+        
     
-    
-    // Si il y a une carte visible et pas de carte cachée, il faut faire le choix de laquelle on garde visible
+        // Si il y a une carte visible et pas de carte cachée, il faut faire le choix de laquelle on garde visible
     }else if(griJoueur[chiffreCarte-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
@@ -230,8 +175,6 @@ std::string demanderCoupJoueur(const Partie& partie){
         }
     }
 
-
-
     // Si l'emplacement est validé (plein), il faut faire le choix d'où mettre la carte
     else{
         unsigned int choix;
@@ -244,4 +187,120 @@ std::string demanderCoupJoueur(const Partie& partie){
         }
         return std::to_string(joueur)+std::to_string(indiceCartePioche)+'m'+std::to_string(choix-1);
     }
+}
+
+void jouerCoup(Partie& partie, std::string coup){
+    // Joueur qui joue le coup
+    unsigned int joueur = coup[0] - '0';
+    // Indice de la carte à prendre dans la pioche
+    unsigned int indiceCartePioche = coup[1] - '0';
+    // Type du coup voulant être joué
+    char typeCoup = coup[2];
+    // Indice où la carte sera mise dans la grille
+    unsigned int indiceDestGrille = coup[3] - '0';
+    
+    // Référence vers la grille du joueur qui va jouer
+    Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
+    
+    // Pointeur vers la carte à jouer
+    Carte* cartePiochee = tierCartePioche(partie.pioche, indiceCartePioche);
+
+    // Si le coup est de la mettre directement dans sa case face visible.
+    if(typeCoup == 'd'){
+        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
+    }
+    // Si le coup est de choisir la carte choisie comme cachée face à celle qui était la avant
+    else if(typeCoup == 'c'){
+        // La carte face visible reste la même (celle qui était là avant)
+        // On met la carte face cachée
+        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
+    }
+    // Si le coup est de choisir la carte choisie comme visible face à celle qui était la avant
+    else if(typeCoup == 'v'){
+        // La carte qui était visible avant devient cachée et on mets celle choisis en tant que visible
+        griJoueur[indiceDestGrille].faceCachee = griJoueur[indiceDestGrille].faceVisible;
+        griJoueur[indiceDestGrille].faceVisible = cartePiochee;
+    }
+    // Si le coup est de la mettre dans une autre case vide
+    else{
+        griJoueur[indiceDestGrille].faceCachee = cartePiochee;
+    }
+
+    // Si il n'y a pas que deux joueur
+    if(partie.nombreJoueurs != 2){
+        if(estVidePioche(partie.pioche)){
+            if(unJoueurAFinit(partie))
+                // La manche est finit si la pioche est vide et qu'un joueur a rempli sa grille
+                partie.estMancheFinie = true;
+            else
+                // On remplit la pioche si elle est vide et que personne n'a terminé
+                remplirPioche(partie.pioche, partie.defausse);
+        }
+        else
+            // Si la pioche n'est pas vide on passe au joueur suivant
+            changerDeJoueur(partie);
+    }
+    // Si il y a que 2 joueurs
+    else{
+        // On regarde si un jouer à finit si il reste 2 ou zéro cartes
+        if((partie.pioche.nombreCartesRestantes == 2 or partie.pioche.nombreCartesRestantes == 0) and unJoueurAFinit(partie))
+            partie.estMancheFinie = true;
+        // Sinon si il n'y a plus de cartes dans la pioche
+        else if(partie.pioche.nombreCartesRestantes == 0)
+            remplirPioche(partie.pioche, partie.defausse);
+        // Si il reste des cartes dans la pioche et que personne n'a finit on passe au prochain joueur
+        else
+            changerDeJoueur(partie);
+    }
+    // On ajoute le coup au coups joués depuis le début de la manche
+    ajouterCoup(partie.coupsManche, coup);
+}
+
+bool unJoueurAFinit(Partie partie){
+    unsigned int i = 0;
+    while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
+    ++i;
+    return i != partie.nombreJoueurs;
+}
+
+void toutRemettreDansDefausse(Partie& partie){
+    // Parcours des grilles des joueurs
+    for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+        // Parcours de chaque case de sa grille
+        for(unsigned int j = 0; j < 9; ++j){
+            // On met les cartes dans la defausse et on vide la grille
+            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
+            partie.joueurs[i].grilleDeJeu[j].faceCachee = nullptr;
+            ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceVisible);
+            partie.joueurs[i].grilleDeJeu[j].faceVisible = nullptr;
+        }
+    }
+    
+    // Parcours des cartes de la pioche
+    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
+        ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
+        partie.pioche.cartes[i] = nullptr;
+    }
+}
+void changerDeJoueur(Partie& partie){
+    partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
+}
+
+void remettreDernierJoueurCommeSuivant(Partie& partie){
+    partie.prochainJoueur = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
+}
+
+std::string recupDernierCoup(Partie partie){
+    if(partie.coupsManche.nombre==0)
+        return "NULL";
+    else
+        return partie.coupsManche.coups[partie.coupsManche.nombre-1];
+}
+
+unsigned int joueurDuDernierCoup(Partie partie){
+    std::string dernierCoup = recupDernierCoup(partie);
+    if(dernierCoup == "NULL")
+        return 10;
+    else
+        return dernierCoup[0] - '0';
 }

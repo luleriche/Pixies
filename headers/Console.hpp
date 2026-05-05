@@ -15,6 +15,5 @@ const std::string GRAS = "\033[1;31m";
 
 const std::string RESET_COUL = "\033[0m";
 
-
 void effaceConsole();
 

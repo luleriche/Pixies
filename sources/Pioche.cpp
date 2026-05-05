@@ -4,8 +4,10 @@
 #include "Carte.hpp"
 #include "Grille.hpp"
 
-void initPioche(Pioche& p){
-    for (unsigned int i = 0; i<5; ++i){
+void initPioche(Pioche& p, unsigned int taille){
+    p.taille = taille;
+    p.nombreCartesRestantes = 0;
+    for(unsigned int i = 0; i < 5; ++i){
         p.cartes[i] = nullptr;
     }
 }
@@ -23,33 +25,20 @@ void remplirPioche(Pioche &p, Defausse& d){
     for (unsigned int i = 0; i < p.taille; ++i){
         p.cartes[i] = tirerCarteDessus(d);
     }
+    p.nombreCartesRestantes = p.taille;
 }
 
 bool estVidePioche(Pioche p){
-    unsigned int i = 0;
-    while(i < p.taille and p.cartes[i] == nullptr){
-        ++i;
-    }
-    return i == p.taille;
+    return p.nombreCartesRestantes == 0;
 }
 
 bool estPleinePioche(Pioche p){
-    unsigned int i = 0;
-    while(i < p.taille and p.cartes[i] != nullptr){
-        ++i;
-    }
-    return i == p.taille;
+    return p.nombreCartesRestantes == p.taille;
 }
 
-Carte* prendrePioche(Pioche& p){
-    unsigned int choix;
-    std::cout << "Votre choix : ";
-    std::cin >> choix;
-    while (choix > p.taille or choix < 0 or p.cartes[choix - 1] == nullptr){
-        std::cout<< "Erreur! Il n'y a pas de carte ici, réessayer : ";
-        std::cin>> choix;
-    }
-    Carte* temp = p.cartes[choix - 1];
-    p.cartes[choix - 1] = nullptr;
-    return temp;
+Carte* tierCartePioche(Pioche& p, unsigned int indice){
+    Carte* carteTiree = p.cartes[indice];
+    p.cartes[indice] = nullptr;
+    --p.nombreCartesRestantes;
+    return carteTiree;
 }
