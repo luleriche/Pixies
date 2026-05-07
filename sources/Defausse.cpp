@@ -67,7 +67,7 @@ Carte* tirerCarteIndice(Defausse& d, int indice){
 void melanger(Defausse& d){
     unsigned int taille = recupTaille(d);
     for(int i = taille; i > 0; --i){
-        ajoutFinDefausse(d, tirerCarteIndice(d, rand()%taille));
+        ajoutFinDefausse(d, tirerCarteIndice(d, rand()%i));
     };
 }
 
