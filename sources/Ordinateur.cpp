@@ -44,6 +44,11 @@ std::string recupMeilleurCoup(Partie& partie){
     // Compteurs qui vont compter le nombre de fois qu'un coup est le meilleur
     std::array<unsigned int, NbMaxCoups> compteursMeilleursCoups = {0};
 
+    // Si il n'y a qu'un coup possible on n'a pas à réfléchir
+    if(coupsPossibles.nombre == 1){
+        return coupsPossibles.coups[0];
+    }
+
     // On crée  et initialise le noeud racine
     Noeud racine;
     racine.coupCreateur = "NULL";
