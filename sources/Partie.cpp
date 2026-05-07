@@ -56,6 +56,7 @@ void lancerUneNouvellePartie(){
     partie.prochainJoueur = rand()%partie.nombreJoueurs;
 
     std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
+    
     partie.numeroManche = 1;
     // Manche 1
     lancerManche(partie);
@@ -94,10 +95,8 @@ void lancerManche(Partie& partie){
     }
 
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
-    // Comptage des points et affichage des points
+    // Affichage des points
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-        ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
-        // Affiche les nouveaux points
         std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
     }
 }
@@ -117,8 +116,8 @@ void faireJouerProchain(Partie& partie){
 
 std::string demanderCoupOrdi(Partie& partie){
     std::cout << "L'ordinateur choisi son coup." << std::endl;
-    ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
-    return coupsPossibles.coups[0];
+    std::string coups = recupMeilleurCoup(partie);
+    return coups;
 }
 
 std::string demanderCoupJoueur(const Partie& partie){
@@ -224,9 +223,14 @@ void jouerCoup(Partie& partie, std::string coup){
     // Si il n'y a pas que deux joueur
     if(partie.nombreJoueurs != 2){
         if(estVidePioche(partie.pioche)){
-            if(unJoueurAFinit(partie))
+            if(unJoueurAFinit(partie)){
                 // La manche est finit si la pioche est vide et qu'un joueur a rempli sa grille
                 partie.estMancheFinie = true;
+                // On ajoute les points aux joueurs
+                for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+                    ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
+                }
+            }
             else
                 // On remplit la pioche si elle est vide et que personne n'a terminé
                 remplirPioche(partie.pioche, partie.defausse);
@@ -238,8 +242,13 @@ void jouerCoup(Partie& partie, std::string coup){
     // Si il y a que 2 joueurs
     else{
         // On regarde si un jouer à finit si il reste 2 ou zéro cartes
-        if((partie.pioche.nombreCartesRestantes == 2 or partie.pioche.nombreCartesRestantes == 0) and unJoueurAFinit(partie))
+        if((partie.pioche.nombreCartesRestantes == 2 or partie.pioche.nombreCartesRestantes == 0) and unJoueurAFinit(partie)){
             partie.estMancheFinie = true;
+            // On ajoute les points aux joueurs
+            for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+                ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
+            }
+        } 
         // Sinon si il n'y a plus de cartes dans la pioche
         else if(partie.pioche.nombreCartesRestantes == 0)
             remplirPioche(partie.pioche, partie.defausse);
@@ -320,9 +329,6 @@ void afficher(const Partie& partie){
         std::cout << "Grille de " << partie.joueurs[i].surnom << std::endl;
         afficherGrille(partie.joueurs[i].grilleDeJeu);
     }
-
     std::cout <<" Pioche :" << std::endl;
-    afficherNCartes(partie.defausse, 5);
-    std::cout << std::endl;
     afficher(partie.pioche);
 }

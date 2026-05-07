@@ -5,14 +5,15 @@
 #include "Joueur.hpp"
 
 // Structure pour une liste de de coups.
-const int NbMaxCoups = 32;
+const int NbMaxCoups = 50;
 struct ListeDeCoups{
-    /* Un coup se construit ainsi :
+    /* 
+    Un coup se construit ainsi :
     - indice du joueur qui a joué le coup
     - indice de la carte prise dans la pioche
     - type du coup (d/v/c/m)
     - indice dans la grille ou a finit la carte
-    */ 
+    */
     std::array<std::string, NbMaxCoups> coups;
     unsigned int nombre;
 };
