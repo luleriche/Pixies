@@ -65,3 +65,7 @@ float calculerUCT(int nbVisitesParent, int nbVistesEnfant, float ratioVictoire, 
 void supprimerArbre(Noeud* ptrRacine);
 
 void reinitRacine(Noeud& racine, ListeDeCoups coupsNonVisites);
+
+void metAJourArbre(Noeud* noeud, Partie& partie);
+
+void supprimerArbre(Noeud* noeudRacine);
