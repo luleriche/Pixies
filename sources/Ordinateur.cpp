@@ -4,36 +4,36 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-void initNoeud(Noeud& noeud, Partie& partie, std::string coup, Noeud* parent){
+void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent){
     // On initialise les différentes valeurs du noeud
-    noeud.coupCreateur = coup;
-    noeud.parent = parent;
-    noeud.nbEnfants = 0;
-    noeud.nbVictoires = {0, 0, 0, 0, 0};
-    noeud.nbVisites = 0;
+    noeud->coupCreateur = coup;
+    noeud->parent = parent;
+    noeud->nbEnfants = 0;
+    noeud->nbVictoires = {0, 0, 0, 0, 0};
+    noeud->nbVisites = 0;
 
     // On récupère les coups possibles dans l'état actuel de la partie.
     // Il faut donc initialiser un noeud après avoir joué le coup si c'est un enfant
     // Sinon si c'est la racine il ne faut jouer aucun coup.
-    noeud.coupsNonVisites = recupCoupsPossibles(partie);
+    noeud->coupsNonVisites = recupCoupsPossibles(partie);
 }
 
-void ajouterEnfant(Noeud& noeud, Partie& partie){
+void ajouterEnfant(Noeud* noeud, Partie& partie){
     // On choisit le coup que l'on va visité, c'est le dernier de la liste des coups non visités
-    std::string coupVisite = noeud.coupsNonVisites.coups[noeud.coupsNonVisites.nombre-1];
-    --noeud.coupsNonVisites.nombre;
+    std::string coupVisite = noeud->coupsNonVisites.coups[noeud->coupsNonVisites.nombre-1];
+    --noeud->coupsNonVisites.nombre;
     // On joue ce coup
     jouerCoup(partie, coupVisite);
     // On crée un enfant et on l'initialise
-    noeud.enfants[noeud.nbEnfants] = new Noeud;
-    initNoeud(*noeud.enfants[noeud.nbEnfants], partie, coupVisite, &noeud);
-    ++noeud.nbEnfants;
+    noeud->enfants[noeud->nbEnfants] = new Noeud;
+    initNoeud(noeud->enfants[noeud->nbEnfants], partie, coupVisite, noeud);
+    ++noeud->nbEnfants;
     // On annule le dernier coup joué pour rester ou on est actuellement.
     annulerDernierCoup(partie);
 }
 
-bool ajoutEnfantPossible(const Noeud& n){
-    return n.coupsNonVisites.nombre > 0;
+bool ajoutEnfantPossible(const Noeud* n){
+    return n->coupsNonVisites.nombre > 0;
 }
 
 std::string recupMeilleurCoup(Partie& partie){
@@ -82,7 +82,7 @@ std::string recupMeilleurCoup(Partie& partie){
             std::cout << "Début de la descente dans l'arbre." << std::endl;
             // On descend intelligement à un endroit où on n'a pas testé tous les coups
             // Tant que on a déja testé tous les enfants actuels et que la partie n'est pas finie
-            while(not ajoutEnfantPossible(*noeudActuel) and not partie.estMancheFinie){
+            while(not ajoutEnfantPossible(noeudActuel) and not partie.estMancheFinie){
                 // On va dans le noeud le plus intéressant à explorer
                 noeudActuel = choisirEnfant(noeudActuel, partie.prochainJoueur);
                 // Et on joue le coup qui y amène
@@ -90,10 +90,10 @@ std::string recupMeilleurCoup(Partie& partie){
             }
             std::cout << "Arrivé en bas de l'arbre." << std::endl;
             // Une fois arrivé à un endroite où on peut ajouter un noeud (vérifier que l'on peut car c'est possible d'être à la fin)
-            if(ajoutEnfantPossible(*noeudActuel)){
+            if(ajoutEnfantPossible(noeudActuel)){
                 std::cout << "Création d'un nouveau noeud." << std::endl;
                 // On créer un nouveau noeud
-                ajouterEnfant(*noeudActuel, partie);
+                ajouterEnfant(noeudActuel, partie);
                 // On descend à ce noeud
                 noeudActuel = noeudActuel->enfants[noeudActuel->nbEnfants-1];
                 jouerCoup(partie, noeudActuel->coupCreateur);

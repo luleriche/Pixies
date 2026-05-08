@@ -38,11 +38,11 @@ void finirMancheAleatoirement(Partie& partie);
 // Récupérer le joueur en tête si l'on simule une fin de manche aléatoire
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
 
-void initNoeud(Noeud& noeud, Partie& partie, std::string coup, Noeud* parent);
+void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent);
 
-void ajouterEnfant(Noeud& noeud, Partie& partie);
+void ajouterEnfant(Noeud* noeud, Partie& partie);
 
-bool ajoutEnfantPossible(const Noeud& n);
+bool ajoutEnfantPossible(const Noeud* n);
 
 std::string recupMeilleurCoup(Partie& partie);
 
