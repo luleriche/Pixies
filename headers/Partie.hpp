@@ -5,7 +5,7 @@
 #include "Joueur.hpp"
 
 // Structure pour une liste de de coups.
-const int NbMaxCoups = 50;
+const int NbMaxCoups = 100;
 struct ListeDeCoups{
     /* 
     Un coup se construit ainsi :

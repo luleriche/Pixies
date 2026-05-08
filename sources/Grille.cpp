@@ -102,12 +102,10 @@ void ajouterCarte(Grille& g, Carte* c){
 }
 
 bool finJeu(Grille g){
-    for (int i = 0; i < 9; ++i){
-        if(g[i].faceCachee == nullptr and g[i].faceVisible == nullptr){
-            return false;
-        }
-    }
-    return true;
+    unsigned int i = 0;
+    while(i < 9 and (g[i].faceCachee != nullptr or g[i].faceVisible != nullptr))
+        ++i;
+    return i == 9;
 }
 
 int comptePoints(Grille g, unsigned int numeroManche){

@@ -53,7 +53,7 @@ std::string recupMeilleurCoup(Partie& partie){
     racine.parent = nullptr;
     racine.nbEnfants = 0;
     racine.enfants.fill(nullptr);
-    racine.nbVictoires = {0};
+    racine.nbVictoires = {0, 0, 0, 0, 0};
     racine.nbVisites = 0;
     racine.coupsNonVisites = coupsPossibles;
     
@@ -172,6 +172,7 @@ void annulerDernierCoup(Partie& partie){
         }
         partie.estMancheFinie = false;
     }
+
     std::string coup = recupDernierCoup(partie);
     // Joueur du coup précedent
     unsigned int joueurPrecedent = coup[0] - '0';
@@ -226,6 +227,8 @@ void annulerDernierCoup(Partie& partie){
 ListeDeCoups recupCoupsPossibles(const Partie& partie){
     ListeDeCoups coupsPossibles;
     coupsPossibles.nombre = 0;
+    if(partie.estMancheFinie)
+        return coupsPossibles;
 
     // Raccourcis pour après, pour pas avoir à tout réecrire à chaque foix
     const unsigned int& joueur = partie.prochainJoueur;
@@ -252,7 +255,7 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
             }// Sinon les coups possibles sont les différentes cases vides où on peut mettre la carte
             else{
                 for(unsigned int j = 0; j < 9; ++j){
-                    if(j!=indiceDestGrille and estVideEmplacement(griJoueur, j))
+                    if(estVideEmplacement(griJoueur, j))
                         ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"m"+std::to_string(j));
                 }
             }
@@ -263,6 +266,14 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
 
 void jouerCoupAlea(Partie& partie){
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+    if(coupsPossibles.nombre == 0){
+        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
+        std::cerr << "Joueur actuel : " << partie.prochainJoueur << std::endl;
+        std::cerr << "Nombres cartes : " << partie.pioche.nombreCartesRestantes << std::endl;
+        std::cerr << "Un joueur a finit " << (unJoueurAFinit(partie) ? "Oui" : "Non")  << std::endl;
+        std::cerr << "La manche est-elle finie ? " << (partie.estMancheFinie ? "Oui" : "Non") << std::endl;
+        afficher(partie);
+    }
     jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
 }
 

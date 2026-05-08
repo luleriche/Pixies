@@ -5,7 +5,7 @@
 
 #include "Partie.hpp"
 
-const int NbMaxEnfants = 32;
+const int NbMaxEnfants = NbMaxCoups;
 
 // Structure qui représente un noeud dans l'arbre de recherche
 struct Noeud{

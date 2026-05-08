@@ -87,10 +87,11 @@ void lancerManche(Partie& partie){
 
     remplirPioche(partie.pioche, partie.defausse);
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
+    
     while(not partie.estMancheFinie){
         faireJouerProchain(partie);
-        if(partie.coupsManche.nombre == 3){
-            std:: cout << recupLeaderFinMancheAleatoire(partie);
+        for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+            std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
         }
     }
 
@@ -196,7 +197,7 @@ void jouerCoup(Partie& partie, std::string coup){
     // Référence vers la grille du joueur qui va jouer
     Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
     
-    // Pointeur vers la carte à jouer
+    // On tire la carte choisi par le coup
     Carte* cartePiochee = tierCartePioche(partie.pioche, indiceCartePioche);
 
     // Si le coup est de la mettre directement dans sa case face visible.
@@ -220,7 +221,7 @@ void jouerCoup(Partie& partie, std::string coup){
         griJoueur[indiceDestGrille].faceCachee = cartePiochee;
     }
 
-    // Si il n'y a pas que deux joueur
+    // Si il n'y a pas que deux joueurs
     if(partie.nombreJoueurs != 2){
         if(estVidePioche(partie.pioche)){
             if(unJoueurAFinit(partie)){
@@ -241,7 +242,7 @@ void jouerCoup(Partie& partie, std::string coup){
     }
     // Si il y a que 2 joueurs
     else{
-        // On regarde si un jouer à finit si il reste 2 ou zéro cartes
+        // On regarde si un jouer à finit si il reste 2 ou 0 cartes
         if((partie.pioche.nombreCartesRestantes == 2 or partie.pioche.nombreCartesRestantes == 0) and unJoueurAFinit(partie)){
             partie.estMancheFinie = true;
             // On ajoute les points aux joueurs
@@ -249,9 +250,10 @@ void jouerCoup(Partie& partie, std::string coup){
                 ajoutePointsDeGrille(partie.joueurs[i], partie.numeroManche);
             }
         } 
-        // Sinon si il n'y a plus de cartes dans la pioche
-        else if(partie.pioche.nombreCartesRestantes == 0)
+        // Sinon si il n'y a plus de cartes dans la pioche et que personne n'a finit
+        else if(partie.pioche.nombreCartesRestantes == 0){
             remplirPioche(partie.pioche, partie.defausse);
+        }
         // Si il reste des cartes dans la pioche et que personne n'a finit on passe au prochain joueur
         else
             changerDeJoueur(partie);
@@ -263,7 +265,7 @@ void jouerCoup(Partie& partie, std::string coup){
 bool unJoueurAFinit(Partie partie){
     unsigned int i = 0;
     while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
-    ++i;
+        ++i;
     return i != partie.nombreJoueurs;
 }
 
@@ -280,11 +282,7 @@ void toutRemettreDansDefausse(Partie& partie){
         }
     }
     
-    // Parcours des cartes de la pioche
-    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
-        ajoutDebutDefausse(partie.defausse, partie.pioche.cartes[i]);
-        partie.pioche.cartes[i] = nullptr;
-    }
+    mettrePiocheDansDefausse(partie.pioche, partie.defausse);
 }
 
 void changerDeJoueur(Partie& partie){
