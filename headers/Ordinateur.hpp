@@ -56,15 +56,13 @@ void finirMancheAleatoirement(Partie& partie);
 
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
 
-Noeud* choisirEnfant(Noeud* n, unsigned int joueur);
+float calculerRatioVictoire(Noeud* n, unsigned int joueur);
 
-float calculerRatioVictoire(Noeud n, unsigned int joueur);
+Noeud* choisirEnfant(Noeud* n, unsigned int joueur);
 
 float calculerUCT(int nbVisitesParent, int nbVistesEnfant, float ratioVictoire, float temperature);
 
 void supprimerArbre(Noeud* ptrRacine);
-
-void reinitRacine(Noeud& racine, ListeDeCoups coupsNonVisites);
 
 void metAJourArbre(Noeud* noeud, Partie& partie);
 

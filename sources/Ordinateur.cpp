@@ -4,9 +4,9 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent){
+void initNoeud(Noeud* noeud, Partie& partie, std::string coupCreateur, Noeud* parent){
     // On initialise les différentes valeurs du noeud
-    noeud->coupCreateur = coup;
+    noeud->coupCreateur = coupCreateur;
     noeud->parent = parent;
     noeud->nbEnfants = 0;
     noeud->enfants.fill(nullptr);
@@ -14,8 +14,7 @@ void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent){
     noeud->nbVisites = 0;
 
     // On récupère les coups possibles dans l'état actuel de la partie.
-    // Il faut donc initialiser un noeud après avoir joué le coup si c'est un enfant
-    // Sinon si c'est la racine il ne faut jouer aucun coup.
+    // Il faut donc initialiser un noeud après avoir joué le coup créateur.
     noeud->coupsNonVisites = recupCoupsPossibles(partie);
 }
 
@@ -38,18 +37,17 @@ bool ajoutEnfantPossible(const Noeud* n){
 }
 
 std::string recupMeilleurCoup(Partie& partie){
-    std::cout <<"Préparation de la recherche." << std::endl;
+    //std::cout <<"Préparation de la recherche." << std::endl;
     
     // Liste des coups possibles pour l'ordinateur.
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
 
-
-    // Si il n'y a qu'un coup possible on n'a pas à réfléchir
+    // Si il n'y a qu'un coup possible on ne réfléchit pas on le renvoie.
     if(coupsPossibles.nombre == 1){
         return coupsPossibles.coups[0];
     }
 
-    // On crée  et initialise le noeud racine
+    // On crée et initialise le noeud racine
     Noeud racine;
     racine.coupCreateur = "NULL";
     racine.parent = nullptr;
@@ -58,7 +56,6 @@ std::string recupMeilleurCoup(Partie& partie){
     racine.nbVictoires = {0};
     racine.nbVisites = 0;
     racine.coupsNonVisites = coupsPossibles;
-    
     
     // On stock les pointeurs de la défausse initiale pour la reconstruire après car on va la mélanger 20 fois
     unsigned int tailleDefausse = recupTaille(partie.defausse);
@@ -69,48 +66,57 @@ std::string recupMeilleurCoup(Partie& partie){
         tmp = tmp->suivant;
     }
 
-    std::cout << "Début de la recherche" << " | ";
-    // On fait la recherche du meilleur coups pour 20 défausses différentes.
-    for(unsigned int j = 0; j < 20; ++j){
+    // Information sur la recherche
+    unsigned int nbDefaussesTestees = 20;
+    unsigned int nbDescentesParDefausse = 400;
+
+    //std::cout << "Début de la recherche" << std::endl;
+    for(unsigned int j = 0; j < nbDefaussesTestees; ++j)
+    {
         // Mélange de la défausse
         melanger(partie.defausse);
-        std::cout << "Défausse mélangée." << " | ";
-        // Mise a jour de l'arbre
+        //std::cout << "Défausse mélangée." << " | ";
+
+        // Mise a jour de l'arbre, on enlève tout noeud qui se trouvait après un tirage de cartes et qui donc
+        // dépendait de la défausse précédente. On change donc aussi les coups non visités de ceux juste avant un tirage
         metAJourArbre(&racine, partie);
-        std::cout << "Arbre nettoyé." << " | ";
-        // On fait 1000 descentes
-        for(int k = 0; k < 50; ++k){
-            std::cout << "Descente numéro" << k << " | ";
-            // On commence à la racine
+        //std::cout << "Arbre nettoyé." << " | ";
+
+        // Toutes les descentes dans l'arbre
+        for(unsigned int k = 0; k < nbDescentesParDefausse; ++k){
+            //std::cout << "Descente numéro" << k << " | ";
+
+            // On se place à la racine
             Noeud* noeudActuel = &racine;
             unsigned int profondeur = 0;
-            // On descend intelligement à un endroit où on n'a pas testé tous les coups
-            // Tant que on a déja testé tous les enfants actuels et que la partie n'est pas finie
-            while(not ajoutEnfantPossible(noeudActuel) and not partie.estMancheFinie){
+
+            // On descend intelligement à un endroit où on n'a pas testé tous les coups ou à un endroit où la partie est finie.
+            // Tant que on a déja visités tous les coups et que la partie n'est pas finie.
+            while(noeudActuel->coupsNonVisites.nombre == 0 and not partie.estMancheFinie){
                 // On va dans le noeud le plus intéressant à explorer
                 noeudActuel = choisirEnfant(noeudActuel, partie.prochainJoueur);
                 ++profondeur;
-                std::cout << "Profondeur " << profondeur << " | ";
-                // Et on joue le coup qui y amène
+                //std::cout << "Profondeur " << profondeur << " | ";
+                // Il faut aussi penser à jouer le coup qui y amène pour changer l'état de la partie.
                 jouerCoup(partie, noeudActuel->coupCreateur);
             }
-            std::cout << "Arrivé en bas de l'arbre." << " | ";
-            // Une fois arrivé à un endroit où on peut ajouter un noeud (vérifier que l'on peut car c'est possible d'être à la fin)
-            if(ajoutEnfantPossible(noeudActuel)){
-                std::cout << "Création d'un nouveau noeud." << " | ";
+            
+            // Si il y a un coup à découvrir 
+            if(noeudActuel->coupsNonVisites.nombre > 0){
                 // On créer un nouveau noeud
                 ajouterEnfant(noeudActuel, partie);
+                //std::cout << "Nouveau noeud crée." << " | ";
                 // On descend à ce noeud
                 noeudActuel = noeudActuel->enfants[noeudActuel->nbEnfants-1];
                 ++profondeur;
-                std::cout << "Profondeur " << profondeur << " | ";
+                //std::cout << "Profondeur " << profondeur << " | ";
                 jouerCoup(partie, noeudActuel->coupCreateur);
             }
+
             // On simule une partie aléatoire à partir de là et on récupère celui qui gagne
-            std::cout << "Début Simulation Partie" << " | ";
             unsigned int gagnant = recupLeaderFinMancheAleatoire(partie);
-            std::cout << "Partie terminée gagnant " << gagnant << " | ";
-            // On retourne tout en haut en mettant à jour les statistiques de chaque noeud où l'on passe
+            
+            // On remonte l'arbre en mettant à jour les statistiques de chaque noeud où l'on est passé
             while(noeudActuel->parent != nullptr){
                 ++noeudActuel->nbVictoires[gagnant];
                 ++noeudActuel->nbVisites;
@@ -118,29 +124,31 @@ std::string recupMeilleurCoup(Partie& partie){
                 annulerDernierCoup(partie);
                 noeudActuel = noeudActuel->parent;
                 --profondeur;
-                std::cout << "Profondeur " << profondeur << " | "; 
+                //std::cout << "Profondeur " << profondeur << " | "; 
             }
+
             // On met aussi à jour les statistiques de la racine
             ++noeudActuel->nbVictoires[gagnant];
             ++noeudActuel->nbVisites;
-            std::cout << "Retourné en haut de l'arbre." << " | ";
+            //std::cout << "Retourné en haut de l'arbre." << " | ";
         }
     }
-    std::cout << "Calcul du coup le plus gagnant." << " | ";
-    // On récupère celui qui a le plus de fois été le meilleur coup
+
+    // On récupère l'enfant qui a amené le plus de fois à une victoire pour le prochain joueur
+    //std::cout << "Calcul du coup le plus gagnant." << " | ";
     unsigned indiceMeilleurCoup = 0;
     for(unsigned int i = 1; i < racine.nbEnfants; ++i){
         if(racine.enfants[i]->nbVictoires[partie.prochainJoueur] > racine.enfants[indiceMeilleurCoup]->nbVictoires[partie.prochainJoueur]){
             indiceMeilleurCoup = i;
         }
     }
+    // On récupère le coup qui a mené à cet enfant
     std::string meilleurCoup = racine.enfants[indiceMeilleurCoup]->coupCreateur;
-    std::cout << "Meilleur coup " << meilleurCoup << " | ";
+    //std::cout << "Meilleur coup " << meilleurCoup << " | ";
     
-    // On désalloue l'arbre
-    // En désallouant les enfants de la racine
+    // On désalloue l'arbre en désallouant les enfants de la racine
     for(unsigned int i = 0; i < racine.nbEnfants; ++i){
-    supprimerArbre(racine.enfants[i]);
+        supprimerArbre(racine.enfants[i]);
     }
 
     // On remet la défausse comme avant
@@ -149,10 +157,11 @@ std::string recupMeilleurCoup(Partie& partie){
         tmp->valeur = ptrDefausseInitiale[i];
         tmp = tmp->suivant;
     }
+    // On désalloue la sauvegarde de notre défausse
     delete[] ptrDefausseInitiale;
-    return meilleurCoup;
 
-    
+    // On renvoie le meilleur coup :)
+    return meilleurCoup;
 }
 
 void annulerDernierCoup(Partie& partie){
@@ -281,10 +290,10 @@ Noeud* choisirEnfant(Noeud* n, unsigned int joueur){
     double nbTotalSimulations = n->nbVisites;
     // On parcours les enfants du noeud pour savoir lequel à la meilleur score UCT
     float meilleurUCT = -1;
-    Noeud* meilleurEnfant;
+    Noeud* meilleurEnfant = nullptr;
     for(unsigned int i = 0; i < n->nbEnfants; ++i){
         Noeud* enfant = n->enfants[i];
-        float UCTscore = calculerUCT(nbTotalSimulations, n->enfants[i]->nbVisites, calculerRatioVictoire(*enfant, joueur), 1.41);
+        float UCTscore = calculerUCT(nbTotalSimulations, n->enfants[i]->nbVisites, calculerRatioVictoire(enfant, joueur), 1.41);
         if(UCTscore > meilleurUCT){
             meilleurUCT = UCTscore;
             meilleurEnfant = n->enfants[i];
@@ -293,28 +302,13 @@ Noeud* choisirEnfant(Noeud* n, unsigned int joueur){
     return meilleurEnfant;
 }
 
-float calculerRatioVictoire(Noeud n, unsigned int joueur){
-    return 1.0*n.nbVictoires[joueur]/n.nbVisites;
+float calculerRatioVictoire(Noeud* n, unsigned int joueur){
+    return 1.0*n->nbVictoires[joueur]/n->nbVisites;
 }
 
-float calculerUCT(int nbVisitesParent, int nbVistesEnfant, float ratioVictoire, float temperature){
-    float exploration = std::sqrt(std::log(nbVisitesParent) / nbVistesEnfant);
+float calculerUCT(int nbVisitesParent, int nbVisitesEnfant, float ratioVictoire, float temperature){
+    float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
     return ratioVictoire + temperature * exploration;
-}
-
-void reinitRacine(Noeud& racine, ListeDeCoups coupsNonVisites){
-    // Pour chaque noeud enfant de la racine
-    for (unsigned int i = 0; i < racine.nbEnfants; ++i) {
-        if (racine.enfants[i] != nullptr){
-            // On supprime tous les noeuds qui suivent et l'enfant lui même
-            supprimerArbre(racine.enfants[i]);
-            racine.enfants[i] = nullptr;
-        }
-    }
-    racine.nbEnfants = 0;
-    racine.nbVictoires = {0};
-    racine.nbVisites = 0;
-    racine.coupsNonVisites = coupsNonVisites;
 }
 
 // Supprimes les noeuds qui se trouvent après le premier tirage de carte dans la défausse et met à jour les coups non visités selon la défausse.
