@@ -14,12 +14,13 @@ elseif(UNIX AND NOT APPLE)
     set(SFML_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Graphics/SFML-3.0.2/lib")
 elseif(WIN32)
     message(STATUS "Compilation sur Windows")
+    set(SFML_STATIC_LIBRARIES TRUE)
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Graphics/SFML-3.0.2-Win/lib/cmake/SFML")
     set(SFML_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Graphics/SFML-3.0.2-Win/lib")
 endif()
 
 # On va chercher le fichier SFMLConfig.cmake 
-find_package(SFML 3.0.2 REQUIRED COMPONENTS Graphics Audio Network)
+find_package(SFML 3.0.2 REQUIRED COMPONENTS Graphics)
 
 add_compile_options(-Wall)
 
@@ -33,6 +34,7 @@ set(SOURCES
     sources/Partie.cpp
     sources/Console.cpp
     sources/Ordinateur.cpp
+    sources/Graphics.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 

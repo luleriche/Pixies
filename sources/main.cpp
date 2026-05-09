@@ -7,10 +7,12 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include "Partie.hpp"
+#include "Graphics.hpp"
 
 int main()
 {
     srand(time(nullptr));
-    lancerUneNouvellePartie();
+    //lancerUneNouvellePartie();
+    lancerJeu();
     return 0;
 }

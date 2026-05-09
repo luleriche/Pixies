@@ -7,10 +7,15 @@
 ## Guide d'installation
 1. Cloner le dépot sur votre ordinateur.
 2. Créer un dossier build dans le dépot
-3. Lancer le jeu avec les commandes suivantes :
+3. Pour lancer le jeu :
     * Sur Windows
+        Copier les fichiers suivants qui se trouvent au même endroit que votre compilateur dans le dossier build :
+            - libgcc_s_dw2-1.dll
+            - libstdc++-6.dll
+            - libwinpthread-1.dll
+        Entrez les commande suivande dans le cmd en étant dans le dossier build
         ```cmd 
-        cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="chemin\vers\gcc.exe" -DCMAKE_CXX_COMPILER="chemin\vers\gcc.exe\g++.exe" ..
+        cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="chemin\vers\gcc.exe" -DCMAKE_CXX_COMPILER="chemin\vers\gcc.exe\g++.exe" -DCMAKE_BUILD_TYPE=Release ..
         mingw32-make
         Pixies.Exe
         ```
