@@ -18,18 +18,18 @@ void initNoeud(Noeud* noeud, Partie& partie, std::string coupCreateur, Noeud* pa
     noeud->coupsNonVisites = recupCoupsPossibles(partie);
 }
 
-void ajouterEnfant(Noeud* noeud, Partie& partie){
-    // On choisit le coup que l'on va visité, c'est le dernier de la liste des coups non visités
-    std::string coupVisite = noeud->coupsNonVisites.coups[noeud->coupsNonVisites.nombre-1];
-    --noeud->coupsNonVisites.nombre;
+Noeud* ajouterEnfant(Noeud* noeudActuel, Partie& partie){
+    // On choisit le coup que l'on va joué, c'est le dernier de la liste des coups non visités
+    std::string coupVisite = noeudActuel->coupsNonVisites.coups[noeudActuel->coupsNonVisites.nombre-1];
+    --noeudActuel->coupsNonVisites.nombre;
     // On joue ce coup
     jouerCoup(partie, coupVisite);
     // On crée un enfant et on l'initialise
-    noeud->enfants[noeud->nbEnfants] = new Noeud;
-    initNoeud(noeud->enfants[noeud->nbEnfants], partie, coupVisite, noeud);
-    ++noeud->nbEnfants;
-    // On annule le dernier coup joué pour rester ou on est actuellement.
-    annulerDernierCoup(partie);
+    noeudActuel->enfants[noeudActuel->nbEnfants] = new Noeud;
+    initNoeud(noeudActuel->enfants[noeudActuel->nbEnfants], partie, coupVisite, noeudActuel);
+    ++noeudActuel->nbEnfants;
+    // On renvoie le pointeur vers le noeud enfant crée
+    return noeudActuel->enfants[noeudActuel->nbEnfants-1];
 }
 
 bool ajoutEnfantPossible(const Noeud* n){
@@ -103,14 +103,10 @@ std::string recupMeilleurCoup(Partie& partie){
             
             // Si il y a un coup à découvrir 
             if(noeudActuel->coupsNonVisites.nombre > 0){
-                // On créer un nouveau noeud
-                ajouterEnfant(noeudActuel, partie);
+                // On créer un nouveau noeud et on y descend
+                noeudActuel = ajouterEnfant(noeudActuel, partie);
                 //std::cout << "Nouveau noeud crée." << " | ";
-                // On descend à ce noeud
-                noeudActuel = noeudActuel->enfants[noeudActuel->nbEnfants-1];
                 ++profondeur;
-                //std::cout << "Profondeur " << profondeur << " | ";
-                jouerCoup(partie, noeudActuel->coupCreateur);
             }
 
             // On simule une partie aléatoire à partir de là et on récupère celui qui gagne
@@ -142,6 +138,7 @@ std::string recupMeilleurCoup(Partie& partie){
             indiceMeilleurCoup = i;
         }
     }
+
     // On récupère le coup qui a mené à cet enfant
     std::string meilleurCoup = racine.enfants[indiceMeilleurCoup]->coupCreateur;
     //std::cout << "Meilleur coup " << meilleurCoup << " | ";
@@ -266,28 +263,16 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie){
 
 void jouerCoupAlea(Partie& partie){
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
-    if(coupsPossibles.nombre == 0){
-        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
-        std::cerr << "Joueur actuel : " << partie.prochainJoueur << std::endl;
-        std::cerr << "Nombres cartes : " << partie.pioche.nombreCartesRestantes << std::endl;
-        std::cerr << "Un joueur a finit " << (unJoueurAFinit(partie) ? "Oui" : "Non")  << std::endl;
-        std::cerr << "La manche est-elle finie ? " << (partie.estMancheFinie ? "Oui" : "Non") << std::endl;
-        afficher(partie);
-    }
     jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
-}
-
-void finirMancheAleatoirement(Partie& partie){
-    while(not partie.estMancheFinie){
-        jouerCoupAlea(partie);
-    }
 }
 
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie){
     // On stock le nombre de coups joués pour y revenir après
     unsigned int nbCoupsInitial = partie.coupsManche.nombre;
     // On va au bout de la manche et on stock le leader
-    finirMancheAleatoirement(partie);
+    while(not partie.estMancheFinie){
+        jouerCoupAlea(partie);
+    }
     // On remets à l'état initial
     unsigned int leader = recupLeader(partie);
     while(partie.coupsManche.nombre > nbCoupsInitial){
@@ -314,10 +299,16 @@ Noeud* choisirEnfant(Noeud* n, unsigned int joueur){
 }
 
 float calculerRatioVictoire(Noeud* n, unsigned int joueur){
+    if(n->nbVisites == 0){
+        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
+    }
     return 1.0*n->nbVictoires[joueur]/n->nbVisites;
 }
 
 float calculerUCT(int nbVisitesParent, int nbVisitesEnfant, float ratioVictoire, float temperature){
+    if(nbVisitesEnfant == 0){
+        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
+    }
     float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
     return ratioVictoire + temperature * exploration;
 }

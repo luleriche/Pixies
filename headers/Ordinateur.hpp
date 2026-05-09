@@ -32,15 +32,13 @@ ListeDeCoups recupCoupsPossibles(const Partie& partie);
 // Fais jouer un coup aléatoire pour le prochain joueur
 void jouerCoupAlea(Partie& partie);
 
-// Finir la manche actuelle avec uniquement des coups aléatoire
-void finirMancheAleatoirement(Partie& partie);
-
 // Récupérer le joueur en tête si l'on simule une fin de manche aléatoire
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
 
 void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent);
 
-void ajouterEnfant(Noeud* noeud, Partie& partie);
+// Ajouter un enfant à un noeud et metttre jouer le coup le qui y amène, recupérer un pointeur vers le noeud crée
+Noeud* ajouterEnfant(Noeud* noeud, Partie& partie);
 
 bool ajoutEnfantPossible(const Noeud* n);
 
