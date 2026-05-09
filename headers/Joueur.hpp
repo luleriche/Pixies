@@ -12,6 +12,7 @@ struct Joueur{
     Grille grilleDeJeu;
     Pioche* piocheCommune;
     int nbPoints;
+    bool estOrdi;
 };
 
 // Initialise un joueur 

@@ -20,6 +20,7 @@ struct ListeDeCoupsManche{
     std::array<std::string, NbMaxCoupsManche> coups;
     unsigned int nombre;
 };
+
 struct ListeDeCoupsPossibles{
     std::array<std::string, NbMaxCoupsPossibles> coups;
     unsigned int nombre;

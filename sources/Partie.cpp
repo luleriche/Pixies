@@ -52,8 +52,6 @@ void lancerUneNouvellePartie(){
         std::cout << "Impossible. Le jeu se joue de 2 à 5 joueurs ! Nombre de joueurs: ";
         std::cin >> partie.nombreJoueurs;
     }
-    // On demande à l'utilisateur d'entrer le nom des joueurs
-    std::cout << "Si le nom d'un joueur commence par $ alors il sera considéré comme un ordi et jouera automatiquement." << std::endl;
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
 
     // On initialise la pioche
@@ -112,7 +110,7 @@ void lancerManche(Partie& partie){
 void faireJouerProchain(Partie& partie){
     std::cout << "Tour de " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     std::string coup;
-    if(partie.joueurs[partie.prochainJoueur].surnom[0]=='$'){
+    if(partie.joueurs[partie.prochainJoueur].estOrdi){
         std::cout << "L'ordinateur choisi son coup." << std::endl;
         coup = recupMeilleurCoup(partie, 40, 600);
     }else{
