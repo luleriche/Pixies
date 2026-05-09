@@ -1,6 +1,22 @@
-Commande pour compiler sous Linux :
-g++ main.cpp -o main -std=c++17 -I SFML-3.0.2/include -L SFML-3.0.2/lib -Wl,-rpath,$(pwd)/SFML-3.0.2/lib -lsfml-graphics -lsfml-window -lsfml-system && ./main
+# Comment jouer à Pixies !
 
-Commande pour compiler sous MAcOS :
-g++ main.cpp -o main -std=c++17 -I SFML-3.0.2-macos/include -L SFML-3.0.2-macos/lib -Wl,-rpath,$(pwd)/SFML-3.0.2-macos/lib -lsfml-graphics -lsfml-window -lsfml-system && ./main
-Autoriser les fichier dans confidentialiter 
+## Prérequis
+* Windows
+    + GCC 14.2.0 MinGW (DW2) (UCRT) - [Téléchargeable ici](https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0posix-19.1.1-12.0.0-ucrt-r2/winlibs-i686-posix-dwarf-gcc-14.2.0-mingw-w64ucrt-12.0.0-r2.7z)
+
+## Guide d'installation
+1. Cloner le dépot sur votre ordinateur.
+2. Créer un dossier build dans le dépot
+3. Lancer le jeu avec les commandes suivantes :
+    * Sur Windows
+        ```cmd 
+        cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="chemin\vers\gcc.exe" -DCMAKE_CXX_COMPILER="chemin\vers\gcc.exe\g++.exe" ..
+        mingw32-make
+        Pixies.Exe
+        ```
+   * Sur Linux et MacOS
+        ```bash
+        cmake ..
+        make
+        ./Pixies.out
+        ```
