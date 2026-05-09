@@ -1,12 +1,17 @@
 #include <cmath>
+#include <ctime>
 
 #include "Ordinateur.hpp"
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses){
-    //std::cout <<"Préparation de la recherche." << std::endl;
+std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses)
+{
+    // Début du chronomètre
+    clock_t debutRecherche = clock();
     
+    
+    //std::cout <<"Préparation de la recherche." << std::endl;
     // Liste des coups possibles pour l'ordinateur.
     ListeDeCoupsPossibles coupsPossibles = recupCoupsPossibles(partie);
 
@@ -119,6 +124,10 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
     }
     // On désalloue la sauvegarde de notre défausse
     delete[] ptrDefausseInitiale;
+
+    clock_t finRecherche = clock();
+    double duree = (double)(finRecherche - debutRecherche) / CLOCKS_PER_SEC;
+    std::cout << "Temps de recherche : " << duree << " secondes" << std::endl;
 
     // On renvoie le meilleur coup :)
     return meilleurCoup;
@@ -241,6 +250,24 @@ void annulerDernierCoup(Partie& partie){
 void jouerCoupAlea(Partie& partie){
     ListeDeCoupsPossibles coupsPossibles = recupCoupsPossibles(partie);
     jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
+}
+
+void jouerCoupMaximisePoints(Partie& partie){
+    ListeDeCoupsPossibles coupsPossibles = recupCoupsPossibles(partie);
+    const unsigned int joueur = partie.prochainJoueur;
+    std::string meilleurCoup = coupsPossibles.coups[0];
+    int meilleursPoints = -100;
+    // On parcours les coups possibles pour le joueur
+    for(unsigned int i = 0; i < coupsPossibles.nombre; ++i){
+        jouerCoup(partie, coupsPossibles.coups[i]);
+        int nbPoints = comptePoints(partie.joueurs[joueur].grilleDeJeu, partie.numeroManche);
+        if(nbPoints > meilleursPoints){
+            meilleursPoints = nbPoints;
+            meilleurCoup = coupsPossibles.coups[i];
+        }
+        annulerDernierCoup(partie);
+    }
+    jouerCoup(partie, meilleurCoup);
 }
 
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie){

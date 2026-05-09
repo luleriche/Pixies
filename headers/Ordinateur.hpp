@@ -23,7 +23,7 @@ struct Noeud{
     ListeDeCoupsPossibles coupsNonVisites;
 };
 
-// Récupérer le meilleur coup possible dans un certain état de la partie.
+// Récupérer le meilleur coup possible dans un certain état de la partie, les parmètre de recherche sont explicites pour une recherche MCTS.
 std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses);
 
 // Initialiser un noeud avec les valeurs passer en paramètres
@@ -38,7 +38,10 @@ void annulerDernierCoup(Partie& partie);
 // Jouer un coup aléatoire à un certain moment de la partie.
 void jouerCoupAlea(Partie& partie);
 
-// Récupérer le joueur en tête après une simulation de fin de manche aléatoire
+// Jouer le coup qui rapporte le plus de points au prochain joueur. Cette fonction a été testé pour les simulation de fin de partie dans l'arbre de recherche mais elle les rends 10 fois plus longue
+void jouerCoupMaximisePoints(Partie& partie);
+
+// Récupérer le joueur en tête après une simulation de fin de manche
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
 
 // Ajouter un enfant à un noeud et metttre jouer le coup le qui y amène, recupérer un pointeur vers le noeud crée

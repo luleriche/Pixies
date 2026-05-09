@@ -111,8 +111,8 @@ void faireJouerProchain(Partie& partie){
     std::cout << "Tour de " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     std::string coup;
     if(partie.joueurs[partie.prochainJoueur].estOrdi){
-        std::cout << "L'ordinateur choisi son coup." << std::endl;
-        coup = recupMeilleurCoup(partie, 40, 600);
+        std::cout << "L'ordinateur choisi son coup..." << std::endl;
+        coup = recupMeilleurCoup(partie, 20, 300);
     }else{
         coup = demanderCoupJoueur(partie);
     }
