@@ -109,7 +109,7 @@ unsigned int recupTaille(Defausse d){
 }
 
 void afficherNCartes(const Defausse d, unsigned int n){
-    if(n != 0){
+    if( d!= nullptr and n != 0){
         afficherEnCouleur(*(d->valeur));
         afficherNCartes(d->suivant, n-1);
     }

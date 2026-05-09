@@ -5,7 +5,7 @@
 
 #include "Partie.hpp"
 
-const int NbMaxEnfants = NbMaxCoups;
+const int NbMaxEnfants = NbMaxCoupsPossibles;
 
 // Structure qui représente un noeud dans l'arbre de recherche
 struct Noeud{
@@ -20,7 +20,7 @@ struct Noeud{
     std::array<double, 5> nbVictoires;
     unsigned int nbVisites;
     // Liste des coups non-visités à partir de ce Node
-    ListeDeCoups coupsNonVisites;
+    ListeDeCoupsPossibles coupsNonVisites;
 };
 
 // Récupérer le meilleur coup possible dans un certain état de la partie.
@@ -30,7 +30,7 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
 void initNoeud(Noeud* const noeud, const Partie& partie, const std::string& coupCreateur, Noeud* const parent);
 
 // Renvoyer une liste de coups contenant tous les coups possibles pour le prochain joueur d'une partie.
-ListeDeCoups recupCoupsPossibles(const Partie& partie);
+ListeDeCoupsPossibles recupCoupsPossibles(const Partie& partie);
 
 // Annuler le dernier coup joué dans une manche
 void annulerDernierCoup(Partie& partie);

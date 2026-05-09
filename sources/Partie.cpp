@@ -5,12 +5,22 @@
 #include "Console.hpp"
 #include "Ordinateur.hpp"
 
-void ajouterCoup(ListeDeCoups& lc, std::string coup){
+void ajouterCoup(ListeDeCoupsManche& lc, std::string coup){
     lc.coups[lc.nombre] = coup;
     ++lc.nombre;
 }
 
-void afficher(ListeDeCoups lc){
+void ajouterCoup(ListeDeCoupsPossibles& lc, std::string coup){
+    lc.coups[lc.nombre] = coup;
+    ++lc.nombre;
+}
+
+void afficher(ListeDeCoupsManche lc){
+    for(unsigned int i = 0; i < lc.nombre; ++i)
+        std::cout << lc.coups[i] << std::endl;
+}
+
+void afficher(ListeDeCoupsPossibles lc){
     for(unsigned int i = 0; i < lc.nombre; ++i)
         std::cout << lc.coups[i] << std::endl;
 }
@@ -216,7 +226,8 @@ void jouerCoup(Partie& partie, std::string coup){
     // Si il n'y a pas que deux joueurs
     if(partie.nombreJoueurs != 2){
         if(estVidePioche(partie.pioche)){
-            if(unJoueurAFinit(partie)){
+            // Si un joueur a finit ou si la défausse est vide, ce qui peut arriver à 5 joueurs, la partie s'arrête
+            if(unJoueurAFinit(partie) or partie.defausse == nullptr){
                 // La manche est finit si la pioche est vide et qu'un joueur a rempli sa grille
                 partie.estMancheFinie = true;
                 // On ajoute les points aux joueurs
@@ -292,7 +303,11 @@ std::string recupDernierCoup(Partie partie){
         return partie.coupsManche.coups[partie.coupsManche.nombre-1];
 }
 
-void supprimeDernierCoup(ListeDeCoups& lc){
+void supprimeDernierCoup(ListeDeCoupsManche& lc){
+    --lc.nombre;
+}
+
+void supprimeDernierCoup(ListeDeCoupsPossibles& lc){
     --lc.nombre;
 }
 

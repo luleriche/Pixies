@@ -8,7 +8,7 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
     //std::cout <<"Préparation de la recherche." << std::endl;
     
     // Liste des coups possibles pour l'ordinateur.
-    ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+    ListeDeCoupsPossibles coupsPossibles = recupCoupsPossibles(partie);
 
     // Si il n'y a qu'un coup possible on ne réfléchit pas on le renvoie.
     if(coupsPossibles.nombre == 1){
@@ -49,7 +49,6 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
         // Toutes les descentes dans l'arbre
         for(unsigned int k = 0; k < nbDescentesParDefausses; ++k){
             //std::cout << "Descente numéro" << k << " | ";
-
             // On se place à la racine
             Noeud* noeudActuel = &racine;
             unsigned int profondeur = 0;
@@ -61,6 +60,7 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
                 noeudActuel = choisirEnfant(noeudActuel, partie.prochainJoueur);
                 ++profondeur;
                 //std::cout << "Profondeur " << profondeur << " | ";
+                
                 // Il faut aussi penser à jouer le coup qui y amène pour changer l'état de la partie.
                 jouerCoup(partie, noeudActuel->coupCreateur);
             }
@@ -72,7 +72,6 @@ std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, con
                 //std::cout << "Nouveau noeud crée." << " | ";
                 ++profondeur;
             }
-
             // On simule une partie aléatoire à partir de là et on récupère celui qui gagne
             unsigned int gagnant = recupLeaderFinMancheAleatoire(partie);
             
@@ -139,8 +138,8 @@ void initNoeud(Noeud* const noeud, const Partie& partie, const std::string& coup
     noeud->coupsNonVisites = recupCoupsPossibles(partie);
 }
 
-ListeDeCoups recupCoupsPossibles(const Partie& partie){
-    ListeDeCoups coupsPossibles;
+ListeDeCoupsPossibles recupCoupsPossibles(const Partie& partie){
+    ListeDeCoupsPossibles coupsPossibles;
     coupsPossibles.nombre = 0;
     if(partie.estMancheFinie)
     return coupsPossibles;
@@ -240,7 +239,7 @@ void annulerDernierCoup(Partie& partie){
 }
 
 void jouerCoupAlea(Partie& partie){
-    ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
+    ListeDeCoupsPossibles coupsPossibles = recupCoupsPossibles(partie);
     jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
 }
 

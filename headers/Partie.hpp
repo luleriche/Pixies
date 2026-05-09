@@ -4,28 +4,37 @@
 #include "Pioche.hpp"
 #include "Joueur.hpp"
 
-// Structure pour une liste de de coups.
-const int NbMaxCoups = 100;
-struct ListeDeCoups{
-    /* 
-    Un coup se construit ainsi :
-    - indice du joueur qui a joué le coup
-    - indice de la carte prise dans la pioche
-    - type du coup (d/v/c/m)
-    - indice dans la grille ou a finit la carte
-    */
-    std::array<std::string, NbMaxCoups> coups;
+// Structure pour une liste de de coups pour une manche
+const int NbMaxCoupsManche = 200;
+// Structure pour une liste de de coups possbile pour un coup.
+const int NbMaxCoupsPossibles = 80;
+
+/* 
+Un coup se construit ainsi :
+- indice du joueur qui a joué le coup
+- indice de la carte prise dans la pioche
+- type du coup (d/v/c/m)
+- indice dans la grille ou a finit la carte
+*/
+struct ListeDeCoupsManche{
+    std::array<std::string, NbMaxCoupsManche> coups;
+    unsigned int nombre;
+};
+struct ListeDeCoupsPossibles{
+    std::array<std::string, NbMaxCoupsPossibles> coups;
     unsigned int nombre;
 };
 
 // Ajouter un coup à une liste de coups.
-void ajouterCoup(ListeDeCoups& lc, std::string coup);
+void ajouterCoup(ListeDeCoupsPossibles& lc, std::string coup);
 
 // Afficher une liste de coup, autant de lignes que de coups.
-void afficher(ListeDeCoups lc);
+void afficher(ListeDeCoupsPossibles lc);
+void afficher(ListeDeCoupsManche lc);
 
 // Supprimer le dernier coup d'une liste de coups.
-void supprimeDernierCoup(ListeDeCoups& lc);
+void supprimeDernierCoup(ListeDeCoupsManche& lc);
+void supprimeDernierCoup(ListeDeCoupsPossibles& lc);
 
 // Structure pour une partie de Pixies
 struct Partie{
@@ -43,7 +52,7 @@ struct Partie{
     // Si la manche actuelle est terminée ou non
     bool estMancheFinie;
     // Liste des coups joués depuis le début de la manche actuelle
-    ListeDeCoups coupsManche;
+    ListeDeCoupsManche coupsManche;
 };
 
 // Lance une nouvelle partie à partir de zéro.
