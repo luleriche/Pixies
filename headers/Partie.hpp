@@ -27,7 +27,6 @@ void afficher(ListeDeCoups lc);
 // Supprimer le dernier coup d'une liste de coups.
 void supprimeDernierCoup(ListeDeCoups& lc);
 
-
 // Structure pour une partie de Pixies
 struct Partie{
     // Défausse de la partie
@@ -61,9 +60,6 @@ void faireJouerProchain(Partie& partie);
 
 // Demander à l'utilisateur le coup qu'il jouerait si il était le prochain joueur 
 std::string demanderCoupJoueur(const Partie& partie);
-
-// Demander à l'ordinateur le coup qu'il jouerait si il était le prochain joueur
-std::string demanderCoupOrdi(Partie& partie);
 
 // Remettre les cartes de la pioche et des grilles des joueurs dans la défausse d'une partie.
 void toutRemettreDansDefausse(Partie& partie);

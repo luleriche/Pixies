@@ -102,20 +102,15 @@ void lancerManche(Partie& partie){
 void faireJouerProchain(Partie& partie){
     std::cout << "Tour de " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     std::string coup;
-    if(partie.joueurs[partie.prochainJoueur].surnom[0]=='$')
-        coup = demanderCoupOrdi(partie);
-    else{
+    if(partie.joueurs[partie.prochainJoueur].surnom[0]=='$'){
+        std::cout << "L'ordinateur choisi son coup." << std::endl;
+        coup = recupMeilleurCoup(partie, 40, 600);
+    }else{
         coup = demanderCoupJoueur(partie);
     }
     jouerCoup(partie, coup);
-    // Affichage après avoir rajouter la carte à la grille
+    //Affichage après avoir rajouter la carte à la grille
     afficher(partie);
-}
-
-std::string demanderCoupOrdi(Partie& partie){
-    std::cout << "L'ordinateur choisi son coup." << std::endl;
-    std::string coups = recupMeilleurCoup(partie);
-    return coups;
 }
 
 std::string demanderCoupJoueur(const Partie& partie){

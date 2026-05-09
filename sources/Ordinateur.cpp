@@ -4,7 +4,7 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-std::string recupMeilleurCoup(Partie& partie){
+std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses){
     //std::cout <<"Préparation de la recherche." << std::endl;
     
     // Liste des coups possibles pour l'ordinateur.
@@ -34,12 +34,8 @@ std::string recupMeilleurCoup(Partie& partie){
         tmp = tmp->suivant;
     }
 
-    // Information sur la recherche
-    unsigned int nbDefaussesTestees = 20;
-    unsigned int nbDescentesParDefausse = 400;
-
     //std::cout << "Début de la recherche" << std::endl;
-    for(unsigned int j = 0; j < nbDefaussesTestees; ++j)
+    for(unsigned int j = 0; j < nbDefausse; ++j)
     {
         // Mélange de la défausse
         melanger(partie.defausse);
@@ -51,7 +47,7 @@ std::string recupMeilleurCoup(Partie& partie){
         //std::cout << "Arbre nettoyé." << " | ";
 
         // Toutes les descentes dans l'arbre
-        for(unsigned int k = 0; k < nbDescentesParDefausse; ++k){
+        for(unsigned int k = 0; k < nbDescentesParDefausses; ++k){
             //std::cout << "Descente numéro" << k << " | ";
 
             // On se place à la racine

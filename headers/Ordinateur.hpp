@@ -24,7 +24,7 @@ struct Noeud{
 };
 
 // Récupérer le meilleur coup possible dans un certain état de la partie.
-std::string recupMeilleurCoup(Partie& partie);
+std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses);
 
 // Initialiser un noeud avec les valeurs passer en paramètres
 void initNoeud(Noeud* const noeud, const Partie& partie, const std::string& coupCreateur, Noeud* const parent);
