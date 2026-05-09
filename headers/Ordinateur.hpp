@@ -18,50 +18,43 @@ struct Noeud{
     unsigned int nbEnfants;
     // Statistiques de ce noeud
     std::array<double, 5> nbVictoires;
-    int nbVisites;
+    unsigned int nbVisites;
     // Liste des coups non-visités à partir de ce Node
     ListeDeCoups coupsNonVisites;
 };
 
-// Annuler le dernier coup joué dans une manche
-void annulerDernierCoup(Partie& partie);
+// Récupérer le meilleur coup possible dans un certain état de la partie.
+std::string recupMeilleurCoup(Partie& partie);
+
+// Initialiser un noeud avec les valeurs passer en paramètres
+void initNoeud(Noeud* const noeud, const Partie& partie, const std::string& coupCreateur, Noeud* const parent);
 
 // Renvoyer une liste de coups contenant tous les coups possibles pour le prochain joueur d'une partie.
 ListeDeCoups recupCoupsPossibles(const Partie& partie);
 
-// Fais jouer un coup aléatoire pour le prochain joueur
-void jouerCoupAlea(Partie& partie);
-
-// Récupérer le joueur en tête si l'on simule une fin de manche aléatoire
-unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
-
-void initNoeud(Noeud* noeud, Partie& partie, std::string coup, Noeud* parent);
-
-// Ajouter un enfant à un noeud et metttre jouer le coup le qui y amène, recupérer un pointeur vers le noeud crée
-Noeud* ajouterEnfant(Noeud* noeud, Partie& partie);
-
-bool ajoutEnfantPossible(const Noeud* n);
-
-std::string recupMeilleurCoup(Partie& partie);
-
+// Annuler le dernier coup joué dans une manche
 void annulerDernierCoup(Partie& partie);
 
-ListeDeCoups recupCoupsPossibles(const Partie& partie);
-
+// Jouer un coup aléatoire à un certain moment de la partie.
 void jouerCoupAlea(Partie& partie);
 
-void finirMancheAleatoirement(Partie& partie);
-
+// Récupérer le joueur en tête après une simulation de fin de manche aléatoire
 unsigned int recupLeaderFinMancheAleatoire(Partie& partie);
 
-float calculerRatioVictoire(Noeud* n, unsigned int joueur);
+// Ajouter un enfant à un noeud et metttre jouer le coup le qui y amène, recupérer un pointeur vers le noeud crée
+Noeud* ajouterEnfant(Noeud* const noeudActuel, Partie& partie);
 
-Noeud* choisirEnfant(Noeud* n, unsigned int joueur);
+// Choisir le meilleur enfant à explorer d'un noeud en utilisant le score UCT
+Noeud* choisirEnfant(const Noeud* const n, unsigned int joueur);
 
-float calculerUCT(int nbVisitesParent, int nbVistesEnfant, float ratioVictoire, float temperature);
+// Désallouer un arbre en donnant le noeud Racine de l'arbre, désalloue également la racine.
+void supprimerArbre(Noeud* const noeudRacine);
 
-void supprimerArbre(Noeud* ptrRacine);
-
+// Mettre un jour un arbre en supprimant tous les noeuds qui se trouvent après le premier tirage dans la pioche et en mettant à jour les coups non visité juste avant ce moment.
 void metAJourArbre(Noeud* noeud, Partie& partie);
 
-void supprimerArbre(Noeud* noeudRacine);
+// Récupérer le ratio de victoire d'un joueur pour un noeud donné.
+float calculerRatioVictoire(const Noeud* const n, const unsigned int joueur);
+
+// Récupérer le score UCT en fonction des différents paramètres
+float calculerUCT(const int nbVisitesParent, const int nbVistesEnfant, const float ratioVictoire, const float temperature);

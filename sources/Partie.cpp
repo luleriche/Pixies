@@ -90,9 +90,6 @@ void lancerManche(Partie& partie){
     
     while(not partie.estMancheFinie){
         faireJouerProchain(partie);
-        for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-            std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
-        }
     }
 
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;

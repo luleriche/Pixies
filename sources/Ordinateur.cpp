@@ -4,38 +4,6 @@
 #include "Partie.hpp"
 #include "Grille.hpp"
 
-void initNoeud(Noeud* noeud, Partie& partie, std::string coupCreateur, Noeud* parent){
-    // On initialise les différentes valeurs du noeud
-    noeud->coupCreateur = coupCreateur;
-    noeud->parent = parent;
-    noeud->nbEnfants = 0;
-    noeud->enfants.fill(nullptr);
-    noeud->nbVictoires = {0, 0, 0, 0, 0};
-    noeud->nbVisites = 0;
-
-    // On récupère les coups possibles dans l'état actuel de la partie.
-    // Il faut donc initialiser un noeud après avoir joué le coup créateur.
-    noeud->coupsNonVisites = recupCoupsPossibles(partie);
-}
-
-Noeud* ajouterEnfant(Noeud* noeudActuel, Partie& partie){
-    // On choisit le coup que l'on va joué, c'est le dernier de la liste des coups non visités
-    std::string coupVisite = noeudActuel->coupsNonVisites.coups[noeudActuel->coupsNonVisites.nombre-1];
-    --noeudActuel->coupsNonVisites.nombre;
-    // On joue ce coup
-    jouerCoup(partie, coupVisite);
-    // On crée un enfant et on l'initialise
-    noeudActuel->enfants[noeudActuel->nbEnfants] = new Noeud;
-    initNoeud(noeudActuel->enfants[noeudActuel->nbEnfants], partie, coupVisite, noeudActuel);
-    ++noeudActuel->nbEnfants;
-    // On renvoie le pointeur vers le noeud enfant crée
-    return noeudActuel->enfants[noeudActuel->nbEnfants-1];
-}
-
-bool ajoutEnfantPossible(const Noeud* n){
-    return n->coupsNonVisites.nombre > 0;
-}
-
 std::string recupMeilleurCoup(Partie& partie){
     //std::cout <<"Préparation de la recherche." << std::endl;
     
@@ -134,7 +102,7 @@ std::string recupMeilleurCoup(Partie& partie){
     //std::cout << "Calcul du coup le plus gagnant." << " | ";
     unsigned indiceMeilleurCoup = 0;
     for(unsigned int i = 1; i < racine.nbEnfants; ++i){
-        if(racine.enfants[i]->nbVictoires[partie.prochainJoueur] > racine.enfants[indiceMeilleurCoup]->nbVictoires[partie.prochainJoueur]){
+        if(calculerRatioVictoire(racine.enfants[i], partie.prochainJoueur) > calculerRatioVictoire(racine.enfants[indiceMeilleurCoup], partie.prochainJoueur)){
             indiceMeilleurCoup = i;
         }
     }
@@ -161,6 +129,60 @@ std::string recupMeilleurCoup(Partie& partie){
     return meilleurCoup;
 }
 
+void initNoeud(Noeud* const noeud, const Partie& partie, const std::string& coupCreateur, Noeud* const parent){
+    // On initialise les différentes valeurs du noeud
+    noeud->coupCreateur = coupCreateur;
+    noeud->parent = parent;
+    noeud->nbEnfants = 0;
+    noeud->enfants.fill(nullptr);
+    noeud->nbVictoires = {0, 0, 0, 0, 0};
+    noeud->nbVisites = 0;
+
+    // On récupère les coups possibles dans l'état actuel de la partie.
+    // Il faut donc initialiser un noeud après avoir joué le coup créateur.
+    noeud->coupsNonVisites = recupCoupsPossibles(partie);
+}
+
+ListeDeCoups recupCoupsPossibles(const Partie& partie){
+    ListeDeCoups coupsPossibles;
+    coupsPossibles.nombre = 0;
+    if(partie.estMancheFinie)
+    return coupsPossibles;
+    
+    // Raccourcis pour après, pour pas avoir à tout réecrire à chaque foix
+    const unsigned int& joueur = partie.prochainJoueur;
+    const Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
+    
+    Carte* carteChoisi;
+    // Indice dans la grille ou sera envoyé la carte
+    unsigned int indiceDestGrille;
+    
+    // Parcours des cases de la pioche
+    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
+        // Si il y a une carte à cet endroit
+        if(partie.pioche.cartes[i] != nullptr){
+            carteChoisi = partie.pioche.cartes[i];
+            // La destination de base est le chiffre de la carte
+            indiceDestGrille = carteChoisi->chiffre-1;
+            // Si à cette destination il n'y a pas de carte visible, il n'y a qu'un coup possible
+            if(griJoueur[indiceDestGrille].faceVisible == nullptr){
+                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"d"+std::to_string(indiceDestGrille));
+            }// Sinon si il y a seulement une carte face visible, deux coups sont possibles : garder la carte piochée visible ou pas
+            else if(griJoueur[indiceDestGrille].faceCachee == nullptr){
+                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"v"+std::to_string(indiceDestGrille));
+                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"c"+std::to_string(indiceDestGrille));
+            }// Sinon les coups possibles sont les différentes cases vides où on peut mettre la carte
+            else{
+                for(unsigned int j = 0; j < 9; ++j){
+                    if(estVideEmplacement(griJoueur, j))
+                    ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"m"+std::to_string(j));
+                }
+            }
+        }
+    }
+    return coupsPossibles;
+}
+
 void annulerDernierCoup(Partie& partie){
     // Si la manche était terminé alors on enlève les points des joueurs d'abord et on change l'état
     if(partie.estMancheFinie){
@@ -169,7 +191,7 @@ void annulerDernierCoup(Partie& partie){
         }
         partie.estMancheFinie = false;
     }
-
+    
     std::string coup = recupDernierCoup(partie);
     // Joueur du coup précedent
     unsigned int joueurPrecedent = coup[0] - '0';
@@ -188,7 +210,7 @@ void annulerDernierCoup(Partie& partie){
     
     // Référence vers la grille du joueur qui a joué avant
     Grille& griJoueur = partie.joueurs[joueurPrecedent].grilleDeJeu;
-
+    
     // Si le coup était de la mettre directement dans sa case.
     if(typeCoup == 'd'){
         // On la met dans la pioche à son ancienne place et on l'enlève de la grille
@@ -221,46 +243,6 @@ void annulerDernierCoup(Partie& partie){
     partie.prochainJoueur = joueurPrecedent;
 }
 
-ListeDeCoups recupCoupsPossibles(const Partie& partie){
-    ListeDeCoups coupsPossibles;
-    coupsPossibles.nombre = 0;
-    if(partie.estMancheFinie)
-        return coupsPossibles;
-
-    // Raccourcis pour après, pour pas avoir à tout réecrire à chaque foix
-    const unsigned int& joueur = partie.prochainJoueur;
-    const Grille& griJoueur = partie.joueurs[joueur].grilleDeJeu;
-
-    Carte* carteChoisi;
-    // Indice dans la grille ou sera envoyé la carte
-    unsigned int indiceDestGrille;
-    
-    // Parcours des cases de la pioche
-    for(unsigned int i = 0; i < partie.pioche.taille; ++i){
-        // Si il y a une carte à cet endroit
-        if(partie.pioche.cartes[i] != nullptr){
-            carteChoisi = partie.pioche.cartes[i];
-            // La destination de base est le chiffre de la carte
-            indiceDestGrille = carteChoisi->chiffre-1;
-            // Si à cette destination il n'y a pas de carte visible, il n'y a qu'un coup possible
-            if(griJoueur[indiceDestGrille].faceVisible == nullptr){
-                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"d"+std::to_string(indiceDestGrille));
-            }// Sinon si il y a seulement une carte face visible, deux coups sont possibles : garder la carte piochée visible ou pas
-            else if(griJoueur[indiceDestGrille].faceCachee == nullptr){
-                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"v"+std::to_string(indiceDestGrille));
-                ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"c"+std::to_string(indiceDestGrille));
-            }// Sinon les coups possibles sont les différentes cases vides où on peut mettre la carte
-            else{
-                for(unsigned int j = 0; j < 9; ++j){
-                    if(estVideEmplacement(griJoueur, j))
-                        ajouterCoup(coupsPossibles, std::to_string(joueur)+std::to_string(i)+"m"+std::to_string(j));
-                }
-            }
-        }
-    }
-    return coupsPossibles;
-}
-
 void jouerCoupAlea(Partie& partie){
     ListeDeCoups coupsPossibles = recupCoupsPossibles(partie);
     jouerCoup(partie, coupsPossibles.coups[rand()%coupsPossibles.nombre]);
@@ -281,39 +263,49 @@ unsigned int recupLeaderFinMancheAleatoire(Partie& partie){
     return leader;
 }
 
-Noeud* choisirEnfant(Noeud* n, unsigned int joueur){
+Noeud* ajouterEnfant(Noeud* const noeudActuel, Partie& partie){
+    // On choisit le coup que l'on va joué, c'est le dernier de la liste des coups non visités
+    std::string coupVisite = noeudActuel->coupsNonVisites.coups[noeudActuel->coupsNonVisites.nombre-1];
+    --noeudActuel->coupsNonVisites.nombre;
+    // On joue ce coup
+    jouerCoup(partie, coupVisite);
+    // On crée un enfant et on l'initialise
+    noeudActuel->enfants[noeudActuel->nbEnfants] = new Noeud;
+    initNoeud(noeudActuel->enfants[noeudActuel->nbEnfants], partie, coupVisite, noeudActuel);
+    ++noeudActuel->nbEnfants;
+    // On renvoie le pointeur vers le noeud enfant crée
+    return noeudActuel->enfants[noeudActuel->nbEnfants-1];
+}
+
+Noeud* choisirEnfant(const Noeud* const n, unsigned int joueur){
     // Le nombre totale de visites du parents, utiles pour le calcul du score UCT
-    double nbTotalSimulations = n->nbVisites;
+    unsigned int nbTotalSimulations = n->nbVisites;
     // On parcours les enfants du noeud pour savoir lequel à la meilleur score UCT
     float meilleurUCT = -1;
     Noeud* meilleurEnfant = nullptr;
     for(unsigned int i = 0; i < n->nbEnfants; ++i){
         Noeud* enfant = n->enfants[i];
+        // On utilise comme température une valeur approchée de racine de 2
         float UCTscore = calculerUCT(nbTotalSimulations, n->enfants[i]->nbVisites, calculerRatioVictoire(enfant, joueur), 1.41);
         if(UCTscore > meilleurUCT){
             meilleurUCT = UCTscore;
             meilleurEnfant = n->enfants[i];
-        }   
+        }
     }
     return meilleurEnfant;
 }
 
-float calculerRatioVictoire(Noeud* n, unsigned int joueur){
-    if(n->nbVisites == 0){
-        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
+void supprimerArbre(Noeud* const noeudRacine){
+    if(noeudRacine != nullptr){
+        // On supprime les enfants du noeud
+        for(unsigned int i = 0; i < noeudRacine->nbEnfants; i++){
+            supprimerArbre(noeudRacine->enfants[i]);
+        }
+        // On supprime le noeudRacine
+        delete noeudRacine;
     }
-    return 1.0*n->nbVictoires[joueur]/n->nbVisites;
 }
 
-float calculerUCT(int nbVisitesParent, int nbVisitesEnfant, float ratioVictoire, float temperature){
-    if(nbVisitesEnfant == 0){
-        std::cerr << "--- CRASH 2 JOUEURS ---" << std::endl;
-    }
-    float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
-    return ratioVictoire + temperature * exploration;
-}
-
-// Supprimes les noeuds qui se trouvent après le premier tirage de carte dans la défausse et met à jour les coups non visités selon la défausse.
 void metAJourArbre(Noeud* noeud, Partie& partie){
     // Si il ne reste qu'une seule carte dans la défausse
     if(partie.pioche.nombreCartesRestantes == 1){
@@ -343,37 +335,11 @@ void metAJourArbre(Noeud* noeud, Partie& partie){
     }
 }
 
-void supprimerArbre(Noeud* noeudRacine){
-    if(noeudRacine != nullptr){
-        // On supprime les enfants du noeud
-        for(unsigned int i = 0; i < noeudRacine->nbEnfants; i++){
-            supprimerArbre(noeudRacine->enfants[i]);
-        }
-        // On supprime le noeudRacine
-        delete noeudRacine;
-    }
+float calculerRatioVictoire(const Noeud* const n, unsigned int joueur){
+    return 1.0*n->nbVictoires[joueur]/n->nbVisites;
 }
 
-/*
-
-CODE POUR PAS PERDRE LA DEFAUSSE DU DEBUT
-
-// On stock les pointeurs de la défausse initiale pour la reconstruire après
-    unsigned int tailleDefausse = recupTaille(partie.defausse);
-    Carte* * ptrDefausseInitiale = new Carte*[tailleDefausse];
-    maillon* tmp = partie.defausse;
-    for(unsigned int i = 0; i < tailleDefausse; ++i){
-        ptrDefausseInitiale[i] = tmp->valeur;
-        tmp = tmp->suivant;
-    }
-
-
-    // On remet la défausse comme avant
-    tmp = partie.defausse;
-    for(unsigned int i = 0; i < tailleDefausse; ++i){
-        tmp->valeur = ptrDefausseInitiale[i];
-        tmp = tmp->suivant;
-    }
-    delete[] ptrDefausseInitiale;
-
-*/
+float calculerUCT(const int nbVisitesParent, const int nbVisitesEnfant, const float ratioVictoire, const float temperature){
+    float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
+    return ratioVictoire + temperature * exploration;
+}
