@@ -5,7 +5,7 @@
 #include "Partie.hpp"
 
 struct RenduPartie{
-    Partie partie;
+    Partie* partie;
     sf::RenderWindow * window;
     std::array<sf::Texture, 100> cartesTextures;
     std::array<std::optional<sf::Sprite>, 100> cartesSprites;
@@ -17,6 +17,10 @@ void chargerCartesTextures(RenduPartie& renduPartie, const Partie& partie);
 void lancerJeu();
 
 void afficher(RenduPartie& renduPartie);
+
+void afficherRenduCarte(RenduPartie& rendu, Carte* c, sf::Vector2f centre);
+
+void afficherRenduGrille(RenduPartie& rendu, unsigned int joueur, sf::Vector2f centre);
 
 void creerSprites(RenduPartie& renduPartie);
 
