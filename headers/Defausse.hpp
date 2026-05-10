@@ -11,7 +11,10 @@ struct maillon{
 using Defausse = maillon*;
 
 // Définition d'un boite de cartes, qui restera inchangé et qui garde les pointeurs vers les cartes
-using BoiteCartes = Carte*;
+struct BoiteCartes{
+    Carte* cartes;
+    unsigned int nbCartes;
+};
 
 // Affichr les Cartes d'une défausse en partant de celle du dessus
 void afficher(Defausse d);
@@ -43,10 +46,10 @@ Carte* tirerCarteIndice(Defausse& d, int indice);
 void melanger(Defausse& d);
 
 // Mets toutes les cartes d'une boite dans une défausse.
-void remplir(BoiteCartes boite, unsigned int nbCartes, Defausse& defausse);
+void remplir(BoiteCartes boite, Defausse& defausse);
 
 // Créer les cartes de jeu et les mets dans une boite 
-void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int &nbCartes);
+void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite);
 
 // Désalloue toute la mémoire prise par les cartes d'une boite
 void supprimerBoite(BoiteCartes& boite);

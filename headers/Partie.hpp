@@ -39,6 +39,8 @@ void supprimeDernierCoup(ListeDeCoupsPossibles& lc);
 
 // Structure pour une partie de Pixies
 struct Partie{
+    // Boite de cartes de la partie
+    BoiteCartes boite;
     // Défausse de la partie
     Defausse defausse;
     // Pioche de la partie

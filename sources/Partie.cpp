@@ -31,13 +31,13 @@ void lancerUneNouvellePartie(){
 
     // Création des cartes dans la mémoire à l'aide d'une boite de cartes
     BoiteCartes boite;
-    unsigned int nbCartes;
-    creerCartesAvecFichier("assets/cartes_pixies.txt", boite, nbCartes);
+    creerCartesAvecFichier("assets/cartes_pixies.txt", boite);
+    partie.boite = boite;
 
     // Chargement des cartes et mélange
     Defausse defausse;
     initDefausse(defausse);
-    remplir(boite, nbCartes, defausse);
+    remplir(boite, defausse);
     melanger(defausse);
     partie.defausse = defausse;
 

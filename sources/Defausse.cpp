@@ -71,20 +71,26 @@ void melanger(Defausse& d){
     };
 }
 
-void remplir(BoiteCartes boite, unsigned int nbCartes, Defausse& defausse){
-    for(unsigned int i = 0; i < nbCartes; ++i){
-        ajoutFinDefausse(defausse, &boite[i]);
+void remplir(BoiteCartes boite, Defausse& defausse){
+    for(unsigned int i = 0; i < boite.nbCartes; ++i){
+        ajoutFinDefausse(defausse, &boite.cartes[i]);
     }
 }
 
-void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int &nbCartes){
+void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite){
     std::ifstream fic;
     fic.open(nomFic);
+    // Si le fichier est bien ouvert
     if(fic.is_open()){
-        fic >> nbCartes;
-        boite = new Carte[nbCartes];
-        for(unsigned int i = 0; i < nbCartes; ++i){
-            fic >> boite[i].chiffre >> boite[i].couleur  >> boite[i].spirale;
+        // On alloue assez de mémoire pour les cartes dont le nombre est marqué en haut
+        fic >> boite.nbCartes;
+        boite.cartes = new Carte[boite.nbCartes];
+        // Pour chaque carte
+        for(unsigned int i = 0; i < boite.nbCartes; ++i){
+            // On lit ses infos
+            fic >> boite.cartes[i].chiffre >> boite.cartes[i].couleur  >> boite.cartes[i].spirale;
+            // Et on met son indice dans la boite
+            boite.cartes[i].boiteIndice = i;
         }
         std::cout << "Toutes les cartes du fichier ont bien été lues." << std::endl;
     }
@@ -94,8 +100,9 @@ void creerCartesAvecFichier(std::string nomFic, BoiteCartes& boite, unsigned int
 }
 
 void supprimerBoite(BoiteCartes& boite){
-    delete[] boite;
-    boite = nullptr;
+    delete[] boite.cartes;
+    boite.cartes = nullptr;
+    boite.nbCartes = 0;
 }
 
 unsigned int recupTaille(Defausse d){

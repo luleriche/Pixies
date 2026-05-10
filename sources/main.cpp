@@ -12,7 +12,6 @@
 int main()
 {
     srand(time(nullptr));
-    //lancerUneNouvellePartie();
     lancerJeu();
     return 0;
 }
