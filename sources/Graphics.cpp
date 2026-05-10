@@ -1,3 +1,4 @@
+#include "Ordinateur.hpp"
 #include "Graphics.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -28,14 +29,16 @@ void lancerJeu(){
     remplirPioche(partie.pioche, partie.defausse);
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     
-    for(int i = 0; i < 10; ++i)
-        faireJouerProchain(partie);
+    for(int i = 0; i < 20; ++i)
+        jouerCoup(partie, recupCoupsPossibles(partie).coups[0]);
 
-
-    sf::RenderWindow window = sf::RenderWindow(sf::VideoMode({1000, 700}), "Pixies");
+    sf::RenderWindow window = sf::RenderWindow(sf::VideoMode({1200, 700}), "Pixies");
+    
     RenduPartie renduPartie;
+
     renduPartie.partie = &partie;
     chargerCartesTextures(renduPartie);
+    renduPartie.fondTexture = sf::Texture("assets/fondBois.png");
     renduPartie.window = &window;
 
     while (window.isOpen())
@@ -66,25 +69,40 @@ void chargerCartesTextures(RenduPartie& renduPartie){
         // On redimensionne le sprite
         // Si tu veux une taille précise (ex: 86x120) :
         sf::Vector2u dimTexture = texture.getSize();
-        renduPartie.cartesSprites[i]->setScale({80.f / dimTexture.x, 120.f / dimTexture.y});
-        renduPartie.cartesSprites[i]->setOrigin({40, 60});
+        renduPartie.cartesSprites[i]->setScale({90.f / dimTexture.x, 140.f / dimTexture.y});
+        renduPartie.cartesSprites[i]->setOrigin({dimTexture.x / 2.f, dimTexture.y / 2.f});
     }
     std::cout << std::endl;
 }
 
 void afficher(RenduPartie& renduPartie){
+    // Affichage du fond
+    sf::RectangleShape fond({1200, 700});
+    fond.setTexture(&renduPartie.fondTexture);
+    renduPartie.window->draw(fond);
     // Affichage de la pioche
     // 10 pixeles entre chaque carte et laisser un espace avant pour la défausse
     for(unsigned int i = 0; i < renduPartie.partie->pioche.taille; ++i){
         Carte* carte = renduPartie.partie->pioche.cartes[i];
         if(carte != nullptr){
-            afficherRenduCarte(renduPartie, carte, sf::Vector2f(140+i*100, 70));
+            afficherRenduCarte(renduPartie, carte, sf::Vector2f(1020, 110+i*167));
         }
     }
     // Affichage des deux grilles
-    afficherRenduGrille(renduPartie, 0, sf::Vector2f(200, 380));
-    afficherRenduGrille(renduPartie, 1, sf::Vector2f(800, 380));
+    afficherRenduGrille(renduPartie, 0, sf::Vector2f(230, 415));
+    afficherRenduGrille(renduPartie, 1, sf::Vector2f(685, 415));
+    // -------- Afficher les textes --------
+    sf::Font font("assets/font.ttf");
+    sf::Text piocheTxt(font, "Pioche", 56);
+    // On récupère les limites
+    sf::FloatRect bounds = piocheTxt.getLocalBounds();
+    // On met l'origine au centre
+    piocheTxt.setOrigin(bounds.position + bounds.size / 2.f);
+    piocheTxt.setPosition({1120.f, 350});
+    piocheTxt.setRotation(sf::degrees(90));
+    renduPartie.window->draw(piocheTxt);    
 }
+
 
 void afficherRenduCarte(RenduPartie& rendu, Carte* c, sf::Vector2f centre){
     if(c != nullptr){
@@ -96,12 +114,28 @@ void afficherRenduCarte(RenduPartie& rendu, Carte* c, sf::Vector2f centre){
 
 void afficherRenduGrille(RenduPartie& renduPartie, unsigned int joueur, sf::Vector2f centre){
     for(unsigned int i = 0; i < 9; ++i){
-        sf::Vector2f decalage = sf::Vector2f((-1.0+i%3)*100, (-1.0 + i/3)*140.0);
+        sf::Vector2f decalage = sf::Vector2f((-1.0+i%3)*110.0, (-1.0 + i/3)*177.0);
         Carte* cVisible = renduPartie.partie->joueurs[joueur].grilleDeJeu[i].faceVisible;
         Carte* cCachee = renduPartie.partie->joueurs[joueur].grilleDeJeu[i].faceCachee;
-        afficherRenduCarte(renduPartie, cCachee, centre+decalage+sf::Vector2f(-7, -7));
+        afficherRenduCarte(renduPartie, cCachee, centre+decalage+sf::Vector2f(-10, -10));
         afficherRenduCarte(renduPartie, cVisible, centre+decalage);
     }
+    sf::Font font("assets/font.ttf");
+    // Dessin du nom et des pts 
+    sf::Text nomTxt(font, renduPartie.partie->joueurs[joueur].surnom, 48);
+    sf::Text ptsTxt(font, std::to_string(renduPartie.partie->joueurs[joueur].nbPoints)+" pts", 26);
+    // On récupère les limites
+    sf::FloatRect nomRect = nomTxt.getLocalBounds();
+    sf::FloatRect ptsRect = ptsTxt.getLocalBounds();
+    // On met l'origine au centre
+    nomTxt.setOrigin(nomRect.position + nomRect.size / 2.f);
+    ptsTxt.setOrigin(ptsRect.position + ptsRect.size / 2.f);
+    // On positionne les textes
+    nomTxt.setPosition(centre - sf::Vector2f(0, 305));
+    ptsTxt.setPosition(centre - sf::Vector2f(0, 270));
+    // On les dessine
+    renduPartie.window->draw(nomTxt);
+    renduPartie.window->draw(ptsTxt);
 }
 
 std::string recupNomFichier(const Carte& c){

@@ -7,9 +7,12 @@
 struct RenduPartie{
     Partie* partie;
     sf::RenderWindow * window;
+    sf::Texture fondTexture;
     std::array<sf::Texture, 100> cartesTextures;
     std::array<std::optional<sf::Sprite>, 100> cartesSprites;
     unsigned int nbSprites;
+
+    std::array<sf::FloatRect, 5> zonesPioches;
 };
 
 void chargerCartesTextures(RenduPartie& renduPartie, const Partie& partie);
