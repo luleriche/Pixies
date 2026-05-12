@@ -69,7 +69,7 @@ void chargerCartesTextures(RenduPartie& renduPartie){
         // On redimensionne le sprite
         // Si tu veux une taille précise (ex: 86x120) :
         sf::Vector2u dimTexture = texture.getSize();
-        renduPartie.cartesSprites[i]->setScale({90.f / dimTexture.x, 140.f / dimTexture.y});
+        renduPartie.cartesSprites[i]->setScale({90.f / dimTexture.x, 126.f / dimTexture.y});
         renduPartie.cartesSprites[i]->setOrigin({dimTexture.x / 2.f, dimTexture.y / 2.f});
     }
     std::cout << std::endl;
@@ -145,7 +145,7 @@ std::string recupNomFichier(const Carte& c){
     nomfic += c.couleur;
     nomfic += '_';
     nomfic += std::to_string(c.spirale);
-    nomfic += ".jpg";
+    nomfic += ".png";
     return nomfic;
 }
 
