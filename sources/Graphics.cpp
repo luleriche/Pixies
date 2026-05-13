@@ -42,7 +42,6 @@ void lancerJeu(){
     mg.etatActuel = "Attente Choix Pioche";
     mg.espaceSelecteur = "Pioche";
     mg.coupActuel = "";
-    mg.choix = -1;
     while (not mg.partie->estMancheFinie)
     {   
 
