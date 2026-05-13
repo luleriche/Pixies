@@ -59,76 +59,8 @@ void lancerJeu(){
                     decalerSelecteur(mg, -1);
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::Enter) {
-                    mg.choix = mg.emplacementSelecteur;
+                    gererUnChoix(mg);
                 }
-            }
-        }
-        // Si on a appuye sur entrer, cad le choix n'est plus -1
-        if(mg.choix != -1)
-        {
-            // Si on attendais un choix parmi les cartes de la pioche
-            if(mg.etatActuel == "Attente Choix Pioche"){
-                // On connait donc les deux premiers caractères du coup, le joueur et l'indice dans la pioche
-                mg.coupActuel += std::to_string(mg.partie->prochainJoueur) + std::to_string(mg.choix);
-                std::cout << "Indice carte choisi dans la pioche " << mg.choix << std::endl;
-                // Si il n'y a pas de carte visible à son emplacement
-                if(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.partie->pioche.cartes[mg.choix]->chiffre-1].faceVisible == nullptr){
-                    // Le coup est direct donc on le fait joueur et remets en mode attente du choix dans la pioche pour le prochain
-                    mg.coupActuel += "d"+ std::to_string(mg.partie->pioche.cartes[mg.choix]->chiffre-1);
-                    std::cout << "Coup joué " << mg.coupActuel << std::endl;
-                    jouerCoup(*mg.partie, mg.coupActuel);
-                    mg.etatActuel = "Attente Choix Pioche";
-                    mg.coupActuel = "";
-                    mg.choix = -1;
-                }
-                // Si il y a une carte visible et aussi une cachée
-                else if(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.partie->pioche.cartes[mg.choix]->chiffre-1].faceCachee != nullptr){
-                    // On sait que le coup sera de la mettre autre part
-                    mg.coupActuel += "m";
-                    // On se met en mode attente d'un choix d'une case de la grille
-                    mg.etatActuel = "Attente Choix Grille";
-                    // L'espace du selecteur est maintenant la grille
-                    mg.espaceSelecteur = "Grille";
-                    mg.choix = -1;
-                }
-                // Sinon si il y a une carte visible et pas de cachée
-                else{
-                    // On mets les deux emplacements du selecteur à l'endroit de la carte où on est et sur la carte qui est a l'emplacement ou c'est sensé aller
-                    mg.emplacementsChoixVisible = {mg.selecteur.getPosition(), mg.emplacementsGrille[mg.partie->prochainJoueur*9+mg.partie->pioche.cartes[mg.choix]->chiffre-1]};
-                    // On met le selecteur à l'endroit
-                    mg.emplacementSelecteur = 0;
-                    // On se met dans le mode ou on attend le choix de laquelle on laisse visible
-                    mg.etatActuel = "Attente Choix Visible";
-                    // Et on dit aussi quel espace utiliser pour le selecteur
-                    mg.espaceSelecteur = "Choix Visible";
-                    mg.choix = -1;
-                }
-            }
-            // Si notre choix était sur l'emplacement dans la grille
-            else if(mg.etatActuel == "Attente Choix Grille"){
-                // On connait maintenant l'emplacement ou va aller la carte donc on fait le coup
-                mg.coupActuel += std::to_string(mg.choix-mg.partie->prochainJoueur*9);
-                std::cout << "Coup joué " << mg.coupActuel << std::endl;
-                jouerCoup(*mg.partie, mg.coupActuel);
-                // On se remet en mode pour attendre le prochain joueur
-                mg.etatActuel = "Attente Choix Pioche";
-                mg.espaceSelecteur = "Pioche";
-                mg.coupActuel = "";
-                mg.choix = -1;
-            }
-            // Si on attendait le choix de la carte qui sera visible
-            else if(mg.etatActuel == "Attente Choix Visible"){
-                // Si le choix est le numéro 1, qui est la carte de la pioche
-                if(mg.choix == 0)
-                    mg.coupActuel += "v" + std::to_string(mg.partie->pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
-                else
-                    mg.coupActuel += "c" + std::to_string(mg.partie->pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
-                std::cout << "Coup joué " << mg.coupActuel << std::endl;
-                jouerCoup(*mg.partie, mg.coupActuel);
-                mg.etatActuel = "Attente Choix Pioche";
-                mg.espaceSelecteur = "Pioche";
-                mg.coupActuel = "";
-                mg.choix = -1;
             }
         }
         mg.window->clear(sf::Color::Black);
@@ -308,6 +240,127 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
         mg.emplacementSelecteur = (mg.emplacementSelecteur+1)%2;
+        mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.emplacementSelecteur]);
+    }
+}
+
+void gererUnChoix(MoteurGraphique& mg){
+    // Si on attendait un choix parmi les cartes de la pioche
+    if(mg.etatActuel == "Attente Choix Pioche"){
+        // On connait donc les deux premiers caractères du coup, le joueur et l'indice de la carte dans la pioche
+        mg.coupActuel += std::to_string(mg.partie->prochainJoueur) + std::to_string(mg.emplacementSelecteur);
+        std::cout << "Coup qui sera joué " << mg.coupActuel <<"..." << std::endl;
+        // On va maintenant changer le type d'attente selon l'emplacement de la carte chois dans la grille
+        const Grille& grille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu;
+        const Carte* carteChoisi = mg.partie->pioche.cartes[mg.emplacementSelecteur];
+
+        // Si il n'y a pas de carte face visible
+        if(grille[carteChoisi->chiffre-1].faceVisible == nullptr){
+            // Alors on connait le coup et on peut le jouer, le joueur n'a plus rine à choisir.
+            // Le coup est direct et la carte va à l'emplacement de son chiffre
+            mg.coupActuel += "d"+ std::to_string(carteChoisi->chiffre-1);
+            std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
+            jouerCoup(*mg.partie, mg.coupActuel);
+            std::cout << "Coup joué" << std::endl;
+            // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
+            mg.etatActuel = "Attente Choix Pioche";
+            // Pas besoin de changer l'espace du selecteur, il est déja sur la pioche
+            // Si la pioche vient de se remplir, cad il y a une carte à l'endroit ou on vient d'en prendre une
+            if(mg.partie->pioche.cartes[mg.emplacementSelecteur] != nullptr){
+                // On se met sur la première carte de la pioche, pour rendre fluide.
+                mg.emplacementSelecteur = 0;
+                mg.selecteur.setPosition(mg.emplacementsPioche[0]);
+            }
+            // Sinon il faut changer d'emplacement car l'actuelle est vide
+            else
+                decalerSelecteur(mg, 1);
+            // On remet le prochain coup vide
+            mg.coupActuel = "";
+        }
+        // Si il y a une carte visible et aussi une cachée
+        else if(grille[carteChoisi->chiffre-1].faceCachee != nullptr){
+            // On sait que le coup sera de la mettre autre part
+            mg.coupActuel += "m";
+            // On va attendre désormais le choix d'une case vide dans la grille
+            mg.etatActuel = "Attente Choix Grille";
+            changerEspaceSelecteur(mg, "Grille");
+        }
+        // Sinon, il y a une carte visible et pas de cachée
+        else{
+            // On va attendre le choix de la carte qui reste visible
+            // Les deux emplacements du selecteur sont donc la carte choisi dans la pioche
+            // Et la carte visible à son emplacement
+            mg.emplacementsChoixVisible = {mg.selecteur.getPosition(), mg.emplacementsGrille[mg.partie->prochainJoueur*9+carteChoisi->chiffre-1]};
+            changerEspaceSelecteur(mg, "Choix Visible");
+            // On se met dans le mode ou on attend le choix de laquelle on laisse visible
+            mg.etatActuel = "Attente Choix Visible";
+        }
+    }
+    // Si on attendait un chois parmi les emplacements de la grille
+    else if(mg.etatActuel == "Attente Choix Grille"){
+        // On connait maintenant l'emplacement où va aller la carte
+        // On peut donc écrire le coup et le jouer
+        mg.coupActuel += std::to_string(mg.emplacementSelecteur-mg.partie->prochainJoueur*9);
+        std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
+        jouerCoup(*mg.partie, mg.coupActuel);
+        std::cout << "Coup joué."<< std::endl;
+        // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
+        mg.etatActuel = "Attente Choix Pioche";
+        changerEspaceSelecteur(mg, "Pioche");
+        // On remet le prochain coup vide
+        mg.coupActuel = "";
+    }
+    // Si on attendait le choix de la carte qui sera visible
+    else if(mg.etatActuel == "Attente Choix Visible"){
+        // Si le choix est l'emplacement 0, qui est celui de la carte de la pioche
+        if(mg.emplacementSelecteur == 0)
+            // Le coup est donc de mettre la carte pioché visible. On peut récupérer son indice dans la pioche
+            // grâce au deuxième caractère du coup actuel donc aussi l'emplacement dans la grille
+            mg.coupActuel += "v" + std::to_string(mg.partie->pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
+        else
+            // Sinon cela veut dire qu'on la met face caché, de même pour l'indice dans la pioche et l'emplacement
+            // dans la grille
+            mg.coupActuel += "c" + std::to_string(mg.partie->pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
+        // On joue le coup
+        std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
+        jouerCoup(*mg.partie, mg.coupActuel);
+        std::cout << "Coup joué." << std::endl;
+        // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
+        mg.etatActuel = "Attente Choix Pioche";
+        changerEspaceSelecteur(mg, "Pioche");
+        // On remet le prochain coup vide
+        mg.coupActuel = "";
+    }
+}
+
+void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
+    mg.espaceSelecteur = espace;
+    std::cout << "Nouveau espace pour le sélecteur " << espace << std::endl;
+    if(mg.espaceSelecteur == "Pioche")
+    {
+        // On met le selecteur au premier emplacement de la pioche
+        mg.emplacementSelecteur = 0;
+        // Tant qu'il n'y a pas de carte à l'endroit du sélecteur
+        while(mg.partie->pioche.cartes[mg.emplacementSelecteur] == nullptr)
+            // On décale vers la droite
+            mg.emplacementSelecteur = (mg.emplacementSelecteur+1)%mg.partie->pioche.taille;
+        // On met à jour sa position
+        mg.selecteur.setPosition(mg.emplacementsPioche[mg.emplacementSelecteur]);
+    }
+    else if(mg.espaceSelecteur == "Grille"){
+        // On met le selecteur au premier emplacement de la grille du prochain joueur
+        mg.emplacementSelecteur = mg.partie->prochainJoueur*9;
+        // Tant que l'emplacement où se trouve le sélecteur contient une carte
+        const Grille& grille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu;
+        while(grille[mg.emplacementSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or grille[mg.emplacementSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
+            // On va à l'emplacement suivant
+            mg.emplacementSelecteur = mg.partie->prochainJoueur*9 + (mg.emplacementSelecteur-mg.partie->prochainJoueur*9+1)%9;
+        // On met à jour sa position
+        mg.selecteur.setPosition(mg.emplacementsGrille[mg.emplacementSelecteur]);
+    }
+    else if(mg.espaceSelecteur == "Choix Visible"){
+        // On met le sélecteur à l'emplacement d'indice zero, il y a forcément une carte
+        mg.emplacementSelecteur = 0;
         mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.emplacementSelecteur]);
     }
 }

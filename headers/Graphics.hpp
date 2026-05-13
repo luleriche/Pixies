@@ -26,8 +26,6 @@ struct MoteurGraphique{
     std::array<sf::Vector2f, 5> emplacementsPioche;
     std::array<sf::Vector2f, 45> emplacementsGrille;
     std::array<sf::Vector2f, 2> emplacementsChoixVisible;
-    // Pour savoir quel est le choix du joueur
-    int choix;
     // Pour savoir qu'est ce qu'on attend
     std::string etatActuel;
     std::string coupActuel;
@@ -55,3 +53,6 @@ std::string recupNomFichier(const Carte& c);
 sf::Color couleurCarte(Carte c);
 
 void decalerSelecteur(MoteurGraphique& mg, int cote);
+void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace);
+
+void gererUnChoix(MoteurGraphique& mg);
