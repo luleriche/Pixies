@@ -64,3 +64,5 @@ void decalerSelecteur(MoteurGraphique& mg, int cote);
 void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace);
 
 void gererUnChoix(MoteurGraphique& mg);
+
+void gererFinDeCoup(MoteurGraphique& mg);

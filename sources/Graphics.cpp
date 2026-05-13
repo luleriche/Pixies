@@ -261,7 +261,7 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
         mg.selecteur.setPosition(mg.emplacementsPioche[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Grille"){
-        mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
+        mg.indiceSelecteur += mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
         while(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
             mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
         mg.selecteur.setPosition(mg.emplacementsGrille[mg.indiceSelecteur]);
@@ -290,20 +290,7 @@ void gererUnChoix(MoteurGraphique& mg){
             std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
             jouerCoup(*mg.partie, mg.coupActuel);
             std::cout << "Coup joué" << std::endl;
-            // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
-            mg.etatActuel = "Attente Choix Pioche";
-            // Pas besoin de changer l'espace du selecteur, il est déja sur la pioche
-            // Si la pioche vient de se remplir, cad il y a une carte à l'endroit ou on vient d'en prendre une
-            if(mg.partie->pioche.cartes[mg.indiceSelecteur] != nullptr){
-                // On se met sur la première carte de la pioche, pour rendre fluide.
-                mg.indiceSelecteur = 0;
-                mg.selecteur.setPosition(mg.emplacementsPioche[0]);
-            }
-            // Sinon il faut changer d'emplacement car l'actuelle est vide
-            else
-                decalerSelecteur(mg, 1);
-            // On remet le prochain coup vide
-            mg.coupActuel = "";
+            gererFinDeCoup(mg);
         }
         // Si il y a une carte visible et aussi une cachée
         else if(grille[carteChoisi->chiffre-1].faceCachee != nullptr){
@@ -331,11 +318,7 @@ void gererUnChoix(MoteurGraphique& mg){
         std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
         jouerCoup(*mg.partie, mg.coupActuel);
         std::cout << "Coup joué."<< std::endl;
-        // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
-        mg.etatActuel = "Attente Choix Pioche";
-        changerEspaceSelecteur(mg, "Pioche");
-        // On remet le prochain coup vide
-        mg.coupActuel = "";
+        gererFinDeCoup(mg);
     }
     // Si on attendait le choix de la carte qui sera visible
     else if(mg.etatActuel == "Attente Choix Visible"){
@@ -352,27 +335,7 @@ void gererUnChoix(MoteurGraphique& mg){
         std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
         jouerCoup(*mg.partie, mg.coupActuel);
         std::cout << "Coup joué." << std::endl;
-        // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
-        mg.etatActuel = "Attente Choix Pioche";
-        changerEspaceSelecteur(mg, "Pioche");
-        // On remet le prochain coup vide
-        mg.coupActuel = "";
-    }
-    // Si le chois à fait finir la manche
-    if(mg.partie->estMancheFinie){
-        // On met à jour tout pour commencer la prochaine manche
-        toutRemettreDansDefausse(*mg.partie);
-        if(mg.partie->numeroManche == 3){
-            viderDefausse(mg.partie->defausse);
-            supprimerBoite(mg.partie->boite);
-        }
-        else{
-            melanger(mg.partie->defausse);
-            ++mg.partie->numeroManche;
-            mg.partie->estMancheFinie = false;
-            mg.partie->coupsManche.nombre = 0;
-            remplirPioche(mg.partie->pioche, mg.partie->defausse);
-        }
+        gererFinDeCoup(mg);
     }
 }
 
@@ -408,3 +371,33 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
     }
 }
 
+void gererFinDeCoup(MoteurGraphique& mg){
+    // Si le choix d'avant à fait finir la manche
+    if(mg.partie->estMancheFinie){
+        // On met à jour tout pour commencer la prochaine manche
+        toutRemettreDansDefausse(*mg.partie);
+        if(mg.partie->numeroManche == 3){
+            viderDefausse(mg.partie->defausse);
+            supprimerBoite(mg.partie->boite);
+        }
+        else{
+            melanger(mg.partie->defausse);
+            ++mg.partie->numeroManche;
+            mg.partie->estMancheFinie = false;
+            mg.partie->coupsManche.nombre = 0;
+            remplirPioche(mg.partie->pioche, mg.partie->defausse);
+            // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
+            mg.etatActuel = "Attente Choix Pioche";
+            changerEspaceSelecteur(mg, "Pioche");
+            // On remet le prochain coup vide
+            mg.coupActuel = "";
+        }
+    }else{
+        // On remet les valeurs qui permetteront d'attendre le choix dans la pioche du prochain joueur
+        mg.etatActuel = "Attente Choix Pioche";
+        changerEspaceSelecteur(mg, "Pioche");
+        // On remet le prochain coup vide
+        mg.coupActuel = "";
+    }
+    
+}
