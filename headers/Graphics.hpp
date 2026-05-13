@@ -21,7 +21,7 @@ struct MoteurGraphique{
     // Endroit ou navigue le selecteur
     std::string espaceSelecteur;
     // L'indice de l'emplacement de l'espace ou se trouve le selecteur
-    unsigned int emplacementSelecteur;
+    unsigned int indiceSelecteur;
     // Les emplacements de chaque cartes, d'abord celles de la pioche puis celles des joueurs
     std::array<sf::Vector2f, 5> emplacementsPioche;
     std::array<sf::Vector2f, 45> emplacementsGrille;
@@ -29,6 +29,8 @@ struct MoteurGraphique{
     // Pour savoir qu'est ce qu'on attend
     std::string etatActuel;
     std::string coupActuel;
+    // Horloge pour les animations
+    sf::Clock clock;
 };
 
 void chargerTextures(MoteurGraphique& moteur);

@@ -1,6 +1,7 @@
 #include "Ordinateur.hpp"
 #include "Graphics.hpp"
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 void lancerJeu(){
     // Création de la partie
@@ -37,12 +38,11 @@ void lancerJeu(){
     initialiserEmplacementsSelecteur(mg);
     initialiserSelecteur(mg);
     mg.window = new sf::RenderWindow(sf::VideoMode({1200, 700}), "Pixies");
-
     
     mg.etatActuel = "Attente Choix Pioche";
     mg.espaceSelecteur = "Pioche";
     mg.coupActuel = "";
-    while (not mg.partie->estMancheFinie)
+    while (mg.window->isOpen() and not (mg.partie->estMancheFinie and mg.partie->numeroManche == 3))
     {   
 
         while (const std::optional event = mg.window->pollEvent())
@@ -120,9 +120,12 @@ void dessinerTout(MoteurGraphique& mg){
     piocheTxt.setRotation(sf::degrees(90));
     mg.window->draw(piocheTxt);    
     // Dessin du selecteur de carte
+    float t = mg.clock.getElapsedTime().asSeconds();
+    float scale = 1.0 + 0.1f * std::sin(t * 5.0f);
+
+    mg.selecteur.setScale(sf::Vector2f(scale, scale));
     mg.window->draw(mg.selecteur); 
 }
-
 
 void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre){
     if(c != nullptr){
@@ -216,30 +219,30 @@ void initialiserSelecteur(MoteurGraphique& mg){
     mg.selecteur.setSize(sf::Vector2f(90.f, 126.f));
     mg.selecteur.setOrigin(sf::Vector2f(45.f, 63.f));
     mg.selecteur.setFillColor(sf::Color::Transparent);
-    mg.selecteur.setOutlineColor(sf::Color::Green);
+    mg.selecteur.setOutlineColor(sf::Color::Red);
     mg.selecteur.setOutlineThickness(2);
-    mg.emplacementSelecteur = 0;
-    mg.selecteur.setPosition(mg.emplacementsGrille[0]);
+    mg.indiceSelecteur = 0;
+    mg.selecteur.setPosition(mg.emplacementsPioche[0]);
 }
 
 void decalerSelecteur(MoteurGraphique& mg, int cote){
     if(mg.espaceSelecteur == "Pioche")
     {
         std::cout << "Selecteur decale vers la droite" << std::endl;
-        mg.emplacementSelecteur = (mg.emplacementSelecteur+cote)%mg.partie->pioche.taille;
-        while(mg.partie->pioche.cartes[mg.emplacementSelecteur] == nullptr)
-            mg.emplacementSelecteur = (mg.emplacementSelecteur+cote)%mg.partie->pioche.taille;
-        mg.selecteur.setPosition(mg.emplacementsPioche[mg.emplacementSelecteur]);
+        mg.indiceSelecteur = (mg.indiceSelecteur+cote)%mg.partie->pioche.taille;
+        while(mg.partie->pioche.cartes[mg.indiceSelecteur] == nullptr)
+            mg.indiceSelecteur = (mg.indiceSelecteur+cote)%mg.partie->pioche.taille;
+        mg.selecteur.setPosition(mg.emplacementsPioche[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Grille"){
-        mg.emplacementSelecteur = mg.partie->prochainJoueur*9 + (mg.emplacementSelecteur-mg.partie->prochainJoueur*9+cote)%9;
-        while(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.emplacementSelecteur].faceVisible != nullptr or mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.emplacementSelecteur].faceCachee != nullptr)
-            mg.emplacementSelecteur = mg.partie->prochainJoueur*9 + (mg.emplacementSelecteur-mg.partie->prochainJoueur*9+cote)%9;
-        mg.selecteur.setPosition(mg.emplacementsGrille[mg.emplacementSelecteur]);
+        mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
+        while(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceVisible != nullptr or mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceCachee != nullptr)
+            mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
+        mg.selecteur.setPosition(mg.emplacementsGrille[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
-        mg.emplacementSelecteur = (mg.emplacementSelecteur+1)%2;
-        mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.emplacementSelecteur]);
+        mg.indiceSelecteur = (mg.indiceSelecteur+1)%2;
+        mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.indiceSelecteur]);
     }
 }
 
@@ -247,11 +250,11 @@ void gererUnChoix(MoteurGraphique& mg){
     // Si on attendait un choix parmi les cartes de la pioche
     if(mg.etatActuel == "Attente Choix Pioche"){
         // On connait donc les deux premiers caractères du coup, le joueur et l'indice de la carte dans la pioche
-        mg.coupActuel += std::to_string(mg.partie->prochainJoueur) + std::to_string(mg.emplacementSelecteur);
+        mg.coupActuel += std::to_string(mg.partie->prochainJoueur) + std::to_string(mg.indiceSelecteur);
         std::cout << "Coup qui sera joué " << mg.coupActuel <<"..." << std::endl;
         // On va maintenant changer le type d'attente selon l'emplacement de la carte chois dans la grille
         const Grille& grille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu;
-        const Carte* carteChoisi = mg.partie->pioche.cartes[mg.emplacementSelecteur];
+        const Carte* carteChoisi = mg.partie->pioche.cartes[mg.indiceSelecteur];
 
         // Si il n'y a pas de carte face visible
         if(grille[carteChoisi->chiffre-1].faceVisible == nullptr){
@@ -265,9 +268,9 @@ void gererUnChoix(MoteurGraphique& mg){
             mg.etatActuel = "Attente Choix Pioche";
             // Pas besoin de changer l'espace du selecteur, il est déja sur la pioche
             // Si la pioche vient de se remplir, cad il y a une carte à l'endroit ou on vient d'en prendre une
-            if(mg.partie->pioche.cartes[mg.emplacementSelecteur] != nullptr){
+            if(mg.partie->pioche.cartes[mg.indiceSelecteur] != nullptr){
                 // On se met sur la première carte de la pioche, pour rendre fluide.
-                mg.emplacementSelecteur = 0;
+                mg.indiceSelecteur = 0;
                 mg.selecteur.setPosition(mg.emplacementsPioche[0]);
             }
             // Sinon il faut changer d'emplacement car l'actuelle est vide
@@ -299,7 +302,7 @@ void gererUnChoix(MoteurGraphique& mg){
     else if(mg.etatActuel == "Attente Choix Grille"){
         // On connait maintenant l'emplacement où va aller la carte
         // On peut donc écrire le coup et le jouer
-        mg.coupActuel += std::to_string(mg.emplacementSelecteur-mg.partie->prochainJoueur*9);
+        mg.coupActuel += std::to_string(mg.indiceSelecteur-mg.partie->prochainJoueur*9);
         std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
         jouerCoup(*mg.partie, mg.coupActuel);
         std::cout << "Coup joué."<< std::endl;
@@ -312,7 +315,7 @@ void gererUnChoix(MoteurGraphique& mg){
     // Si on attendait le choix de la carte qui sera visible
     else if(mg.etatActuel == "Attente Choix Visible"){
         // Si le choix est l'emplacement 0, qui est celui de la carte de la pioche
-        if(mg.emplacementSelecteur == 0)
+        if(mg.indiceSelecteur == 0)
             // Le coup est donc de mettre la carte pioché visible. On peut récupérer son indice dans la pioche
             // grâce au deuxième caractère du coup actuel donc aussi l'emplacement dans la grille
             mg.coupActuel += "v" + std::to_string(mg.partie->pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
@@ -330,6 +333,22 @@ void gererUnChoix(MoteurGraphique& mg){
         // On remet le prochain coup vide
         mg.coupActuel = "";
     }
+    // Si le chois à fait finir la manche
+    if(mg.partie->estMancheFinie){
+        // On met à jour tout pour commencer la prochaine manche
+        toutRemettreDansDefausse(*mg.partie);
+        if(mg.partie->numeroManche == 3){
+            viderDefausse(mg.partie->defausse);
+            supprimerBoite(mg.partie->boite);
+        }
+        else{
+            melanger(mg.partie->defausse);
+            ++mg.partie->numeroManche;
+            mg.partie->estMancheFinie = false;
+            mg.partie->coupsManche.nombre = 0;
+            remplirPioche(mg.partie->pioche, mg.partie->defausse);
+        }
+    }
 }
 
 void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
@@ -338,29 +357,29 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
     if(mg.espaceSelecteur == "Pioche")
     {
         // On met le selecteur au premier emplacement de la pioche
-        mg.emplacementSelecteur = 0;
+        mg.indiceSelecteur = 0;
         // Tant qu'il n'y a pas de carte à l'endroit du sélecteur
-        while(mg.partie->pioche.cartes[mg.emplacementSelecteur] == nullptr)
+        while(mg.partie->pioche.cartes[mg.indiceSelecteur] == nullptr)
             // On décale vers la droite
-            mg.emplacementSelecteur = (mg.emplacementSelecteur+1)%mg.partie->pioche.taille;
+            mg.indiceSelecteur = (mg.indiceSelecteur+1)%mg.partie->pioche.taille;
         // On met à jour sa position
-        mg.selecteur.setPosition(mg.emplacementsPioche[mg.emplacementSelecteur]);
+        mg.selecteur.setPosition(mg.emplacementsPioche[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Grille"){
         // On met le selecteur au premier emplacement de la grille du prochain joueur
-        mg.emplacementSelecteur = mg.partie->prochainJoueur*9;
+        mg.indiceSelecteur = mg.partie->prochainJoueur*9;
         // Tant que l'emplacement où se trouve le sélecteur contient une carte
         const Grille& grille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu;
-        while(grille[mg.emplacementSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or grille[mg.emplacementSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
+        while(grille[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or grille[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
             // On va à l'emplacement suivant
-            mg.emplacementSelecteur = mg.partie->prochainJoueur*9 + (mg.emplacementSelecteur-mg.partie->prochainJoueur*9+1)%9;
+            mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+1)%9;
         // On met à jour sa position
-        mg.selecteur.setPosition(mg.emplacementsGrille[mg.emplacementSelecteur]);
+        mg.selecteur.setPosition(mg.emplacementsGrille[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
         // On met le sélecteur à l'emplacement d'indice zero, il y a forcément une carte
-        mg.emplacementSelecteur = 0;
-        mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.emplacementSelecteur]);
+        mg.indiceSelecteur = 0;
+        mg.selecteur.setPosition(mg.emplacementsChoixVisible[mg.indiceSelecteur]);
     }
 }
 
