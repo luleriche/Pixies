@@ -121,12 +121,13 @@ void dessinerTout(MoteurGraphique& mg){
 
     // Si on est dans le choix de la carte visible
     if(mg.etatActuel == "Attente Choix Visible"){
+        mg.window->draw(mg.fondChoixVisible);
         Carte* cartePioche = mg.partie->pioche.cartes[mg.coupActuel[1]-'0'];
         Carte* carteGrille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[cartePioche->chiffre-1].faceVisible;
         // On dessine les deux choix
-        dessinerDosCarte(mg, mg.emplacementsChoixVisible[0]+sf::Vector2f(4, 4));
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[0]+mg.decalageDos);
         dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0]);
-        dessinerDosCarte(mg, mg.emplacementsChoixVisible[1]+sf::Vector2f(4, 4));
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[1]+mg.decalageDos);
         dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1]);
     }
     // Dessin du selecteur de carte
@@ -203,7 +204,7 @@ void initialiserDispositionEcran(MoteurGraphique& mg){
         }
         mg.emplacementsChoixVisible = {sf::Vector2f(500.f, 350.f), sf::Vector2f(700.f, 350.f)};
         mg.tailleCartes = sf::Vector2f(90.f, 126.f);
-        mg.decalageDos = sf::Vector2f(10.f, 10.f);
+        mg.decalageDos = sf::Vector2f(-10.f, -10.f);
     }
 }
 
@@ -236,11 +237,18 @@ sf::Color couleurCarte(Carte c){
 void initialiserSelecteur(MoteurGraphique& mg){
     mg.selecteur.setSize(sf::Vector2f(90.f, 126.f));
     mg.selecteur.setOrigin(sf::Vector2f(45.f, 63.f));
-    mg.selecteur.setFillColor(sf::Color::Red);
+    mg.selecteur.setFillColor(sf::Color::Transparent);
     mg.selecteur.setOutlineColor(sf::Color::Red);
     mg.selecteur.setOutlineThickness(2);
     mg.indiceSelecteur = 0;
     mg.selecteur.setPosition(mg.emplacementsPioche[0]);
+
+    mg.fondChoixVisible.setSize(sf::Vector2f(300.f, 180.f));
+    mg.fondChoixVisible.setOrigin(sf::Vector2f(150.f, 90.f));
+    mg.fondChoixVisible.setFillColor(sf::Color(200, 200, 200, 200));
+    mg.fondChoixVisible.setOutlineColor(sf::Color::White);
+    mg.fondChoixVisible.setOutlineThickness(2);
+    mg.fondChoixVisible.setPosition(sf::Vector2f(600.f, 350.f));
 }
 
 void decalerSelecteur(MoteurGraphique& mg, int cote){

@@ -20,6 +20,8 @@ struct MoteurGraphique{
     sf::Vector2f decalageDos;
     // Rectangle de selection
     sf::RectangleShape selecteur;
+    // rectangle de fond lors du choix de quelle carte garder visible
+    sf::RectangleShape fondChoixVisible;
     // Endroit ou navigue le selecteur
     std::string espaceSelecteur;
     // L'indice de l'emplacement de l'espace ou se trouve le selecteur
