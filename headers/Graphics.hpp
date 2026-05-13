@@ -41,6 +41,8 @@ void dessinerTout(MoteurGraphique& mg);
 
 void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre);
 
+void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre);
+
 // Dessine la grille d'un joueur ainsi que son nom et son nombre de point
 void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur, sf::Vector2f centre);
 

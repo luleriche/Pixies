@@ -119,6 +119,17 @@ void dessinerTout(MoteurGraphique& mg){
     piocheTxt.setPosition({1120.f, 350});
     piocheTxt.setRotation(sf::degrees(90));
     mg.window->draw(piocheTxt);    
+
+    // Si on est dans le choix de la carte visible
+    if(mg.etatActuel == "Attente Choix Visible"){
+        Carte* cartePioche = mg.partie->pioche.cartes[mg.coupActuel[1]-'0'];
+        Carte* carteGrille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[cartePioche->chiffre-1].faceVisible;
+        // On dessine les deux choix
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[0]+sf::Vector2f(4, 4));
+        dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0]);
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[1]+sf::Vector2f(4, 4));
+        dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1]);
+    }
     // Dessin du selecteur de carte
     float t = mg.clock.getElapsedTime().asSeconds();
     float scale = 1.0 + 0.1f * std::sin(t * 5.0f);
@@ -186,6 +197,7 @@ void initialiserEmplacementsSelecteur(MoteurGraphique& mg){
                 mg.emplacementsGrille[j*9+empl] = sf::Vector2f(centre + decalage);
             }
         }
+        mg.emplacementsChoixVisible = {sf::Vector2f(500.f, 350.f), sf::Vector2f(700.f, 350.f)};
     }
 }
 
@@ -218,7 +230,7 @@ sf::Color couleurCarte(Carte c){
 void initialiserSelecteur(MoteurGraphique& mg){
     mg.selecteur.setSize(sf::Vector2f(90.f, 126.f));
     mg.selecteur.setOrigin(sf::Vector2f(45.f, 63.f));
-    mg.selecteur.setFillColor(sf::Color::Transparent);
+    mg.selecteur.setFillColor(sf::Color::Red);
     mg.selecteur.setOutlineColor(sf::Color::Red);
     mg.selecteur.setOutlineThickness(2);
     mg.indiceSelecteur = 0;
@@ -292,7 +304,6 @@ void gererUnChoix(MoteurGraphique& mg){
             // On va attendre le choix de la carte qui reste visible
             // Les deux emplacements du selecteur sont donc la carte choisi dans la pioche
             // Et la carte visible à son emplacement
-            mg.emplacementsChoixVisible = {mg.selecteur.getPosition(), mg.emplacementsGrille[mg.partie->prochainJoueur*9+carteChoisi->chiffre-1]};
             changerEspaceSelecteur(mg, "Choix Visible");
             // On se met dans le mode ou on attend le choix de laquelle on laisse visible
             mg.etatActuel = "Attente Choix Visible";
