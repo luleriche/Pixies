@@ -14,8 +14,10 @@ struct MoteurGraphique{
     sf::Texture textureFond;
     // Les textures et les emplacements pour les sprites des cartes
     std::array<sf::Texture, 100> texturesCartes;
+    sf::Vector2f tailleCartes;
     std::array<std::optional<sf::Sprite>, 100> spritesCartes;
     unsigned int nbSpritesCartes;
+    sf::Vector2f decalageDos;
     // Rectangle de selection
     sf::RectangleShape selecteur;
     // Endroit ou navigue le selecteur
@@ -44,11 +46,11 @@ void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre);
 void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre);
 
 // Dessine la grille d'un joueur ainsi que son nom et son nombre de point
-void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur, sf::Vector2f centre);
+void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur);
 
 void creerSprites(MoteurGraphique& mg);
 
-void initialiserEmplacementsSelecteur(MoteurGraphique& mg);
+void initialiserDispositionEcran(MoteurGraphique& mg);
 
 void initialiserSelecteur(MoteurGraphique& mg);
 
