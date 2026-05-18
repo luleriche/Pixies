@@ -35,6 +35,7 @@ set(SOURCES
     sources/Console.cpp
     sources/Ordinateur.cpp
     sources/Graphics.cpp
+    sources/EtatJeu.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 

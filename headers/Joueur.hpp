@@ -16,7 +16,7 @@ struct Joueur{
 };
 
 // Initialise un joueur 
-void initJoueur(Joueur & j, Pioche* p, std::string surnom);
+void initJoueur(Joueur & j, Pioche* p, std::string surnom, bool estOrdi = false);
 
 //Créer un nombre de joueur precis 
 void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune);

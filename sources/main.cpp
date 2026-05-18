@@ -8,11 +8,13 @@
 #include <optional>
 #include "Partie.hpp"
 #include "Graphics.hpp"
+#include "EtatJeu.hpp"
 
 int main()
 {
     srand(time(nullptr));
     //lancerUneNouvellePartie();
-    lancerJeu();
+    //lancerJeu();
+    jouerCoupDepuisFichier("etat_ia.txt");
     return 0;
 }
