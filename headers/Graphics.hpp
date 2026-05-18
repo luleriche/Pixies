@@ -15,6 +15,7 @@ struct MoteurGraphique{
     // Les textures et les emplacements pour les sprites des cartes
     std::array<sf::Texture, 100> texturesCartes;
     sf::Vector2f tailleCartes;
+    sf::Vector2f taillePetitesCartes;
     std::array<std::optional<sf::Sprite>, 100> spritesCartes;
     unsigned int nbSpritesCartes;
     sf::Vector2f decalageDos;
@@ -25,11 +26,13 @@ struct MoteurGraphique{
     // Endroit ou navigue le selecteur
     std::string espaceSelecteur;
     // L'indice de l'emplacement de l'espace ou se trouve le selecteur
-    unsigned int indiceSelecteur;
+    int indiceSelecteur;
     // Les emplacements de chaque cartes, d'abord celles de la pioche puis celles des joueurs
     std::array<sf::Vector2f, 5> emplacementsPioche;
-    std::array<sf::Vector2f, 45> emplacementsGrille;
+    std::array<std::array<sf::Vector2f, 9>, 5> emplacementsGrille;
     std::array<sf::Vector2f, 2> emplacementsChoixVisible;
+    // L'emplacement du texte pioche
+    sf::Vector2f txtPiochePosition;
     // Pour savoir qu'est ce qu'on attend
     std::string etatActuel;
     std::string coupActuel;

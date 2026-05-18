@@ -15,7 +15,13 @@ void lancerJeu(){
     remplir(partie.boite, partie.defausse);
     melanger(partie.defausse);
     
-    partie.nombreJoueurs = 2;
+    // On demande à l'utilisateur le nombre de joueurs à la partie.
+    std::cout << "Le jeu se joue de 2 à 5 joueurs !" << std::endl << "Nombre de joueurs: ";
+    std::cin >> partie.nombreJoueurs;
+    while(partie.nombreJoueurs > 5 or partie.nombreJoueurs < 2){
+        std::cout << "Impossible. Le jeu se joue de 2 à 5 joueurs ! Nombre de joueurs: ";
+        std::cin >> partie.nombreJoueurs;
+    }
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
     // Génération aléatoire du premier joueur.
     partie.prochainJoueur = rand()%partie.nombreJoueurs;
@@ -37,7 +43,7 @@ void lancerJeu(){
     chargerTextures(mg);
     mg.font = sf::Font("assets/font.ttf");
     initialiserSelecteur(mg);
-    mg.window = new sf::RenderWindow(sf::VideoMode({1200, 700}), "Pixies");
+    mg.window = new sf::RenderWindow(sf::VideoMode({1280, 720}), "Pixies");
     
     mg.etatActuel = "Attente Choix Pioche";
     mg.espaceSelecteur = "Pioche";
@@ -96,7 +102,7 @@ void chargerTextures(MoteurGraphique& mg){
 
 void dessinerTout(MoteurGraphique& mg){
     // Affichage du fond
-    sf::RectangleShape fond({1200, 700});
+    sf::RectangleShape fond({1280, 720});
     fond.setTexture(&mg.textureFond);
     mg.window->draw(fond);
     // Affichage de la pioche
@@ -107,17 +113,19 @@ void dessinerTout(MoteurGraphique& mg){
         }
     }
     // Affichage des deux grilles
-    dessinerJoueur(mg, 0);
-    dessinerJoueur(mg, 1);
+    for(unsigned int i = 0; i < mg.partie->nombreJoueurs; ++i){
+        dessinerJoueur(mg, i);
+    }
     // -------- Afficher les textes --------
     sf::Text piocheTxt(mg.font, "Pioche", 56);
     // On récupère les limites
     sf::FloatRect bounds = piocheTxt.getLocalBounds();
     // On met l'origine au centre et on positionne au bon endroit
     piocheTxt.setOrigin(bounds.position + bounds.size / 2.f);
-    piocheTxt.setPosition({1120.f, 350});
-    piocheTxt.setRotation(sf::degrees(90));
-    mg.window->draw(piocheTxt);    
+    piocheTxt.setPosition(mg.txtPiochePosition);
+    if(mg.partie->nombreJoueurs == 2 or mg.partie->nombreJoueurs > 3)
+        piocheTxt.setRotation(sf::degrees(90));
+    mg.window->draw(piocheTxt);
 
     // Si on est dans le choix de la carte visible
     if(mg.etatActuel == "Attente Choix Visible"){
@@ -155,56 +163,118 @@ void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre){
 }
 
 void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
-    sf::Vector2f centre = mg.emplacementsGrille[joueur*9+4];
     // On dessine les cartes de la grille du joueur
     const Joueur& j = mg.partie->joueurs[joueur];
     for(unsigned int i = 0; i < 9; ++i){
         Carte* carteVisible = j.grilleDeJeu[i].faceVisible;
         Carte* carteCachee = j.grilleDeJeu[i].faceCachee;
         if(carteVisible == nullptr and carteCachee != nullptr)
-            dessinerDosCarte(mg, mg.emplacementsGrille[joueur*9+i]);
+            dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]);
         else{
             if(carteCachee != nullptr)
-                dessinerDosCarte(mg, mg.emplacementsGrille[joueur*9+i]+mg.decalageDos);
-            dessinerCarte(mg, carteVisible, mg.emplacementsGrille[joueur*9+i]);
+                dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]+mg.decalageDos);
+            dessinerCarte(mg, carteVisible, mg.emplacementsGrille[joueur][i]);
         }
     }
     // Dessin du nom et des points du joueur 
-    sf::Text nomTxt(mg.font, j.surnom, 48);
     sf::Text ptsTxt(mg.font, std::to_string(j.nbPoints)+" pts", 26);
     // On récupère les limites de cahque texte
+    int nomTaillePolice = 48;
+    sf::Text nomTxt(mg.font, j.surnom,  nomTaillePolice);
+    while(nomTxt.getLocalBounds().size.x > 2.1*mg.tailleCartes.x){
+        nomTaillePolice--;
+        nomTxt = sf::Text(mg.font, j.surnom, nomTaillePolice);
+    }
+
     sf::FloatRect nomRect = nomTxt.getLocalBounds();
     sf::FloatRect ptsRect = ptsTxt.getLocalBounds();
     // On met l'origine des textes au centre
-    nomTxt.setOrigin(nomRect.position + nomRect.size / 2.f);
-    ptsTxt.setOrigin(ptsRect.position + ptsRect.size / 2.f);
+    nomTxt.setOrigin({nomRect.position.x, nomRect.position.y + nomRect.size.y});
+    ptsTxt.setOrigin({ptsRect.position.x + ptsRect.size.x, ptsRect.position.y + ptsRect.size.y});
     // On positionne les textes
-    nomTxt.setPosition(centre - sf::Vector2f(0, 305));
-    ptsTxt.setPosition(centre - sf::Vector2f(0, 270));
+    nomTxt.setPosition(mg.emplacementsGrille[joueur][0] - mg.tailleCartes/2.f + sf::Vector2f(0, 1.3*mg.decalageDos.y));
+    ptsTxt.setPosition(mg.emplacementsGrille[joueur][2] + sf::Vector2f(mg.tailleCartes.x/2.f, -mg.tailleCartes.y/2.f) + sf::Vector2f(0, 1.3*mg.decalageDos.y));
     // On les dessine
     mg.window->draw(nomTxt);
     mg.window->draw(ptsTxt);
 }
 
 void initialiserDispositionEcran(MoteurGraphique& mg){
+    mg.emplacementsChoixVisible = {sf::Vector2f(500.f, 350.f), sf::Vector2f(700.f, 350.f)};
     if(mg.partie->nombreJoueurs == 2){
         for(unsigned int i = 0; i < 4; ++i){
-            mg.emplacementsPioche[i] = sf::Vector2f(1020, 110+i*167);
+            mg.emplacementsPioche[i] = sf::Vector2f(1120, 110+i*167);
         }
         sf::Vector2f centre;
         for(unsigned int j = 0; j < 2; ++j){
             if(j == 0)
                 centre = {230, 415};
             else
-                centre = {685, 415};
+                centre = {730, 415};
             for(unsigned int empl = 0; empl < 9; ++empl){
                 sf::Vector2f decalage = sf::Vector2f((-1.0+empl%3)*110.0, (-1.0 + empl/3)*177.0);
-                mg.emplacementsGrille[j*9+empl] = sf::Vector2f(centre + decalage);
+                mg.emplacementsGrille[j][empl] = sf::Vector2f(centre + decalage);
             }
         }
-        mg.emplacementsChoixVisible = {sf::Vector2f(500.f, 350.f), sf::Vector2f(700.f, 350.f)};
+        mg.txtPiochePosition = {1220.f, 350};
         mg.tailleCartes = sf::Vector2f(90.f, 126.f);
         mg.decalageDos = sf::Vector2f(-10.f, -10.f);
+    }
+    else if(mg.partie->nombreJoueurs == 3){
+        mg.tailleCartes = sf::Vector2f(88.f, 134.f);
+        sf::Vector2f& t = mg.tailleCartes;
+
+        mg.decalageDos = sf::Vector2f(-10.f, -10.f);
+
+        sf::Vector2f ecartCarte(23.f, 30.f);
+
+        // Emplacements des cartes de la pioche
+        mg.txtPiochePosition = {130.f, 81.f};
+        for(unsigned int i = 0; i < 3; ++i){
+            mg.emplacementsPioche[i] = {300+i*(t.x+ecartCarte.x), 81};
+        }
+        // Emplacements des cartes des grilles
+        sf::Vector2f centre;
+        for(unsigned int j = 0; j < 3; ++j){
+            if(j == 0)
+                centre = {210, 450};
+            else if(j == 1)
+                centre = {640, 450};
+            else
+                centre = {1070, 450};
+
+            for(int empl = 0; empl < 9; ++empl){
+                sf::Vector2f decalage = {(-1+empl%3)*(t.x+ecartCarte.x), (-1 + empl/3)*(t.y+ecartCarte.y)};
+                mg.emplacementsGrille[j][empl] = {centre + decalage};
+            }
+        }
+    }else if(mg.partie->nombreJoueurs == 4){
+        mg.tailleCartes = {90.f, 126.f};
+        sf::Vector2f& t = mg.tailleCartes;
+
+        mg.taillePetitesCartes = 0.8f*mg.tailleCartes;
+        sf::Vector2f& pt = mg.taillePetitesCartes;
+
+        mg.decalageDos = sf::Vector2f(-10.f, -10.f);
+
+        sf::Vector2f ecartCarte(23.f, 30.f);
+        mg.txtPiochePosition = {1220.f, 350};
+        
+        mg.taillePetitesCartes = 0.8f*mg.tailleCartes;
+        for(unsigned int i = 0; i < 4; ++i){
+            mg.emplacementsPioche[i] = sf::Vector2f(1120, 110+i*167);
+        }
+        sf::Vector2f centre;
+        for(unsigned int j = 0; j < 5; ++j){
+            if(j == 0)
+                centre = {230, 415};
+            else
+                centre = {730, 415};
+            for(unsigned int empl = 0; empl < 9; ++empl){
+                sf::Vector2f decalage = sf::Vector2f((-1.0+empl%3)*110.0, (-1.0 + empl/3)*177.0);
+                mg.emplacementsGrille[j][empl] = sf::Vector2f(centre + decalage);
+            }
+        }
     }
 }
 
@@ -261,10 +331,10 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
         mg.selecteur.setPosition(mg.emplacementsPioche[mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Grille"){
-        mg.indiceSelecteur += mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
-        while(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
-            mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+cote)%9;
-        mg.selecteur.setPosition(mg.emplacementsGrille[mg.indiceSelecteur]);
+        mg.indiceSelecteur = (mg.indiceSelecteur+cote)%9;
+        while(mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceVisible != nullptr or mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceCachee != nullptr)
+            mg.indiceSelecteur = (mg.indiceSelecteur+cote)%9;
+        mg.selecteur.setPosition(mg.emplacementsGrille[mg.partie->prochainJoueur][mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
         mg.indiceSelecteur = (mg.indiceSelecteur+1)%2;
@@ -355,14 +425,14 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
     }
     else if(mg.espaceSelecteur == "Grille"){
         // On met le selecteur au premier emplacement de la grille du prochain joueur
-        mg.indiceSelecteur = mg.partie->prochainJoueur*9;
+        mg.indiceSelecteur = 0;
         // Tant que l'emplacement où se trouve le sélecteur contient une carte
         const Grille& grille = mg.partie->joueurs[mg.partie->prochainJoueur].grilleDeJeu;
-        while(grille[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceVisible != nullptr or grille[mg.indiceSelecteur-mg.partie->prochainJoueur*9].faceCachee != nullptr)
+        while(grille[mg.indiceSelecteur].faceVisible != nullptr or grille[mg.indiceSelecteur].faceCachee != nullptr)
             // On va à l'emplacement suivant
-            mg.indiceSelecteur = mg.partie->prochainJoueur*9 + (mg.indiceSelecteur-mg.partie->prochainJoueur*9+1)%9;
+            mg.indiceSelecteur =  (mg.indiceSelecteur+1)%9;
         // On met à jour sa position
-        mg.selecteur.setPosition(mg.emplacementsGrille[mg.indiceSelecteur]);
+        mg.selecteur.setPosition(mg.emplacementsGrille[mg.partie->prochainJoueur][mg.indiceSelecteur]);
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
         // On met le sélecteur à l'emplacement d'indice zero, il y a forcément une carte
