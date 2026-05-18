@@ -208,7 +208,7 @@ void jouerCoupDepuisFichier(const std::string& nomFichier) {
             unsigned int joueurFichier;
             unsigned int chiffre2; char couleur2; int points2; int estSpeciale2;
 
-            // Détection d'un coup joué (7 champs)
+            // Détection d'un coup joué
             if (ssCoup >> joueurFichier >> chiffre2 >> couleur2 >> points2 >> estSpeciale2 >> emplacement >> cv
                 && joueurFichier >= 1 && joueurFichier <= 5) {
                 unsigned int joueur = joueurFichier - 1;

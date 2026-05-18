@@ -114,3 +114,24 @@ void afficherNCartes(const Defausse d, unsigned int n){
         afficherNCartes(d->suivant, n-1);
     }
 }
+
+Carte* TirerCartePrecise(Defausse & d, Carte c){
+    if (d = nullptr){
+        return nullptr;
+    }
+    if((d->valeur->chiffre == c.chiffre)  and (d->valeur->couleur == c.couleur) and (d->valeur->spirale == c.spirale)){
+        return tirerCarteDessus(d);
+    }
+    maillon* courant = d;
+
+    while(courant->suivant != nullptr){
+        if((courant->valeur->chiffre == c.chiffre)  and (courant->valeur->couleur == c.couleur) and (courant->valeur->spirale == c.spirale)){
+            maillon* tmp = courant->suivant;
+            Carte* carte = tmp->valeur;
+            courant->suivant = tmp->suivant;
+            delete tmp;
+            return carte;
+        }
+        courant = courant->suivant;
+    }
+}

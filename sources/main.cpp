@@ -15,6 +15,6 @@ int main()
     srand(time(nullptr));
     //lancerUneNouvellePartie();
     //lancerJeu();
-    jouerCoupDepuisFichier("etat_ia.txt");
+    //jouerCoupDepuisFichier("etat_ia.txt");
     return 0;
 }
