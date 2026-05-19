@@ -386,8 +386,8 @@ void lireFichierPartie(const std::string nomFichier, Partie& partie){
         }
         std::cout << "Tous les points des joueurs ont été lu." << std::endl;
         // Puis ça altèrne entre les 5 cinqs cartes la pioche et les coups
-        while(fichier.good()){
-            // Pour les cinqs cartes dans la pioche
+        do{
+            // Pour lire les cinqs cartes dans la pioche
             for(unsigned int i = 0; i < 5; ++i){
                 // On lit les attributs de la carte (chiffre, couleur, spirale)
                 Carte cartePioche;
@@ -403,29 +403,86 @@ void lireFichierPartie(const std::string nomFichier, Partie& partie){
                 std::cout << "Carte ajouté à la pioche :"; afficherEnCouleur(*partie.pioche.cartes[i]); std::cout << std::endl;
             }
             std::cout << "Pioche pleine :" << std::endl; afficher(partie.pioche); std::cout << std::endl;
-            // Pour les cinqs coups
+            
+            // On stock le nombre de coups qu'on va joué pour savoir quand c'est la fin
             unsigned int nbCoupsJoues = 0;
-            std::cout << "Lecture des coups." << std::endl;
-            // On s'arrête de lire des coups si il n'y en a plus ou si on en a joué cinq
-            while(fichier.good() and nbCoupsJoues < 5){
-                std::string coup;
-                fichier >> coup;
-                if(partie.coupsManche.nombre == 0)
-                    partie.prochainJoueur = coup[0] - '0';
-                jouerCoup(partie, coup);
-                ++nbCoupsJoues;
-                std::cout << "Un coup a été joué." << std::endl;
-                afficher(partie);
+            // Booléen qui indique s'il reste des coups à lire
+            bool ilResteDesCoups = true;
+            // Tant qu'il reste des coups à lire
+            while(ilResteDesCoups){
+                std::cout << "Lecture d'un coup." << std::endl;
+                // Il faut traduire le coup dans notre format
+                // 5,5 v 0 0,5,v -> 43d3
+                // VARIABLES POUR LA LECTURE
+                // Numéro du joueur (0, 1, 2... ou 4)
+                unsigned int joueur;
+                // Indice de la case de destination de la carte dans la grille (0, 1, 2... ou 8)
+                unsigned int indiceDestGrille;
+                // Chiffre qui indique si la carte est spéciale ou non (0 ou 1)
+                unsigned int speciale;
+                // Type du coup (v ou c dans le fichier - v,c,d ou m dans notre format)
+                char typeCoup;
+                // Virgule du fichier à ne pas prendre en compte
+                char virgule;
+                // Carte qui est choisie par le joueur parmi celle de la pioche
+                Carte carteChoisi;
+    
+                // Lecture des données du fichier
+                fichier >> joueur >> virgule >> carteChoisi.chiffre >> carteChoisi.couleur >> carteChoisi.spirale >> speciale >> virgule >> indiceDestGrille >> virgule >> typeCoup;
+                // Si la lecture s'est bien passé, c'est à dire il y avait vraiment un coup dans le fichier
+                if(fichier.good()){
+                    std::cout << "Informations du fichier lues correctement." << std::endl;
+                    // Correction dans le cas où la carte choisie est spéciale, dans notre format on met un neuf
+                    if(speciale == 1)
+                        carteChoisi.spirale = 9;
+                    // Correction dans le cas où la carte choisie est multicolore, dans notre format on met un s
+                    if(carteChoisi.couleur == 'n')
+                        carteChoisi.couleur = 's';
+                    // Correction des indice, dans les coups du fichier on met les numéros de la case et du joueur, dans notre format les indices
+                    --indiceDestGrille; --joueur;
+                    // On récpère l'indice de la carte choisie dans la piche car dans notre format on indique cet indice et non la carte elle même.
+                    unsigned int indiceCarteChoisie = indiceCartePioche(partie.pioche, carteChoisi);
+                    
+                    // On s'occupe maintenant de trouver le type du coup selon la grille du joueur
+                    if(indiceDestGrille != carteChoisi.chiffre-1)
+                        // Si la carte ne va pas dans son emplacement, alors le coup est forcément de type m, pour mettre
+                        typeCoup = 'm';
+                    else if(partie.joueurs[joueur].grilleDeJeu[indiceDestGrille].faceVisible == nullptr)
+                        // Si il n'y a pas de carte face visible à l'emplacement de la carte, alors le coup est forcément direct
+                        typeCoup = 'd';
+                    // Sinon on garde le v ou le c car et le seul restant. Ce sont les coups quand il y a déja une carte face visible à l'emplacement.
+    
+                    // On forme le coup avec les différentes informations que l'on a récuupéré
+                    std::string coup = std::to_string(joueur)+std::to_string(indiceCarteChoisie)+typeCoup+std::to_string(indiceDestGrille);
+                    std::cout << "Le coup qui va être joué est " << coup << std::endl;
+    
+                    // Si c'est le premier coup de la manche on met la valeur premier joueur, car elle n'est pas renseigné avant dans le fichier
+                    if(partie.coupsManche.nombre == 0)
+                        partie.prochainJoueur = joueur;
+                    
+                    // On joue le coup
+                    jouerCoup(partie, coup);
+                    ++nbCoupsJoues;
+                    std::cout << "Un coup a été joué." << std::endl;
+                    afficher(partie);
+    
+                    // Si c'est le cinquième coup qui a été joué
+                    if(nbCoupsJoues == 5){
+                        std::cout << "5 coups ont été joué." << std::endl;
+                        // Il faut vider la pioche car le dernier coup l'a remplit avec les cartes au dessus de la défausse
+                        mettrePiocheDansDefausse(partie.pioche, partie.defausse);
+                        std::cout << "La pioche a été vidée et remise dans la défausse." << std::endl;
+                        afficher(partie);
+                        ilResteDesCoups = false;
+                    }
+                }
+                else{
+                    std::cout <<"Enfait il n'y avait plus de coup dans le fichier." << std::endl;
+                    // Sinon il ne reste plus de coup à lire
+                    ilResteDesCoups = false;
+                }
             }
-            // Si on a joué 5 coups
-            if(nbCoupsJoues == 5){
-                // Il faut vider la pioche car le dernier coup l'a remplit avec les cartes au dessus de la défausse
-                mettrePiocheDansDefausse(partie.pioche, partie.defausse);
-                std::cout << "La pioche a été vidée et remise dans la défausse." << std::endl;
-                afficher(partie);
-            }
-        }
-        
+        }while(fichier.good());
     }else
         std::cout << "Erreur à l'ouverture du fichier de la partie." << std::endl;
 }

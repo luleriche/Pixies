@@ -33,3 +33,6 @@ bool estPleinePioche(Pioche p);
 
 // Récupérer un pointeur vers une carte d'une pioche et l'enlevée de celle-ci.
 Carte* tierCartePioche(Pioche& p, unsigned int indice);
+
+// Récupère l'indice d'une carte précise dans la pioche
+unsigned int indiceCartePioche(Pioche p, Carte c);
