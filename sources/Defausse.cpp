@@ -121,3 +121,14 @@ void afficherNCartes(const Defausse d, unsigned int n){
         afficherNCartes(d->suivant, n-1);
     }
 }
+
+Carte* tirerCartePrecise(Defausse & d, Carte c){
+    if (d == nullptr){
+        std::cout << "La carte "; afficherEnCouleur(c); std::cout << " n'a pas été trouvée dans la défausse." << std::endl;
+        return nullptr;
+    }
+    else if(d->valeur->chiffre == c.chiffre and d->valeur->couleur == c.couleur and d->valeur->spirale == c.spirale)
+        return tirerCarteDessus(d);
+    else
+        return tirerCartePrecise(d->suivant, c);
+}

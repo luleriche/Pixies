@@ -1,5 +1,6 @@
 #include <cmath>
 #include <ctime>
+#include <fstream>
 
 #include "Ordinateur.hpp"
 #include "Partie.hpp"
@@ -364,4 +365,186 @@ float calculerRatioVictoire(const Noeud* const n, unsigned int joueur){
 float calculerUCT(const int nbVisitesParent, const int nbVisitesEnfant, const float ratioVictoire, const float temperature){
     float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
     return ratioVictoire + temperature * exploration;
+}
+
+// ---------- CODE POUR LA LECTURE D'UN FICHIER ---------
+
+void lireFichierPartie(const std::string nomFichier, Partie& partie){
+    std::ifstream fichier;
+    fichier.open(nomFichier);
+
+    //---- Initialisation de la partie avant la lecture dans le fichier ----
+    
+    // Création des cartes dans la mémoire à l'aide d'une boite de cartes
+    creerCartesAvecFichier("assets/cartes_pixies.txt", partie.boite);
+
+    // initialisation de la défausse
+    initDefausse(partie.defausse);
+    remplir(partie.boite, partie.defausse);
+
+    // On met la taille de la pioche à 5
+    partie.pioche.taille = 5;
+
+    // Creation des joueurs
+    partie.nombreJoueurs = 5;
+    for(unsigned int i = 0; i < 5; ++i){
+        initJoueur(partie.joueurs[i], &partie.pioche, std::to_string(i), false);
+    }
+
+    partie.estMancheFinie = false;
+    partie.coupsManche.nombre = 0;
+
+    if(fichier.is_open()){
+        std::cout << "Fichier de la partie correctement ouvert." << std::endl;
+        // Le premier élément du fichier est le numero de la manche
+        fichier >> partie.numeroManche;
+        // Ensuite il y a les points des joueurs
+        for(unsigned int i = 0; i < 5; ++i){
+            fichier >> partie.joueurs[i].nbPoints;
+        }
+        std::cout << "Tous les points des joueurs ont été lu." << std::endl;
+        // Puis ça altèrne entre les 5 cinqs cartes la pioche et les coups
+        do{
+            // Pour lire les cinqs cartes dans la pioche
+            for(unsigned int i = 0; i < 5; ++i){
+                // On lit les attributs de la carte (chiffre, couleur, spirale)
+                Carte cartePioche;
+                int speciale;
+                fichier >> cartePioche.chiffre >> cartePioche.couleur >> cartePioche.spirale >> speciale;
+                if(speciale == 1)
+                    cartePioche.spirale = 9;
+                if(cartePioche.couleur == 'n')
+                    cartePioche.couleur = 's';
+                // On prend cette carte dans la défausse et on la met dans la pioche
+                partie.pioche.cartes[i] = tirerCartePrecise(partie.defausse, cartePioche);
+                ++partie.pioche.nombreCartesRestantes;
+                std::cout << "Carte ajouté à la pioche :"; afficherEnCouleur(*partie.pioche.cartes[i]); std::cout << std::endl;
+            }
+            std::cout << "Pioche pleine :" << std::endl; afficher(partie.pioche); std::cout << std::endl;
+            
+            // On stock le nombre de coups qu'on va joué pour savoir quand c'est la fin
+            unsigned int nbCoupsJoues = 0;
+            // Booléen qui indique s'il reste des coups à lire
+            bool ilResteDesCoups = true;
+            // Tant qu'il reste des coups à lire
+            while(ilResteDesCoups){
+                std::cout << "Lecture d'un coup." << std::endl;
+                // Il faut traduire le coup dans notre format
+                // 5,5 v 0 0,5,v -> 43d3
+                // VARIABLES POUR LA LECTURE
+                // Numéro du joueur (0, 1, 2... ou 4)
+                unsigned int joueur;
+                // Indice de la case de destination de la carte dans la grille (0, 1, 2... ou 8)
+                unsigned int indiceDestGrille;
+                // Chiffre qui indique si la carte est spéciale ou non (0 ou 1)
+                unsigned int speciale;
+                // Type du coup (v ou c dans le fichier - v,c,d ou m dans notre format)
+                char typeCoup;
+                // Virgule du fichier à ne pas prendre en compte
+                char virgule;
+                // Carte qui est choisie par le joueur parmi celle de la pioche
+                Carte carteChoisi;
+    
+                // Lecture des données du fichier
+                fichier >> joueur >> virgule >> carteChoisi.chiffre >> carteChoisi.couleur >> carteChoisi.spirale >> speciale >> virgule >> indiceDestGrille >> virgule >> typeCoup;
+                // Si la lecture s'est bien passé, c'est à dire il y avait vraiment un coup dans le fichier
+                if(fichier.good()){
+                    std::cout << "Informations du fichier lues correctement." << std::endl;
+                    // Correction dans le cas où la carte choisie est spéciale, dans notre format on met un neuf
+                    if(speciale == 1)
+                        carteChoisi.spirale = 9;
+                    // Correction dans le cas où la carte choisie est multicolore, dans notre format on met un s
+                    if(carteChoisi.couleur == 'n')
+                        carteChoisi.couleur = 's';
+                    // Correction des indice, dans les coups du fichier on met les numéros de la case et du joueur, dans notre format les indices
+                    --indiceDestGrille; --joueur;
+                    // On récpère l'indice de la carte choisie dans la piche car dans notre format on indique cet indice et non la carte elle même.
+                    unsigned int indiceCarteChoisie = indiceCartePioche(partie.pioche, carteChoisi);
+                    
+                    // On s'occupe maintenant de trouver le type du coup selon la grille du joueur
+                    if(indiceDestGrille != carteChoisi.chiffre-1)
+                        // Si la carte ne va pas dans son emplacement, alors le coup est forcément de type m, pour mettre
+                        typeCoup = 'm';
+                    else if(partie.joueurs[joueur].grilleDeJeu[indiceDestGrille].faceVisible == nullptr)
+                        // Si il n'y a pas de carte face visible à l'emplacement de la carte, alors le coup est forcément direct
+                        typeCoup = 'd';
+                    // Sinon on garde le v ou le c car et le seul restant. Ce sont les coups quand il y a déja une carte face visible à l'emplacement.
+    
+                    // On forme le coup avec les différentes informations que l'on a récuupéré
+                    std::string coup = std::to_string(joueur)+std::to_string(indiceCarteChoisie)+typeCoup+std::to_string(indiceDestGrille);
+                    std::cout << "Le coup qui va être joué est " << coup << std::endl;
+    
+                    // Si c'est le premier coup de la manche on met la valeur premier joueur, car elle n'est pas renseigné avant dans le fichier
+                    if(partie.coupsManche.nombre == 0)
+                        partie.prochainJoueur = joueur;
+                    
+                    // On joue le coup
+                    jouerCoup(partie, coup);
+                    ++nbCoupsJoues;
+                    std::cout << "Un coup a été joué." << std::endl;
+                    afficher(partie);
+    
+                    // Si c'est le cinquième coup qui a été joué
+                    if(nbCoupsJoues == 5){
+                        std::cout << "5 coups ont été joué." << std::endl;
+                        // Il faut vider la pioche car le dernier coup l'a remplit avec les cartes au dessus de la défausse
+                        mettrePiocheDansDefausse(partie.pioche, partie.defausse);
+                        std::cout << "La pioche a été vidée et remise dans la défausse." << std::endl;
+                        afficher(partie);
+                        ilResteDesCoups = false;
+                    }
+                }
+                else{
+                    std::cout <<"Enfait il n'y avait plus de coup dans le fichier." << std::endl;
+                    // Sinon il ne reste plus de coup à lire
+                    ilResteDesCoups = false;
+                }
+            }
+        }while(fichier.good() and not partie.estMancheFinie);
+    }else
+        std::cout << "Erreur à l'ouverture du fichier de la partie." << std::endl;
+}
+
+void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier){
+    std::cout << "Début du calcul du meilleur coup." << std::endl;
+    std::string coup = recupMeilleurCoup(partie, 20, 400);
+    std::string coupFichier = traduireCoupNormalVersFichier(coup, partie);
+    std::cout << "Le meilleur coup a été trouvé et traduit pour le fichier." << std::endl;
+    std::cout << "Coup " << coup << std::endl << "Coup écrit " << coupFichier << std::endl;
+    std::ofstream fichier;
+    // On ouvre le fichier à la fin
+    fichier.open(nomFichier, std::ios::app);
+    if(fichier.is_open()){
+        std::cout << "Le fichier s'est ouvert correctement." << std::endl;
+        // On met un saut de ligne et notre coup
+        fichier << std::endl << coupFichier;
+        std::cout << "Le coup a bien été écrit dans le fichier." << std::endl;
+    }else{
+        std::cout << "L'ouverture du fichier a échoué." << std::endl;
+    }
+}
+
+std::string traduireCoupNormalVersFichier(std::string coup, const Partie& partie){
+    std::string traduction = "";
+    // Le premier caractère est le numéro du joueur, dans notre format c'était l'indice du joueur
+    traduction += std::to_string(coup[0] - '0' + 1);
+    // Ensuite il y a une virgule
+    traduction += ',';
+    // Ensuite il y a le chiffre, la couleur, les spirales et si la carte est spéciale ou non.
+    Carte* carteChoisie = partie.pioche.cartes[coup[1]-'0'];
+    traduction += std::to_string(carteChoisie->chiffre) + ' ' + carteChoisie->couleur + ' ';
+    if(carteChoisie->spirale == 9){
+        traduction += "0 1";
+    }else{
+        traduction += std::to_string(carteChoisie->spirale) + " 0";
+    }
+    // Ensuite une virgule, la case de destination de la carte et une autre virgule
+    traduction += ',' + std::to_string(coup[3] - '1' +1) + ',';
+    // Et le coup se termine par si la carte finit visible ou caché
+    if(coup[2] == 'm' or coup[2] == 'c'){
+        traduction += 'c';
+    }else{
+        traduction += 'v';
+    }
+    return traduction;
 }

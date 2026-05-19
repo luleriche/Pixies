@@ -53,7 +53,7 @@ void lancerUneNouvellePartie(){
         std::cin >> partie.nombreJoueurs;
     }
     creerJoueurs(partie.joueurs, partie.nombreJoueurs, &partie.pioche);
-
+    
     // On initialise la pioche
     if(partie.nombreJoueurs == 2)
         initPioche(partie.pioche, 4);
@@ -67,6 +67,7 @@ void lancerUneNouvellePartie(){
     
     partie.numeroManche = 1;
     // Manche 1
+
     lancerManche(partie);
 
     toutRemettreDansDefausse(partie);
@@ -97,11 +98,12 @@ void lancerManche(Partie& partie){
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     
     while(not partie.estMancheFinie){
-        faireJouerProchain(partie);
+        for (unsigned int i = 0; i < partie.nombreJoueurs; ++i){
+           faireJouerProchain(partie); 
+        }
     }
 
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
-    // Affichage des points
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
         std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
     }
@@ -117,7 +119,6 @@ void faireJouerProchain(Partie& partie){
         coup = demanderCoupJoueur(partie);
     }
     jouerCoup(partie, coup);
-    //Affichage après avoir rajouter la carte à la grille
     afficher(partie);
 }
 

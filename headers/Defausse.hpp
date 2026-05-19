@@ -57,3 +57,5 @@ void supprimerBoite(BoiteCartes& boite);
 // Afficher les n premières cartes de la défausse en une ligne.
 void afficherNCartes(const Defausse d, unsigned int n);
 
+// Tire une carte precise de la defausse
+Carte* tirerCartePrecise(Defausse & d, Carte c);

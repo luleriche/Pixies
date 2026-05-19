@@ -24,6 +24,7 @@ struct Noeud{
 };
 
 // Récupérer le meilleur coup possible dans un certain état de la partie, les parmètre de recherche sont explicites pour une recherche MCTS.
+// Paramètres conseillées 20, 300
 std::string recupMeilleurCoup(Partie& partie, const unsigned int nbDefausse, const unsigned int nbDescentesParDefausses);
 
 // Initialiser un noeud avec les valeurs passer en paramètres
@@ -61,3 +62,13 @@ float calculerRatioVictoire(const Noeud* const n, const unsigned int joueur);
 
 // Récupérer le score UCT en fonction des différents paramètres
 float calculerUCT(const int nbVisitesParent, const int nbVistesEnfant, const float ratioVictoire, const float temperature);
+
+
+// Lire les coups d'un fichier et les jouer sur une partie de 5 joueurs vierge.
+void lireFichierPartie(const std::string nomFichier, Partie& partie);
+
+// Ecrire dans un fichier le meilleur prochain coup à jouer
+void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier);
+
+// Traduire un coup dans le format de notre projet à celui d'un fichier d'une partie
+std::string traduireCoupNormalVersFichier(std::string coup, const Partie& partie);

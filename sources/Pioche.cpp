@@ -52,3 +52,13 @@ Carte* tierCartePioche(Pioche& p, unsigned int indice){
     --p.nombreCartesRestantes;
     return carteTiree;
 }
+
+unsigned int indiceCartePioche(Pioche p, Carte c){
+    for(unsigned int indice = 0; indice < p.taille; ++indice){
+        if (p.cartes[indice] != nullptr and c.couleur == p.cartes[indice]->couleur and c.chiffre == p.cartes[indice]->chiffre and c.spirale == p.cartes[indice]->spirale){
+            return indice;
+        }
+    }
+    std::cout << "La carte "; afficherEnCouleur(c); std::cout << " n'est pas dans la pioche." << std::endl;
+    return -1;
+}
