@@ -55,4 +55,4 @@ void supprimerBoite(BoiteCartes& boite);
 void afficherNCartes(const Defausse d, unsigned int n);
 
 // Tire une carte precise de la defausse
-Carte* TirerCartePrecise(Defausse & d, Carte c);
+Carte* tirerCartePrecise(Defausse & d, Carte c);

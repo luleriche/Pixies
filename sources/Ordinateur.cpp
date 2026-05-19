@@ -1,5 +1,6 @@
 #include <cmath>
 #include <ctime>
+#include <fstream>
 
 #include "Ordinateur.hpp"
 #include "Partie.hpp"
@@ -364,4 +365,67 @@ float calculerRatioVictoire(const Noeud* const n, unsigned int joueur){
 float calculerUCT(const int nbVisitesParent, const int nbVisitesEnfant, const float ratioVictoire, const float temperature){
     float exploration = std::sqrt(std::log(nbVisitesParent) / nbVisitesEnfant);
     return ratioVictoire + temperature * exploration;
+}
+
+// ---------- CODE POUR LA LECTURE D'UN FICHIER ---------
+
+void lireFichierPartie(const std::string nomFichier, Partie& partie){
+    std::ifstream fichier;
+    fichier.open(nomFichier);
+
+    partie.estMancheFinie = false;
+    partie.coupsManche.nombre = 0;
+
+    if(fichier.is_open()){
+        std::cout << "Fichier de la partie correctement ouvert." << std::endl;
+        // Le premier élément du fichier est le numero de la manche
+        fichier >> partie.numeroManche;
+        // Ensuite il y a les points des joueurs
+        for(unsigned int i = 0; i < 5; ++i){
+            fichier >> partie.joueurs[i].nbPoints;
+        }
+        std::cout << "Tous les points des joueurs ont été lu." << std::endl;
+        // Puis ça altèrne entre les 5 cinqs cartes la pioche et les coups
+        while(fichier.good()){
+            // Pour les cinqs cartes dans la pioche
+            for(unsigned int i = 0; i < 5; ++i){
+                // On lit les attributs de la carte (chiffre, couleur, spirale)
+                Carte cartePioche;
+                int speciale;
+                fichier >> cartePioche.chiffre >> cartePioche.couleur >> cartePioche.spirale >> speciale;
+                if(speciale == 1)
+                    cartePioche.spirale = 9;
+                if(cartePioche.couleur == 'n')
+                    cartePioche.couleur = 's';
+                // On prend cette carte dans la défausse et on la met dans la pioche
+                partie.pioche.cartes[i] = tirerCartePrecise(partie.defausse, cartePioche);
+                ++partie.pioche.nombreCartesRestantes;
+                std::cout << "Carte ajouté à la pioche :"; afficherEnCouleur(*partie.pioche.cartes[i]); std::cout << std::endl;
+            }
+            std::cout << "Pioche pleine :" << std::endl; afficher(partie.pioche); std::cout << std::endl;
+            // Pour les cinqs coups
+            unsigned int nbCoupsJoues = 0;
+            std::cout << "Lecture des coups." << std::endl;
+            // On s'arrête de lire des coups si il n'y en a plus ou si on en a joué cinq
+            while(fichier.good() and nbCoupsJoues < 5){
+                std::string coup;
+                fichier >> coup;
+                if(partie.coupsManche.nombre == 0)
+                    partie.prochainJoueur = coup[0] - '0';
+                jouerCoup(partie, coup);
+                ++nbCoupsJoues;
+                std::cout << "Un coup a été joué." << std::endl;
+                afficher(partie);
+            }
+            // Si on a joué 5 coups
+            if(nbCoupsJoues == 5){
+                // Il faut vider la pioche car le dernier coup l'a remplit avec les cartes au dessus de la défausse
+                mettrePiocheDansDefausse(partie.pioche, partie.defausse);
+                std::cout << "La pioche a été vidée et remise dans la défausse." << std::endl;
+                afficher(partie);
+            }
+        }
+        
+    }else
+        std::cout << "Erreur à l'ouverture du fichier de la partie." << std::endl;
 }

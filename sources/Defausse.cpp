@@ -115,23 +115,13 @@ void afficherNCartes(const Defausse d, unsigned int n){
     }
 }
 
-Carte* TirerCartePrecise(Defausse & d, Carte c){
-    if (d = nullptr){
+Carte* tirerCartePrecise(Defausse & d, Carte c){
+    if (d == nullptr){
+        std::cout << "La carte n'a pas été trouvé dans la défausse." << std::endl;
         return nullptr;
     }
-    if((d->valeur->chiffre == c.chiffre)  and (d->valeur->couleur == c.couleur) and (d->valeur->spirale == c.spirale)){
+    else if((d->valeur->chiffre == c.chiffre) and (d->valeur->couleur == c.couleur) and (d->valeur->spirale == c.spirale))
         return tirerCarteDessus(d);
-    }
-    maillon* courant = d;
-
-    while(courant->suivant != nullptr){
-        if((courant->valeur->chiffre == c.chiffre)  and (courant->valeur->couleur == c.couleur) and (courant->valeur->spirale == c.spirale)){
-            maillon* tmp = courant->suivant;
-            Carte* carte = tmp->valeur;
-            courant->suivant = tmp->suivant;
-            delete tmp;
-            return carte;
-        }
-        courant = courant->suivant;
-    }
+    else
+        return tirerCartePrecise(d->suivant, c);
 }

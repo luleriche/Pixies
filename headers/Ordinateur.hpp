@@ -61,3 +61,7 @@ float calculerRatioVictoire(const Noeud* const n, const unsigned int joueur);
 
 // Récupérer le score UCT en fonction des différents paramètres
 float calculerUCT(const int nbVisitesParent, const int nbVistesEnfant, const float ratioVictoire, const float temperature);
+
+
+// Lire les coups d'un fichier et les jouer sur une partie de 5 joueurs vierge.
+void lireFichierPartie(const std::string nomFichier, Partie& partie);

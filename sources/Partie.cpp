@@ -4,7 +4,6 @@
 #include "Partie.hpp"
 #include "Console.hpp"
 #include "Ordinateur.hpp"
-#include "EtatJeu.hpp"
 
 void ajouterCoup(ListeDeCoupsManche& lc, std::string coup){
     lc.coups[lc.nombre] = coup;
@@ -67,9 +66,7 @@ void lancerUneNouvellePartie(){
     std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     
     partie.numeroManche = 1;
-    ouvrirFichierIA("etat_ia.txt", partie);
     // Manche 1
-    ecrireDebutManche(partie);
 
     lancerManche(partie);
 
@@ -78,8 +75,6 @@ void lancerUneNouvellePartie(){
     ++partie.numeroManche;
 
     // Manche 2
-    ecrireDebutManche(partie);
-
     lancerManche(partie);
 
     toutRemettreDansDefausse(partie);
@@ -87,15 +82,12 @@ void lancerUneNouvellePartie(){
     ++partie.numeroManche;
 
     // Manche 3
-    ecrireDebutManche(partie);
-
     lancerManche(partie);
 
     std::cout << "La partie est terminée." << std::endl;
     toutRemettreDansDefausse(partie);
     viderDefausse(partie.defausse);
     supprimerBoite(boite);
-    fermerFichierIA();
 }
 
 void lancerManche(Partie& partie){
@@ -106,11 +98,9 @@ void lancerManche(Partie& partie){
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     
     while(not partie.estMancheFinie){
-        ecrireCartesDisponibles(partie); 
-        for (int i = 0; i < partie.nombreJoueurs; ++i){
+        for (unsigned int i = 0; i < partie.nombreJoueurs; ++i){
            faireJouerProchain(partie); 
         }
-        
     }
 
     std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
@@ -129,7 +119,6 @@ void faireJouerProchain(Partie& partie){
         coup = demanderCoupJoueur(partie);
     }
     jouerCoup(partie, coup);
-    ecrireCoupJoue(partie, coup);
     afficher(partie);
 }
 
