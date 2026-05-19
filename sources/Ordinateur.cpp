@@ -486,3 +486,47 @@ void lireFichierPartie(const std::string nomFichier, Partie& partie){
     }else
         std::cout << "Erreur à l'ouverture du fichier de la partie." << std::endl;
 }
+
+void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier){
+    std::cout << "Début du calcul du meilleur coup." << std::endl;
+    std::string coup = recupMeilleurCoup(partie, 20, 400);
+    std::string coupFichier = traduireCoupNormalVersFichier(coup, partie);
+    std::cout << "Le meilleur coup a été trouvé et traduit pour le fichier." << std::endl;
+    std::cout << "Coup " << coup << std::endl << "Coup écrit " << coupFichier << std::endl;
+    std::ofstream fichier;
+    // On ouvre le fichier à la fin
+    fichier.open(nomFichier, std::ios::app);
+    if(fichier.is_open()){
+        std::cout << "Le fichier s'est ouvert correctement." << std::endl;
+        // On met un saut de ligne et notre coup
+        fichier << std::endl << coupFichier;
+        std::cout << "Le coup a bien été écrit dans le fichier." << std::endl;
+    }else{
+        std::cout << "L'ouverture du fichier a échoué." << std::endl;
+    }
+}
+
+std::string traduireCoupNormalVersFichier(std::string coup, const Partie& partie){
+    std::string traduction = "";
+    // Le premier caractère est le numéro du joueur, dans notre format c'était l'indice du joueur
+    traduction += std::to_string(coup[0] - '0' + 1);
+    // Ensuite il y a une virgule
+    traduction += ',';
+    // Ensuite il y a le chiffre, la couleur, les spirales et si la carte est spéciale ou non.
+    Carte* carteChoisie = partie.pioche.cartes[coup[1]-'0'];
+    traduction += std::to_string(carteChoisie->chiffre) + ' ' + carteChoisie->couleur + ' ';
+    if(carteChoisie->spirale == 9){
+        traduction += "0 1";
+    }else{
+        traduction += std::to_string(carteChoisie->spirale) + " 0";
+    }
+    // Ensuite une virgule, la case de destination de la carte et une autre virgule
+    traduction += ',' + std::to_string(coup[3] - '1' +1) + ',';
+    // Et le coup se termine par si la carte finit visible ou caché
+    if(coup[2] == 'm' or coup[2] == 'c'){
+        traduction += 'c';
+    }else{
+        traduction += 'v';
+    }
+    return traduction;
+}

@@ -39,6 +39,7 @@ int main(int argc, char **argv)
         }
 
         lireFichierPartie(argv[1], partie);
+        jouerCoupOrdiEtEcrire(partie, argv[1]);
     }
     else{
 
