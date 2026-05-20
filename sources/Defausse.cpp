@@ -33,12 +33,11 @@ void supprimerBoite(BoiteCartes& boite){
 }
 
 
-
 void initDefausse(Defausse& d){
     d = nullptr; // Une défausse initialisée ne pointe vers aucun maillon
 }
 
-void remplir(const BoiteCartes boite, Defausse& defausse){
+void remplir(const BoiteCartes& boite, Defausse& defausse){
     // On parcourt les cartes de la boîtes
     for(unsigned int i = 0; i < boite.nbCartes; ++i){
         ajoutFinDefausse(defausse, &boite.cartes[i]); // On les ajoute chacunes à la fin de la défausse

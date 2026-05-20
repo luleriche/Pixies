@@ -15,17 +15,27 @@ void ajouterCoup(ListeDeCoupsPossibles& lc, std::string coup){
     ++lc.nombre;
 }
 
-void afficher(ListeDeCoupsManche lc){
+void afficher(const ListeDeCoupsManche& lc){
     for(unsigned int i = 0; i < lc.nombre; ++i)
         std::cout << lc.coups[i] << std::endl;
 }
 
-void afficher(ListeDeCoupsPossibles lc){
+void afficher(const ListeDeCoupsPossibles& lc){
     for(unsigned int i = 0; i < lc.nombre; ++i)
         std::cout << lc.coups[i] << std::endl;
 }
 
-void lancerUneNouvellePartie(){
+void supprimeDernierCoup(ListeDeCoupsManche& lc){
+    --lc.nombre;
+}
+
+void supprimeDernierCoup(ListeDeCoupsPossibles& lc){
+    --lc.nombre;
+}
+
+
+
+void lancerPartieConsole(){
     // Création de la partie
     Partie partie;
 
@@ -57,23 +67,20 @@ void lancerUneNouvellePartie(){
     std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
 
     // Manche 1
-    partie.numeroManche = 1;
-    lancerManche(partie);
+    lancerManche(partie, 1);
 
     toutRemettreDansDefausse(partie);
     melanger(partie.defausse);
     
     // Manche 2
-    partie.numeroManche = 2;
-    lancerManche(partie);
+    lancerManche(partie, 2);
 
     toutRemettreDansDefausse(partie);
     melanger(partie.defausse);
     ++partie.numeroManche;
 
     // Manche 3
-    partie.numeroManche = 3;
-    lancerManche(partie);
+    lancerManche(partie, 3);
 
     std::cout << "La partie est terminée." << std::endl;
     toutRemettreDansDefausse(partie);
@@ -81,20 +88,19 @@ void lancerUneNouvellePartie(){
     supprimerBoite(partie.boite);
 }
 
-void lancerManche(Partie& partie){
+void lancerManche(Partie& partie, const unsigned int numeroManche){
+    partie.numeroManche = numeroManche;
     partie.estMancheFinie = false;
     partie.coupsManche.nombre = 0;
-
     remplirPioche(partie.pioche, partie.defausse);
+
     std::cout << "DEBUT DE LA MANCHE " << partie.numeroManche << std::endl;
     
     while(not partie.estMancheFinie){
-        for (unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-           faireJouerProchain(partie); 
-        }
+        faireJouerProchain(partie); 
     }
 
-    std::cout << "Manche Terminée. Voici les points désormais." << std::endl;
+    std::cout << "Manche Terminée. Voici les points désormais.:" << std::endl;
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
         std::cout << partie.joueurs[i].surnom << " : " << partie.joueurs[i].nbPoints << " points." << std::endl;
     }
@@ -103,12 +109,14 @@ void lancerManche(Partie& partie){
 void faireJouerProchain(Partie& partie){
     std::cout << "Tour de " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
     std::string coup;
+    // Si le prochain joueur est un ordinateur
     if(partie.joueurs[partie.prochainJoueur].estOrdi){
         std::cout << "L'ordinateur choisi son coup..." << std::endl;
-        coup = recupMeilleurCoup(partie, 20, 300);
+        coup = recupMeilleurCoup(partie, 20, 300); // On trouve son coup grâce à un arbre de recherche
     }else{
-        coup = demanderCoupJoueur(partie);
+        coup = demanderCoupJoueur(partie); // Sinon on demande dans la console à l'utilisateur d'entrer son coup
     }
+    // On joue le coup et on affiche les grilles
     jouerCoup(partie, coup);
     afficher(partie);
 }
@@ -255,7 +263,8 @@ void jouerCoup(Partie& partie, std::string coup){
     ajouterCoup(partie.coupsManche, coup);
 }
 
-bool unJoueurAFinit(Partie partie){
+bool unJoueurAFinit(const Partie& partie){
+    // On parcout les joueurs et on s'arrête si il y en un qui a aucun emplacement vide
     unsigned int i = 0;
     while(i < partie.nombreJoueurs and not finJeu(partie.joueurs[i].grilleDeJeu))
         ++i;
@@ -265,7 +274,7 @@ bool unJoueurAFinit(Partie partie){
 void toutRemettreDansDefausse(Partie& partie){
     // Parcours des grilles des joueurs
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
-        // Parcours de chaque case de sa grille
+        // Parcours de chaque emplacement de sa grille
         for(unsigned int j = 0; j < 9; ++j){
             // On met les cartes dans la defausse et on vide la grille
             ajoutDebutDefausse(partie.defausse, partie.joueurs[i].grilleDeJeu[j].faceCachee);
@@ -274,7 +283,7 @@ void toutRemettreDansDefausse(Partie& partie){
             partie.joueurs[i].grilleDeJeu[j].faceVisible = nullptr;
         }
     }
-    
+    // On met aussi les cartes de la pioche dans la défausse
     mettrePiocheDansDefausse(partie.pioche, partie.defausse);
 }
 
@@ -282,48 +291,37 @@ void changerDeJoueur(Partie& partie){
     partie.prochainJoueur = (partie.prochainJoueur + 1)%partie.nombreJoueurs;
 }
 
-void remettreDernierJoueurCommeSuivant(Partie& partie){
-    partie.prochainJoueur = (partie.prochainJoueur - 1)%partie.nombreJoueurs;
-}
-
-std::string recupDernierCoup(Partie partie){
-    if(partie.coupsManche.nombre==0)
+std::string recupDernierCoup(const Partie& partie){
+    if(partie.coupsManche.nombre > 0) // Si il y a au moins un coup dans la liste de ceux joué
+        return partie.coupsManche.coups[partie.coupsManche.nombre-1]; // On revoie le dernier
+    else 
         return "NULL";
-    else
-        return partie.coupsManche.coups[partie.coupsManche.nombre-1];
 }
 
-void supprimeDernierCoup(ListeDeCoupsManche& lc){
-    --lc.nombre;
-}
-
-void supprimeDernierCoup(ListeDeCoupsPossibles& lc){
-    --lc.nombre;
-}
-
-unsigned int joueurDuDernierCoup(Partie partie){
-    std::string dernierCoup = recupDernierCoup(partie);
+unsigned int joueurDuDernierCoup(const Partie& partie){
+    std::string dernierCoup = recupDernierCoup(partie); // On récupère le dernier coups joué dans une manche
     if(dernierCoup == "NULL")
         return 10;
     else
-        return dernierCoup[0] - '0';
+        return dernierCoup[0] - '0'; // Si il y en a un, le premier caractère est le joueur qui l'a joué.
 }
 
 unsigned int recupLeader(const Partie& partie){
-    int leader = 0;
+    int leader = 0; // On parcours les joueurs
     for(unsigned int i = 1; i < partie.nombreJoueurs; ++i){
         if(partie.joueurs[i].nbPoints > partie.joueurs[leader].nbPoints)
-            leader = i;
+            leader = i; // On garde l'indice de celui qui a le plus de points
     }
     return leader;
 }
 
 void afficher(const Partie& partie){
-    
+    // On affiche les grilles de tous les joueurs
     for(unsigned int i = 0; i < partie.nombreJoueurs; ++i){
         std::cout << "Grille de " << partie.joueurs[i].surnom << std::endl;
         afficherGrille(partie.joueurs[i].grilleDeJeu);
     }
+    // Et on affiche la pioche
     std::cout <<" Pioche :" << std::endl;
     afficher(partie.pioche);
 }

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
         if(choix == 'y')
             lancerJeu();
         else
-            lancerUneNouvellePartie();
+            lancerPartieConsole();
     }
     // Si il y a trois agruments
     else{

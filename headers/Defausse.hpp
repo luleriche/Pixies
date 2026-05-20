@@ -21,8 +21,6 @@ void supprimerBoite(BoiteCartes& boite);
 
 
 
-
-
 // Définition de la défausse(ou pile) de cartes qui est représenté par une liste chainée.
 struct maillon{
     Carte* valeur;
@@ -34,7 +32,7 @@ using Defausse = maillon*;
 void initDefausse(Defausse& d);
 
 // Remplir une défausse avec toutes les cartes d'une boîte.
-void remplir(BoiteCartes boite, Defausse& defausse);
+void remplir(const BoiteCartes& boite, Defausse& defausse);
 
 // Ajouter une carte au début d'une défausse.
 void ajoutDebutDefausse(Defausse& defausse, Carte* ptrCarte);
