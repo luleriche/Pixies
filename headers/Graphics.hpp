@@ -27,6 +27,7 @@ struct MoteurGraphique{
     std::array<sf::Texture, 100> texturesCartes; // Les textures et les emplacements pour les sprites des cartes
     sf::Vector2f tailleCartes;
     std::array<std::optional<sf::Sprite>, 100> spritesCartes; // Les sprites des cartes
+    std::array<sf::Vector2f, 100> scaleFacteursCartes; // Les facteurs de scales des cartes pour pouvoir faire des petites anim
     unsigned int nbSpritesCartes;
 
     sf::Vector2f decalageDos; // Le décalage des cartes face cachée par rapport à celle face visible
@@ -47,9 +48,9 @@ void lancerJeu();
 
 void dessinerTout(MoteurGraphique& mg);
 
-void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre);
+void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre, float facteurTaille);
 
-void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre);
+void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre, float facteurTaille);
 
 // Dessine la grille d'un joueur ainsi que son nom et son nombre de point
 void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur);
