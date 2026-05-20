@@ -450,7 +450,7 @@ void gererFinDeCoup(MoteurGraphique& mg){
         // On met à jour tout pour commencer la prochaine manche
         toutRemettreDansDefausse(*mg.partie);
         if(mg.partie->numeroManche == 3){
-            viderDefausse(mg.partie->defausse);
+            supprimerDefausse(mg.partie->defausse);
             supprimerBoite(mg.partie->boite);
         }
         else{

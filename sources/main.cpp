@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     }
     // Si il y a trois agruments
     else{
+        // On répète 50 fois
         for(unsigned int i = 0; i < 50; ++i){
             // On écrit une partie aléatoire dans le fichier
             ecrirePartieAlea("test"+std::to_string(i)+".txt");

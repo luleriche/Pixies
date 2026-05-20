@@ -54,19 +54,17 @@ void lancerUneNouvellePartie(){
     
     // Génération aléatoire du premier joueur.
     partie.prochainJoueur = rand()%partie.nombreJoueurs;
-
     std::cout << "Le premier joueur sera " << partie.joueurs[partie.prochainJoueur].surnom << std::endl;
-    
-    partie.numeroManche = 1;
-    // Manche 1
 
+    // Manche 1
+    partie.numeroManche = 1;
     lancerManche(partie);
 
     toutRemettreDansDefausse(partie);
     melanger(partie.defausse);
-    ++partie.numeroManche;
-
+    
     // Manche 2
+    partie.numeroManche = 2;
     lancerManche(partie);
 
     toutRemettreDansDefausse(partie);
@@ -74,11 +72,11 @@ void lancerUneNouvellePartie(){
     ++partie.numeroManche;
 
     // Manche 3
+    partie.numeroManche = 3;
     lancerManche(partie);
 
     std::cout << "La partie est terminée." << std::endl;
     toutRemettreDansDefausse(partie);
-    viderDefausse(partie.defausse);
     supprimerDefausse(partie.defausse);
     supprimerBoite(partie.boite);
 }
