@@ -100,12 +100,13 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
     mg.textureFond = sf::Texture("assets/fondBois.png");
 
     // On initialise le rectangle en fond lors du choix de la carte visible
-    mg.fondChoixVisible.setSize(sf::Vector2f(300.f, 180.f));
-    mg.fondChoixVisible.setOrigin(sf::Vector2f(150.f, 90.f));
-    mg.fondChoixVisible.setFillColor(sf::Color(200, 200, 200, 200));
+    sf::Vector2f tailleFondChoix(400.f, 200.f);
+    mg.fondChoixVisible.setSize(tailleFondChoix);
+    mg.fondChoixVisible.setOrigin(tailleFondChoix/2.f);
+    mg.fondChoixVisible.setFillColor(sf::Color(55, 55, 55, 200));
     mg.fondChoixVisible.setOutlineColor(sf::Color::White);
-    mg.fondChoixVisible.setOutlineThickness(2);
-    mg.fondChoixVisible.setPosition(sf::Vector2f(600.f, 350.f));
+    mg.fondChoixVisible.setOutlineThickness(4);
+    mg.fondChoixVisible.setPosition({640.f, 360.f});
 
     // On charge la texture du sélecteur et crée son sprite
     mg.textureSelecteur = sf::Texture("assets/icone-de-feuille-verte.png");
@@ -113,6 +114,7 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
     sf::Vector2u dimTexture = mg.textureSelecteur.getSize();
     mg.selecteur->setScale({80.f / dimTexture.x, 80.f / dimTexture.y});
     mg.selecteur->setOrigin(sf::Vector2f{dimTexture.x / 2.f, dimTexture.y / 2.f});
+    changerEspaceSelecteur(mg, "Pioche");
 }
 
 void dessinerTout(MoteurGraphique& mg){
@@ -158,17 +160,18 @@ void dessinerTout(MoteurGraphique& mg){
         Carte* cartePioche = mg.partie.pioche.cartes[mg.coupActuel[1]-'0'];
         Carte* carteGrille = mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu[cartePioche->chiffre-1].faceVisible;
         // On dessine les deux choix
+        std::array<float, 2> facteurs;
         if(mg.indiceSelecteur == 0){
-            dessinerDosCarte(mg, mg.emplacementsChoixVisible[0]+mg.decalageDos, scale);
-            dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0], scale);
-            dessinerDosCarte(mg, mg.emplacementsChoixVisible[1]+mg.decalageDos, 1);
-            dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1], 1);
+            facteurs = {scale, 1};
         }else{
-            dessinerDosCarte(mg, mg.emplacementsChoixVisible[0]+mg.decalageDos, 1);
-            dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0], 1);
-            dessinerDosCarte(mg, mg.emplacementsChoixVisible[1]+mg.decalageDos, scale);
-            dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1], scale);
+            facteurs = {1, scale};
         }
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[0], facteurs[0]);
+        dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0], facteurs[0]);
+        dessinerDosCarte(mg, mg.emplacementsChoixVisible[1], facteurs[1]);
+        dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1], facteurs[1]);
+    }else if(mg.espaceSelecteur == "Grille"){
+        dessinerDosCarte(mg, mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]-mg.decalageDos, scale);
     }
 
     mettreAJourPositionSelecteur(mg);
@@ -189,7 +192,7 @@ void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre, float fac
 void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre, float facteurTaille){
     // On récupère le sprite qui est à cet indice dans notre liste de sprite
     unsigned int i = mg.nbSpritesCartes - 1;
-    mg.spritesCartes[i]->setPosition(centre);
+    mg.spritesCartes[i]->setPosition(centre+mg.decalageDos);
     mg.spritesCartes[i]->setScale(mg.scaleFacteursCartes[i]*facteurTaille);
     mg.window->draw(*mg.spritesCartes[i]);
 }
@@ -201,22 +204,29 @@ void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
         Carte* carteVisible = j.grilleDeJeu[i].faceVisible;
         Carte* carteCachee = j.grilleDeJeu[i].faceCachee;
         if(carteVisible == nullptr and carteCachee != nullptr)
-            dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i], 1);
+            dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]-mg.decalageDos, 1);
         else{
             if(carteCachee != nullptr)
-                dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]+mg.decalageDos, 1);
+                dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i], 1);
             dessinerCarte(mg, carteVisible, mg.emplacementsGrille[joueur][i], 1);
         }
     }
     // Dessin du nom et des points du joueur 
+    sf::Color couleur;
+    if(mg.partie.prochainJoueur == joueur)
+        couleur = sf::Color::Green;
+    else
+        couleur = sf::Color::White;
     sf::Text ptsTxt(mg.font, std::to_string(j.nbPoints)+" pts", 26);
+    ptsTxt.setFillColor(couleur);
     // On récupère les limites de cahque texte
     int nomTaillePolice = 48;
-    sf::Text nomTxt(mg.font, j.surnom,  nomTaillePolice);
+    sf::Text nomTxt(mg.font, j.surnom, nomTaillePolice);
     while(nomTxt.getLocalBounds().size.x > 2.1*mg.tailleCartes.x){
         nomTaillePolice--;
         nomTxt = sf::Text(mg.font, j.surnom, nomTaillePolice);
     }
+    nomTxt.setFillColor(couleur);
 
     sf::FloatRect nomRect = nomTxt.getLocalBounds();
     sf::FloatRect ptsRect = ptsTxt.getLocalBounds();
@@ -232,7 +242,7 @@ void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
 }
 
 void initialiserDispositionEcran(MoteurGraphique& mg){
-    mg.emplacementsChoixVisible = {sf::Vector2f(500.f, 350.f), sf::Vector2f(700.f, 350.f)};
+    mg.emplacementsChoixVisible = {sf::Vector2f(540.f, 360.f), sf::Vector2f(740.f, 360.f)};
     if(mg.partie.nombreJoueurs == 2){
         for(unsigned int i = 0; i < 4; ++i){
             mg.emplacementsPioche[i] = sf::Vector2f(1120, 110+i*167);
@@ -315,7 +325,7 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
     {
         do // On décale l'indice du selecteur d'un cote jusqu'a ce qu'il soit sur une carte
         { 
-            mg.indiceSelecteur = (mg.indiceSelecteur+cote)%mg.partie.pioche.taille;
+            mg.indiceSelecteur = (mg.partie.pioche.taille+mg.indiceSelecteur+cote)%mg.partie.pioche.taille;
         }while(mg.partie.pioche.cartes[mg.indiceSelecteur] == nullptr);
         mg.positionViseeSelecteur = mg.emplacementsPioche[mg.indiceSelecteur]+mg.tailleCartes/2.f; // On change la position du selecteur
         mg.selecteurEnMouvement = true;
@@ -345,7 +355,7 @@ void gererUnChoix(MoteurGraphique& mg){
     {
         // On connait donc les deux premiers caractères du coup, le joueur et l'indice de la carte dans la pioche
         mg.coupActuel += std::to_string(mg.partie.prochainJoueur) + std::to_string(mg.indiceSelecteur);
-        std::cout << "Coup qui sera joué " << mg.coupActuel << "..." << std::endl;
+        
 
         // On va maintenant changer l'espace du selecteur selon l'emplacement où doit aller la carte choisie dans la grille du prochain joueur
         const Grille& grille = mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu;
@@ -357,9 +367,7 @@ void gererUnChoix(MoteurGraphique& mg){
             // Alors on connait le coup et on peut le jouer, le joueur n'a plus rine à choisir.
             // Le coup est direct et la carte va à l'emplacement de son chiffre
             mg.coupActuel += "d"+ std::to_string(carteChoisi->chiffre-1);
-            std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
             jouerCoup(mg.partie, mg.coupActuel);
-            std::cout << "Coup joué" << std::endl;
             gererFinDeCoup(mg);
         }
         // Si il y a une carte visible et aussi une cachée
@@ -386,9 +394,7 @@ void gererUnChoix(MoteurGraphique& mg){
         // On connait maintenant l'emplacement où va aller la carte
         // On peut donc écrire le coup et le jouer
         mg.coupActuel += std::to_string(mg.indiceSelecteur);
-        std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
         jouerCoup(mg.partie, mg.coupActuel);
-        std::cout << "Coup joué."<< std::endl;
         gererFinDeCoup(mg);
     }
 
@@ -406,16 +412,13 @@ void gererUnChoix(MoteurGraphique& mg){
             // dans la grille
             mg.coupActuel += "c" + std::to_string(mg.partie.pioche.cartes[mg.coupActuel[1]-'0']->chiffre-1);
         // On joue le coup
-        std::cout << "Coup qui sera joué " << mg.coupActuel << std::endl;
         jouerCoup(mg.partie, mg.coupActuel);
-        std::cout << "Coup joué." << std::endl;
         gererFinDeCoup(mg);
     }
 }
 
 void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
     mg.espaceSelecteur = espace;
-    std::cout << "Nouveau espace pour le sélecteur " << espace << std::endl;
     if(mg.espaceSelecteur == "Pioche")
     {
         // On met le selecteur au premier emplacement de la pioche
@@ -423,7 +426,7 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
         // Tant qu'il n'y a pas de carte à l'endroit du sélecteur
         while(mg.partie.pioche.cartes[mg.indiceSelecteur] == nullptr)
             // On décale vers la droite
-            mg.indiceSelecteur = (mg.indiceSelecteur+1)%mg.partie.pioche.taille;
+            mg.indiceSelecteur = (mg.partie.pioche.taille+mg.indiceSelecteur+1)%mg.partie.pioche.taille;
         // On met à jour sa position
         mg.positionViseeSelecteur = mg.emplacementsPioche[mg.indiceSelecteur]+mg.tailleCartes/2.f;
         mg.selecteurEnMouvement = true;
@@ -436,7 +439,7 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
         const Grille& grille = mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu;
         while(grille[mg.indiceSelecteur].faceVisible != nullptr or grille[mg.indiceSelecteur].faceCachee != nullptr)
             // On va à l'emplacement suivant
-            mg.indiceSelecteur =  (mg.indiceSelecteur+1)%9;
+            mg.indiceSelecteur =  (9+mg.indiceSelecteur+1)%9;
         // On met à jour sa position
         mg.positionViseeSelecteur = mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]+mg.tailleCartes/2.f;
         mg.selecteurEnMouvement = true;

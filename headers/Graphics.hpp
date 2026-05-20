@@ -63,7 +63,6 @@ std::string recupNomFichier(const Carte& c);
 
 sf::Color couleurCarte(Carte c);
 
-// Change l'indice du sélecteur et également sa position
 void decalerSelecteur(MoteurGraphique& mg, int cote);
 
 void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace);
