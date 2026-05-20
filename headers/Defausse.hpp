@@ -59,3 +59,6 @@ void afficherNCartes(const Defausse d, unsigned int n);
 
 // Tire une carte precise de la defausse
 Carte* tirerCartePrecise(Defausse & d, Carte c);
+
+// Désallouer une défausse.
+void supprimerDefausse(Defausse& d);

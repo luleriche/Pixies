@@ -5,12 +5,12 @@
 int main(int argc, char **argv)
 {
     srand(time(nullptr));
-    //lancerUneNouvellePartie();
-    //lancerJeu();
     if(argc == 2){
         Partie partie;
         lireFichierPartie(argv[1], partie);
         jouerCoupOrdiEtEcrire(partie, argv[1]);
+        supprimerDefausse(partie.defausse);
+        supprimerBoite(partie.boite);
     }
     else{
         char choix;

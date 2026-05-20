@@ -132,3 +132,11 @@ Carte* tirerCartePrecise(Defausse & d, Carte c){
     else
         return tirerCartePrecise(d->suivant, c);
 }
+
+void supprimerDefausse(Defausse& d){
+    if(d != nullptr){
+        supprimerDefausse(d->suivant);
+        d->valeur = nullptr;
+        delete d;
+    }
+}

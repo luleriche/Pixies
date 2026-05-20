@@ -29,22 +29,14 @@ void lancerUneNouvellePartie(){
     // Création de la partie
     Partie partie;
 
-    // Création des cartes dans la mémoire à l'aide d'une boite de cartes
-    BoiteCartes boite;
-    creerCartesAvecFichier("assets/cartes_pixies.txt", boite);
-    partie.boite = boite;
+    // Création des cartes de la boite
+    creerCartesAvecFichier("assets/cartes_pixies.txt", partie.boite);
 
-    // Chargement des cartes et mélange
-    Defausse defausse;
-    initDefausse(defausse);
-    remplir(boite, defausse);
-    melanger(defausse);
-    partie.defausse = defausse;
+    // Initialisation, remplissage et mélange de la défausse
+    initDefausse(partie.defausse);
+    remplir(partie.boite, partie.defausse);
+    melanger(partie.defausse);
 
-    // Création de la pioche
-    Pioche pioche;
-    partie.pioche = pioche;
-    
     // On demande à l'utilisateur le nombre de joueurs à la partie.
     std::cout << "Le jeu se joue de 2 à 5 joueurs !" << std::endl << "Nombre de joueurs: ";
     std::cin >> partie.nombreJoueurs;
@@ -87,7 +79,8 @@ void lancerUneNouvellePartie(){
     std::cout << "La partie est terminée." << std::endl;
     toutRemettreDansDefausse(partie);
     viderDefausse(partie.defausse);
-    supprimerBoite(boite);
+    supprimerDefausse(partie.defausse);
+    supprimerBoite(partie.boite);
 }
 
 void lancerManche(Partie& partie){
@@ -336,3 +329,5 @@ void afficher(const Partie& partie){
     std::cout <<" Pioche :" << std::endl;
     afficher(partie.pioche);
 }
+
+

@@ -72,6 +72,9 @@ void lancerJeu(){
         dessinerTout(mg);
         mg.window->display();
     }
+
+    supprimerDefausse(partie.defausse);
+    supprimerBoite(partie.boite);
 }
 
 void chargerTextures(MoteurGraphique& mg){
