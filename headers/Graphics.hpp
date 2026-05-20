@@ -15,6 +15,8 @@ struct MoteurGraphique{
 
     sf::Texture textureSelecteur; // La texture du selecteur
     std::optional<sf::Sprite> selecteur; // Sprite du selecteur
+    sf::Vector2f positionViseeSelecteur;
+    bool selecteurEnMouvement;
     std::string espaceSelecteur; // Nom de l'espace ou navigue le sélecteur
     int indiceSelecteur; // Indice de l'endroit ou se trouve le sélecteur dans son espace
     
@@ -69,3 +71,5 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace);
 void gererUnChoix(MoteurGraphique& mg);
 
 void gererFinDeCoup(MoteurGraphique& mg);
+
+void mettreAJourPositionSelecteur(MoteurGraphique& mg);

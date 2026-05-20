@@ -42,6 +42,7 @@ void lancerJeu(){
     mg.coupActuel = "";
     
     mg.window = new sf::RenderWindow(sf::VideoMode({1280, 720}), "Pixies");
+    mg.window->setFramerateLimit(60);
     
     while (mg.window->isOpen() and not (mg.partie.estMancheFinie and mg.partie.numeroManche == 3))
     {   
@@ -111,7 +112,7 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
     mg.selecteur = sf::Sprite(mg.textureSelecteur);
     sf::Vector2u dimTexture = mg.textureSelecteur.getSize();
     mg.selecteur->setScale({80.f / dimTexture.x, 80.f / dimTexture.y});
-    mg.selecteur->setOrigin({dimTexture.x / 2.f, dimTexture.y / 2.f});
+    mg.selecteur->setOrigin(sf::Vector2f{dimTexture.x / 2.f, dimTexture.y / 2.f});
 }
 
 void dessinerTout(MoteurGraphique& mg){
@@ -170,6 +171,7 @@ void dessinerTout(MoteurGraphique& mg){
         }
     }
 
+    mettreAJourPositionSelecteur(mg);
     mg.window->draw(*mg.selecteur); 
 }
 
@@ -315,7 +317,8 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
         { 
             mg.indiceSelecteur = (mg.indiceSelecteur+cote)%mg.partie.pioche.taille;
         }while(mg.partie.pioche.cartes[mg.indiceSelecteur] == nullptr);
-        mg.selecteur->setPosition(mg.emplacementsPioche[mg.indiceSelecteur]+mg.tailleCartes/2.f); // On change la position du selecteur
+        mg.positionViseeSelecteur = mg.emplacementsPioche[mg.indiceSelecteur]+mg.tailleCartes/2.f; // On change la position du selecteur
+        mg.selecteurEnMouvement = true;
     }
     else if(mg.espaceSelecteur == "Grille")
     {
@@ -324,12 +327,14 @@ void decalerSelecteur(MoteurGraphique& mg, int cote){
             mg.indiceSelecteur = (9+mg.indiceSelecteur+cote)%9;
         }while(mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceVisible != nullptr or mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu[mg.indiceSelecteur].faceCachee != nullptr);
 
-        mg.selecteur->setPosition(mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]+mg.tailleCartes/2.f);
+        mg.positionViseeSelecteur = mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]+mg.tailleCartes/2.f;
+        mg.selecteurEnMouvement = true;
     }
     else if(mg.espaceSelecteur == "Choix Visible")
     {
         mg.indiceSelecteur = (mg.indiceSelecteur+1)%2;
-        mg.selecteur->setPosition(mg.emplacementsChoixVisible[mg.indiceSelecteur]+mg.tailleCartes/2.f);
+        mg.positionViseeSelecteur = mg.emplacementsChoixVisible[mg.indiceSelecteur]+mg.tailleCartes/2.f;
+        mg.selecteurEnMouvement = true;
     }
 }
 
@@ -420,7 +425,8 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
             // On décale vers la droite
             mg.indiceSelecteur = (mg.indiceSelecteur+1)%mg.partie.pioche.taille;
         // On met à jour sa position
-        mg.selecteur->setPosition(mg.emplacementsPioche[mg.indiceSelecteur]);
+        mg.positionViseeSelecteur = mg.emplacementsPioche[mg.indiceSelecteur]+mg.tailleCartes/2.f;
+        mg.selecteurEnMouvement = true;
     }
     else if(mg.espaceSelecteur == "Grille")
     {
@@ -432,12 +438,26 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
             // On va à l'emplacement suivant
             mg.indiceSelecteur =  (mg.indiceSelecteur+1)%9;
         // On met à jour sa position
-        mg.selecteur->setPosition(mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]);
+        mg.positionViseeSelecteur = mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]+mg.tailleCartes/2.f;
+        mg.selecteurEnMouvement = true;
     }
     else if(mg.espaceSelecteur == "Choix Visible"){
         // On met le sélecteur à l'emplacement d'indice zero, il y a forcément une carte
         mg.indiceSelecteur = 0;
-        mg.selecteur->setPosition(mg.emplacementsChoixVisible[mg.indiceSelecteur]);
+        mg.positionViseeSelecteur = mg.emplacementsChoixVisible[mg.indiceSelecteur]+mg.tailleCartes/2.f;
+        mg.selecteurEnMouvement = true;
+    }
+}
+
+void mettreAJourPositionSelecteur(MoteurGraphique&mg){
+    if(mg.selecteurEnMouvement){
+        float distance = std::sqrt(std::pow(mg.selecteur->getPosition().x - mg.positionViseeSelecteur.x, 2) + std::pow(mg.selecteur->getPosition().y - mg.positionViseeSelecteur.y, 2));
+        if(distance > 10)
+            mg.selecteur->setPosition(mg.selecteur->getPosition() + (mg.positionViseeSelecteur-mg.selecteur->getPosition())*0.3f);
+        else{
+            mg.selecteur->setPosition(mg.positionViseeSelecteur);
+            mg.selecteurEnMouvement = false;
+        }
     }
 }
 
