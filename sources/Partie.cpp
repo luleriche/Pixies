@@ -34,7 +34,6 @@ void supprimeDernierCoup(ListeDeCoupsPossibles& lc){
 }
 
 
-
 void lancerPartieConsole(){
     // Création de la partie
     Partie partie;
@@ -140,7 +139,6 @@ std::string demanderCoupJoueur(const Partie& partie){
     }
     
     //  -------- Choix de la destination de la carte dans la grille --------
-    
     // Pointeur vers la carte choisie juste avnt
     const Carte* carteChoisi = partie.pioche.cartes[indiceCartePioche];
     // Chiffre de la carte
@@ -152,8 +150,7 @@ std::string demanderCoupJoueur(const Partie& partie){
         std::cout << "La carte y a est sera visible." << std::endl;
         return std::to_string(joueur)+std::to_string(indiceCartePioche)+'d'+std::to_string(chiffreCarte-1);
         
-    
-        // Si il y a une carte visible et pas de carte cachée, il faut faire le choix de laquelle on garde visible
+    // Si il y a une carte visible et pas de carte cachée, il faut faire le choix de laquelle on garde visible
     }else if(griJoueur[chiffreCarte-1].faceCachee == nullptr){
         unsigned int choix;
         std::cout << "Laissez visible 1 ou 2 ?" << std::endl;
@@ -176,7 +173,7 @@ std::string demanderCoupJoueur(const Partie& partie){
         std::cout << "Emplacement validé !" << std::endl;
         std::cout <<  "Choisissez dans quelle case la mettre : ";
         std::cin >> choix;
-        while(griJoueur[choix-1].faceCachee != nullptr or griJoueur[choix-1].faceVisible != nullptr){
+        while(choix < 1 or choix > 9 or griJoueur[choix-1].faceCachee != nullptr or griJoueur[choix-1].faceVisible != nullptr){
             std::cout << "Erreur! Cet emplacement n'est pas vide. Réessayez : ";
             std::cin >> choix;
         }
