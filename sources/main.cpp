@@ -12,7 +12,7 @@ int main(int argc, char **argv)
         supprimerDefausse(partie.defausse);
         supprimerBoite(partie.boite);
     }
-    else{
+    else if(argc == 1){
         char choix;
         std::cout << "Lancer le jeu dans une fenêtre graphique (y/n) : ";
         std::cin >> choix;
@@ -20,6 +20,21 @@ int main(int argc, char **argv)
             lancerJeu();
         else
             lancerUneNouvellePartie();
+    }
+    // Si il y a trois agruments
+    else{
+        for(unsigned int i = 0; i < 50; ++i){
+            // On écrit une partie aléatoire dans le fichier
+            ecrirePartieAlea("test"+std::to_string(i)+".txt");
+            // On simule une lecture de cette partie et l'écriture d'un coup
+            Partie partie;
+            lireFichierPartie("test"+std::to_string(i)+".txt", partie);
+            afficher(partie);
+            jouerCoupOrdiEtEcrire(partie, "test"+std::to_string(i)+".txt");
+            supprimerDefausse(partie.defausse);
+            supprimerBoite(partie.boite);
+        }
+        
     }
     return 0;
 }

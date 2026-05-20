@@ -78,3 +78,15 @@ std::string traduireCoupFichierVersNormal(const std::string& ligneCoup, const Pa
 
 // Récupérer une carte qui est écrit dans le format utilisé dans un fichier de partie
 Carte lireCarteDeFichier(const std::string& txtCarte);
+
+// Récupérer le texte qui décrit une carte pour le mettre dans une fichier de partie
+std::string construireTexteCartePourFichier(const Carte carte);
+
+// Ecrire une partie aléatoire dans un fichier.
+void ecrirePartieAlea(std::string nomFichier);
+
+// Ecrire les cartes qu'il y a dans la pioche d'une partie à la find d'un fichier
+void ecrirePiocheDansFichier(std::string nomFichier, const Partie& partie);
+
+// Ecire le dernier coupd 'une partie dans un fichier.
+void ecrireCoupDansFichier(std::string nomFichier, std::string coup, const Partie& partie);
