@@ -144,7 +144,7 @@ void dessinerTout(MoteurGraphique& mg){
     // On met l'origine au centre et on positionne au bon endroit
     piocheTxt.setOrigin(bounds.position + bounds.size / 2.f);
     piocheTxt.setPosition(mg.txtPiochePosition);
-    if(mg.partie.nombreJoueurs == 2 or mg.partie.nombreJoueurs > 3)
+    if(mg.partie.nombreJoueurs == 2)
         piocheTxt.setRotation(sf::degrees(90));
     mg.window->draw(piocheTxt);
 
@@ -230,12 +230,22 @@ void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
 
     sf::FloatRect nomRect = nomTxt.getLocalBounds();
     sf::FloatRect ptsRect = ptsTxt.getLocalBounds();
-    // On met l'origine des textes au centre
-    nomTxt.setOrigin({nomRect.position.x, nomRect.position.y + nomRect.size.y});
-    ptsTxt.setOrigin({ptsRect.position.x + ptsRect.size.x, ptsRect.position.y + ptsRect.size.y});
-    // On positionne les textes
-    nomTxt.setPosition(mg.emplacementsGrille[joueur][0] - mg.tailleCartes/2.f + sf::Vector2f(0, 1.3*mg.decalageDos.y));
-    ptsTxt.setPosition(mg.emplacementsGrille[joueur][2] + sf::Vector2f(mg.tailleCartes.x/2.f, -mg.tailleCartes.y/2.f) + sf::Vector2f(0, 1.3*mg.decalageDos.y));
+    
+    if(mg.partie.nombreJoueurs != 5){
+        // On met l'origine des textes au centre
+        nomTxt.setOrigin({nomRect.position.x, nomRect.position.y + nomRect.size.y});
+        ptsTxt.setOrigin(ptsRect.position + ptsRect.size);
+        // On positionne les textes
+        nomTxt.setPosition(mg.emplacementsGrille[joueur][0] - mg.tailleCartes/2.f + sf::Vector2f(0, 1.3*mg.decalageDos.y));
+        ptsTxt.setPosition(mg.emplacementsGrille[joueur][2] + sf::Vector2f(mg.tailleCartes.x/2.f, -mg.tailleCartes.y/2.f) + sf::Vector2f(0, 1.3*mg.decalageDos.y));
+    }else{
+        nomTxt.setOrigin({nomRect.position.x, nomRect.position.y + nomRect.size.y});
+        ptsTxt.setOrigin(ptsRect.position + ptsRect.size);
+        nomTxt.setPosition(mg.emplacementsGrille[joueur][2] + sf::Vector2f(mg.tailleCartes.x/2.f - mg.decalageDos.y, -mg.tailleCartes.y/2.f));
+        ptsTxt.setPosition(mg.emplacementsGrille[joueur][8] + sf::Vector2f(mg.tailleCartes.x/2.f - mg.decalageDos.y, mg.tailleCartes.y/2.f - mg.decalageDos.x));
+        nomTxt.setRotation(sf::degrees(90));
+        ptsTxt.setRotation(sf::degrees(90));
+    }
     // On les dessine
     mg.window->draw(nomTxt);
     mg.window->draw(ptsTxt);
@@ -290,6 +300,58 @@ void initialiserDispositionEcran(MoteurGraphique& mg){
                 mg.emplacementsGrille[j][empl] = {centre + decalage};
             }
         }
+    }else if(mg.partie.nombreJoueurs == 4){
+        mg.tailleCartes = sf::Vector2f(65.f, 95.f);
+        sf::Vector2f& t = mg.tailleCartes;
+
+        mg.decalageDos = sf::Vector2f(-6.f, -6.f);
+        sf::Vector2f ecartCarte(12.f, 15.f);
+
+        mg.txtPiochePosition = {150.f, 140.f};
+        for(unsigned int i = 0; i < 4; ++i){
+            mg.emplacementsPioche[i] = {350.f + i * (t.x + ecartCarte.x), 140.f};
+        }
+
+        // 4 grilles alignées verticalement au même niveau (Y = 450)
+        sf::Vector2f centre;
+        for(unsigned int j = 0; j < 4; ++j){
+            // On espace les centres de 300 pixels sur l'axe X
+            centre = {140.f + j * 330.f, 500.f};
+
+            for(int empl = 0; empl < 9; ++empl){
+                sf::Vector2f decalage = {(-1 + empl % 3) * (t.x + ecartCarte.x), (-1 + empl / 3) * (t.y + ecartCarte.y)};
+                mg.emplacementsGrille[j][empl] = {centre + decalage};
+            }
+        }
+    }
+    else if(mg.partie.nombreJoueurs == 5){
+        mg.tailleCartes = sf::Vector2f(65.f, 95.f);
+        sf::Vector2f& t = mg.tailleCartes;
+
+        mg.decalageDos = sf::Vector2f(-6.f, -6.f);
+        sf::Vector2f ecartCarte(12.f, 15.f);
+
+        mg.txtPiochePosition = {200.f, 180.f};
+        for(unsigned int i = 0; i < 5; ++i){
+            mg.emplacementsPioche[i] = {400.f + i * (t.x + ecartCarte.x), 180.f};
+        }
+
+        sf::Vector2f centre;
+        for(unsigned int j = 0; j < 4; ++j){
+            centre = {160.f + j * 300.f, 520.f};
+
+            for(int empl = 0; empl < 9; ++empl){
+                sf::Vector2f decalage = {(-1 + empl % 3) * (t.x + ecartCarte.x), (-1 + empl / 3) * (t.y + ecartCarte.y)};
+                mg.emplacementsGrille[j][empl] = {centre + decalage};
+            }
+        }
+        centre = {1060.f, 180.f};
+
+        for(int empl = 0; empl < 9; ++empl){
+            sf::Vector2f decalage = {(-1 + empl % 3) * (t.x + ecartCarte.x), (-1 + empl / 3) * (t.y + ecartCarte.y)};
+            mg.emplacementsGrille[4][empl] = {centre + decalage};
+        }
+
     }
 }
 
