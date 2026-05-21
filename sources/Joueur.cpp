@@ -13,7 +13,7 @@ void initJoueur(Joueur & j, Pioche* p, std::string surnom, bool estOrdi){
     j.estOrdi = estOrdi;
 }
 
-void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheCommune) {
+void creerJoueurs(std::array<Joueur, 5>& joueurs, const int nbJoueurs, Pioche* piocheCommune) {
     std::string surnom;
     for (int i = 0; i < nbJoueurs; i++) {
         std::cout << "Surnom du joueur " << i+1 << " : ";
@@ -32,6 +32,6 @@ void creerJoueurs(std::array<Joueur, 5>& joueurs, int nbJoueurs, Pioche* piocheC
     }
 }
 
-void ajoutePointsDeGrille(Joueur& j, unsigned int numeroManche){
+void ajoutePointsDeGrille(Joueur& j, const unsigned int numeroManche){
     j.nbPoints += comptePoints(j.grilleDeJeu, numeroManche);
 }

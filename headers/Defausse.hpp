@@ -41,7 +41,7 @@ void ajoutDebutDefausse(Defausse& defausse, Carte* ptrCarte);
 void ajoutFinDefausse(Defausse& defausse, Carte* ptrCarte);
 
 // Récupérer le nombre de cartes dans une défausse.
-unsigned int recupTaille(const Defausse d);
+unsigned int recupTaille(const Defausse& d);
 
 // Mélanger une défausse de manière aléatoire.
 void melanger(Defausse& d);

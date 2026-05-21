@@ -463,7 +463,7 @@ void lireFichierPartie(const std::string nomFichier, Partie& partie){
         std::cout << "Erreur à l'ouverture du fichier de la partie." << std::endl;
 }
 
-void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier){
+void jouerCoupOrdiEtEcrire(Partie& partie, const std::string nomFichier){
     std::cout << "Début du calcul du meilleur coup." << std::endl;
     std::string coup = recupMeilleurCoup(partie, 40, 300);
     std::string coupFichier = traduireCoupNormalVersFichier(coup, partie);
@@ -482,7 +482,7 @@ void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier){
     }
 }
 
-std::string traduireCoupNormalVersFichier(std::string coup, const Partie& partie){
+std::string traduireCoupNormalVersFichier(const std::string coup, const Partie& partie){
     std::string traduction = "";
     // Le premier caractère est le numéro du joueur, dans notre format c'était l'indice du joueur
     traduction += std::to_string(coup[0] - '0' + 1);
@@ -581,7 +581,7 @@ std::string construireTexteCartePourFichier(const Carte carte){
     return txt;
 }
 
-void ecrirePartieAlea(std::string nomFichier){
+void ecrirePartieAlea(const std::string nomFichier){
     //---- Initialisation de la partie avant la lecture dans le fichier ----
     Partie partie;
     
@@ -640,7 +640,7 @@ void ecrirePartieAlea(std::string nomFichier){
     supprimerBoite(partie.boite);
 }
 
-void ecrirePiocheDansFichier(std::string nomFichier, const Partie& partie){
+void ecrirePiocheDansFichier(const std::string nomFichier, const Partie& partie){
     std::ofstream fichier;
     fichier.open(nomFichier, std::ios::app);
     for(unsigned int i = 0; i < 5; ++i){
@@ -649,7 +649,7 @@ void ecrirePiocheDansFichier(std::string nomFichier, const Partie& partie){
     }
 }
 
-void ecrireCoupDansFichier(std::string nomFichier, std::string coup, const Partie& partie){
+void ecrireCoupDansFichier(const std::string nomFichier, const std::string coup, const Partie& partie){
     std::ofstream fichier;
     fichier.open(nomFichier, std::ios::app);
     fichier << std::endl;

@@ -2,8 +2,6 @@
 #include <fstream>
 #include "Defausse.hpp"
 
-
-
 void creerCartesAvecFichier(const std::string nomFic, BoiteCartes& boite){
     std::ifstream fic;
     fic.open(nomFic);
@@ -63,7 +61,7 @@ void ajoutFinDefausse(Defausse& d, Carte* ptrCarte){
         ajoutFinDefausse(d->suivant, ptrCarte); // On ajoute à la fin de la défausse de manière récursive
 }
 
-unsigned int recupTaille(const Defausse d){
+unsigned int recupTaille(const Defausse& d){
     maillon* tmp = d; // On met un pouinteur vers le début de la défausse
     unsigned int taille = 0;
     while(tmp != nullptr){ // Tant que ce pointeur n'est pas nul

@@ -68,10 +68,10 @@ float calculerUCT(const int nbVisitesParent, const int nbVistesEnfant, const flo
 void lireFichierPartie(const std::string nomFichier, Partie& partie);
 
 // Ecrire dans un fichier le meilleur prochain coup à jouer
-void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier);
+void jouerCoupOrdiEtEcrire(Partie& partie, const std::string nomFichier);
 
 // Traduire un coup dans le format de notre projet à celui d'un fichier d'une partie (ex 43d3 -> 5,5 v 0 0,5,v)
-std::string traduireCoupNormalVersFichier(std::string coup, const Partie& partie);
+std::string traduireCoupNormalVersFichier(const std::string coup, const Partie& partie);
 
 // Traduire un coup dans le format d'un fichier à celui de notre format (ex 5,5 v 0 0,5,v -> 43d3)
 std::string traduireCoupFichierVersNormal(const std::string& ligneCoup, const Partie& partie);
@@ -83,10 +83,10 @@ Carte lireCarteDeFichier(const std::string& txtCarte);
 std::string construireTexteCartePourFichier(const Carte carte);
 
 // Ecrire une partie aléatoire dans un fichier.
-void ecrirePartieAlea(std::string nomFichier);
+void ecrirePartieAlea(const std::string nomFichier);
 
 // Ecrire les cartes qu'il y a dans la pioche d'une partie à la find d'un fichier
-void ecrirePiocheDansFichier(std::string nomFichier, const Partie& partie);
+void ecrirePiocheDansFichier(const std::string nomFichier, const Partie& partie);
 
 // Ecire le dernier coupd 'une partie dans un fichier.
-void ecrireCoupDansFichier(std::string nomFichier, std::string coup, const Partie& partie);
+void ecrireCoupDansFichier(const std::string nomFichier, const std::string coup, const Partie& partie);
