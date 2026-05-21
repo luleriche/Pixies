@@ -1,6 +1,6 @@
 # COMMENT JOUER A PIXIES
 
-## Règles du jeu.
+## Règles du jeu
 L'objectif premier de ce jeu est de finir la partie avec le plus de points. 
 Pour cela placer intelligemment vos cartes dans votre grille de jeu. 
 Celles-ci vous rapportent des points en fonction de leur chiffre, de leur couleur et des symboles dessus (spirales ou croix).
@@ -51,14 +51,19 @@ AppleClang  | 12
 
 ### Guide de compilation
 1. Cloner le dépot git sur votre ordinateur.
-2. Créer un dossier build dans le dépot.
-3. Si vous êtes sur Windows. Débrouillez vous pour compiler à l'aide de CMake
-4. SI vous êtes sur Linux et MacOS, placer vous dans le dossier build et entrez ces commandes dans la console.
+2. Créer un dossier build dans le dépot. Et aller dedans.
+3. Générer les fichiers de configuration. _Par exemple sur Linux :_
     ```bash
     cmake ..
-    make
-    ./Pixies.out
     ```
+4. Compiler le projet. _Sur Linux :_
+    ```bash
+    make
+    ```
+5. Lancer votre executable.
 
 ### Prise en main
 Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
+
+## Extras
+Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executbale) pour rajouter le meilleur coup à celui.
