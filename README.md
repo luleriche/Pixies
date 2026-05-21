@@ -62,6 +62,7 @@ AppleClang  | 12
     ```bash
     cmake ..
     ```
+    __Sur Windows le SFML est celui compatible pour 32 bits__
 4. Compiler le projet. _Sur Linux :_
     ```bash
     make
