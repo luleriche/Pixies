@@ -465,7 +465,7 @@ void lireFichierPartie(const std::string nomFichier, Partie& partie){
 
 void jouerCoupOrdiEtEcrire(Partie& partie, std::string nomFichier){
     std::cout << "Début du calcul du meilleur coup." << std::endl;
-    std::string coup = recupMeilleurCoup(partie, 20, 400);
+    std::string coup = recupMeilleurCoup(partie, 40, 300);
     std::string coupFichier = traduireCoupNormalVersFichier(coup, partie);
     std::cout << "Le meilleur coup a été trouvé et traduit pour le fichier." << std::endl;
     std::cout << "Coup " << coup << std::endl << "Coup écrit " << coupFichier << std::endl;

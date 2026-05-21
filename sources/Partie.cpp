@@ -111,7 +111,7 @@ void faireJouerProchain(Partie& partie){
     // Si le prochain joueur est un ordinateur
     if(partie.joueurs[partie.prochainJoueur].estOrdi){
         std::cout << "L'ordinateur choisi son coup..." << std::endl;
-        coup = recupMeilleurCoup(partie, 20, 300); // On trouve son coup grâce à un arbre de recherche
+        coup = recupMeilleurCoup(partie, 40, 300); // On trouve son coup grâce à un arbre de recherche
     }else{
         coup = demanderCoupJoueur(partie); // Sinon on demande dans la console à l'utilisateur d'entrer son coup
     }
