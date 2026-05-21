@@ -43,6 +43,8 @@ _Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur 
 
 # Comment compiler le projet
 
+* __Le Projet n'a pas été réalisé pour se compiler sur Windows__
+
 ### Prérequis 
 1. Un des __compilateur C++__ ci-dessous, pour être compatible avec SFML 3.0.2
 
@@ -58,16 +60,18 @@ AppleClang  | 12
 ### Guide de compilation
 1. Cloner le dépot git sur votre ordinateur.
 2. Créer un dossier build dans le dépot. Et aller dedans.
-3. Générer les fichiers de configuration. _Par exemple sur Linux :_
+3. Générer les fichiers de configuration.
     ```bash
     cmake ..
     ```
-    __Sur Windows le SFML est celui compatible pour 32 bits__
-4. Compiler le projet. _Sur Linux :_
+4. Compiler le projet.
     ```bash
     make
     ```
 5. Lancer votre executable.
+    ```bash
+    ./Pixies
+    ```
 
 ### Prise en main
 Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
