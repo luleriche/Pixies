@@ -41,7 +41,8 @@ __Règles de décompte des points__
 _Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur et compte aussi pour les cartes à spirale spéciale._
 
 
-## Comment compiler le projet
+# Comment compiler le projet
+
 ### Prérequis 
 1. Un des __compilateur C++__ ci-dessous, pour être compatible avec SFML 3.0.2
 
