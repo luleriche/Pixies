@@ -8,6 +8,7 @@ Celles-ci vous rapportent des points en fonction de leur chiffre, de leur couleu
 Les règles du jeu sont disponibles en détail ici -> [Règles du Pixies](https://www.nos-jeux-de-societe.fr/wp-content/uploads/2024/03/PIXIES-regles-du-jeu-FR-www.nos-jeux-de-societe.fr_.pdf).
 
 __Déroulement d'une manche__
+
 Une manche est divisée en plusieurs tours de jeu, et se termine à la fin d'un tour si l'un des joueurs n'a plus aucun emplacement vide dans sa zone.
 
 __Lors d'un tour de jeu__ 
@@ -18,7 +19,7 @@ __Lors d'un tour de jeu__
 
 _Attention, si vous jouez à deux, il faut tirer 4 cartes de la défausse et chaque personne joue alors deux fois._
 
-__Règle de placement__
+__Règles de placement__
 
 Votre grille de jeu se compose de 9 emplacements numérotés de 1 à 9 formant une grille de 3 par 3. 
 Lorsque vous choisissez une carte, plusieurs cas sont possibles :
@@ -37,7 +38,7 @@ __Règles de décompte des points__
 2. Comptez ensuite les points de validation. Chaque emplacement validé vous rapporte autant de points que le chiffre indiqué dessus.
 3. Enfin, rajouter les points de zone. Une zone de couleurs est formée par au moins deux couleurs qui sont côte à côte (pas en diagonale). Chaque carte de votre plus grande zone vous rapporte 2 points à la première manche, 3 à la seconde et 4 à la dernière manche.
 
-Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur et compte aussi pour les cartes à spirale spéciale.
+_Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur et compte aussi pour les cartes à spirale spéciale._
 
 
 ## Comment compiler le projet
@@ -70,4 +71,4 @@ AppleClang  | 12
 Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
 
 ## Extras
-Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executbale) pour rajouter le meilleur coup à celui.
+Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executable) pour rajouter le meilleur coup à celui-ci.
