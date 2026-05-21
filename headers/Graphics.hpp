@@ -25,6 +25,7 @@ struct MoteurGraphique{
     std::array<sf::Vector2f, 2> emplacementsChoixVisible;
 
     sf::RectangleShape fondChoixVisible; // Rectangle de fond lors du choix de quelle carte garder visible
+    sf::RectangleShape fondOrdi;
 
     std::array<sf::Texture, 100> texturesCartes; // Les textures et les emplacements pour les sprites des cartes
     sf::Vector2f tailleCartes;

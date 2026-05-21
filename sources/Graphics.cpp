@@ -62,7 +62,7 @@ void lancerJeu(){
                 else if (keyPressed->code == sf::Keyboard::Key::Left) {
                     decalerSelecteur(mg, -1);
                 }
-                else if (keyPressed->code == sf::Keyboard::Key::Enter) {
+                else if (keyPressed->code == sf::Keyboard::Key::Enter and not mg.partie.joueurs[mg.partie.prochainJoueur].estOrdi) {
                     gererUnChoix(mg);
                 }
             }
@@ -71,6 +71,23 @@ void lancerJeu(){
         mg.window->clear(sf::Color::Black);
         dessinerTout(mg);
         mg.window->display();
+        // Tant que c'est à l'ordi de jouer après
+        if(mg.partie.joueurs[mg.partie.prochainJoueur].estOrdi and not mg.partie.estMancheFinie){
+            // On ecrit que l'ordi réflchi
+            sf::Text ordiAttente(mg.font, "Attente du coup de l'ordi.", 43);
+            sf::Rect txtRect = ordiAttente.getLocalBounds();
+            ordiAttente.setFillColor(sf::Color::Red);
+            ordiAttente.setOrigin(txtRect.position + txtRect.size /2.f);
+            ordiAttente.setPosition({640.f, 360.f});
+            dessinerTout(mg);
+            mg.window->draw(mg.fondOrdi);
+            mg.window->draw(ordiAttente);
+            mg.window->display();
+            // On fait jouer le prochain joueur en mode ordi
+            jouerCoup(mg.partie, recupMeilleurCoup(mg.partie, 40, 400));
+            gererFinDeCoup(mg);
+        }
+        
     }
     // Quand on quite on affiche les points dans la console
     std::cout << "La partie est terminée. Voici les scores :" << std::endl;
@@ -124,6 +141,14 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
     mg.selecteur->setScale({80.f / dimTexture.x, 80.f / dimTexture.y});
     mg.selecteur->setOrigin(sf::Vector2f{dimTexture.x / 2.f, dimTexture.y / 2.f});
     changerEspaceSelecteur(mg, "Pioche");
+
+    // On initialise le fond quand l'ordi réfléchi
+    mg.fondOrdi = sf::RectangleShape({400.f, 200.f});
+    mg.fondOrdi.setOrigin({200.f, 100.f});
+    mg.fondOrdi.setPosition({640.f, 360.f});
+    mg.fondOrdi.setFillColor(sf::Color(50, 50, 50, 200));
+    mg.fondOrdi.setOutlineColor(sf::Color::White);
+    mg.fondOrdi.setOutlineThickness(4);
 }
 
 void dessinerTout(MoteurGraphique& mg){
@@ -468,7 +493,6 @@ void gererUnChoix(MoteurGraphique& mg){
             changerEspaceSelecteur(mg, "Choix Visible");
         }
     }
-
 
     // Si on attendait un chois parmi les emplacements de la grille
     else if(mg.espaceSelecteur == "Grille")
