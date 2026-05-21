@@ -38,15 +38,18 @@ void lancerJeu(){
     initialiserTexturesEtSprites(mg);
     mg.font = sf::Font("assets/font.ttf");
 
+    // On initialise l'espace du selecteur et le coup actuel
     mg.espaceSelecteur = "Pioche";
     mg.coupActuel = "";
     
+    // On crée la fenêtre et on met une limite aux fps
     mg.window = new sf::RenderWindow(sf::VideoMode({1280, 720}), "Pixies");
     mg.window->setFramerateLimit(60);
     
+    // Tant que la fenêtre est ouverte et que la partie n'est pas finie
     while (mg.window->isOpen() and not (mg.partie.estMancheFinie and mg.partie.numeroManche == 3))
-    {   
-
+    {      
+        // On regarde pour les input
         while (const std::optional event = mg.window->pollEvent())
         {
             if (event->is<sf::Event::Closed>()){
@@ -64,17 +67,23 @@ void lancerJeu(){
                 }
             }
         }
+        // On dessine tout après avoir nettoyer l'écran
         mg.window->clear(sf::Color::Black);
         dessinerTout(mg);
         mg.window->display();
     }
+    // Quand on quite on affiche les points dans la console
+    std::cout << "La partie est terminée. Voici les scores :" << std::endl;
+    for(unsigned int i = 0; i < mg.partie.nombreJoueurs; ++i){
+        std::cout << mg.partie.joueurs[i].surnom << "  " << mg.partie.joueurs[i].nbPoints <<"pts" << std::endl;
+    }
+    // On libère la mémoire
     supprimerDefausse(mg.partie.defausse);
     supprimerBoite(mg.partie.boite);
 }
 
 void initialiserTexturesEtSprites(MoteurGraphique& mg){
-    
-    // Creation des sprites des cartes
+    // ------ Creation des sprites des cartes -----
     mg.nbSpritesCartes = mg.partie.boite.nbCartes + 1; // On note le nombre de sprites, c'est le nombre de cartes + 1 pour le dos d'une carte
     std::cout << "Chargement des textures et création des sprites." << std::endl;
     for(unsigned int i = 0; i < mg.nbSpritesCartes; ++i){
@@ -120,6 +129,7 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
 void dessinerTout(MoteurGraphique& mg){
     // Temps depuis le début pour les animations
     float t = mg.clock.getElapsedTime().asSeconds();
+    // Facteur d'agranddisement pour les animations
     float scale = 1.0 + 0.06f * std::sin(t * 2.5);
 
     // Affichage du fond
@@ -127,13 +137,13 @@ void dessinerTout(MoteurGraphique& mg){
     fond.setTexture(&mg.textureFond);
     mg.window->draw(fond);
 
-
     // Affichage des cartes de la pioche et de son texte
     for(unsigned int i = 0; i < mg.partie.pioche.taille; ++i){
         Carte* carte = mg.partie.pioche.cartes[i];
         if(carte != nullptr){
+            // Si la carte est à l'emplacement ou est le selecteur
             if(mg.espaceSelecteur == "Pioche" and mg.indiceSelecteur == static_cast<int>(i))
-                dessinerCarte(mg, carte, mg.emplacementsPioche[i], scale);
+                dessinerCarte(mg, carte, mg.emplacementsPioche[i], scale); // On la dessine agrandi un peu
             else
                 dessinerCarte(mg, carte, mg.emplacementsPioche[i], 1);
         }
@@ -144,7 +154,7 @@ void dessinerTout(MoteurGraphique& mg){
     // On met l'origine au centre et on positionne au bon endroit
     piocheTxt.setOrigin(bounds.position + bounds.size / 2.f);
     piocheTxt.setPosition(mg.txtPiochePosition);
-    if(mg.partie.nombreJoueurs == 2)
+    if(mg.partie.nombreJoueurs == 2) // A deux joueurs le texte est a la vertical
         piocheTxt.setRotation(sf::degrees(90));
     mg.window->draw(piocheTxt);
 
@@ -156,26 +166,31 @@ void dessinerTout(MoteurGraphique& mg){
 
     // Si on est dans le choix de la carte visible
     if(mg.espaceSelecteur == "Choix Visible"){
-        mg.window->draw(mg.fondChoixVisible);
+        mg.window->draw(mg.fondChoixVisible); // On dessine le fond
+        // On récupère les deux cartes
         Carte* cartePioche = mg.partie.pioche.cartes[mg.coupActuel[1]-'0'];
         Carte* carteGrille = mg.partie.joueurs[mg.partie.prochainJoueur].grilleDeJeu[cartePioche->chiffre-1].faceVisible;
-        // On dessine les deux choix
+        // On met selon la position du selecteur, les facteurs d'agrandissements des deux emplacements
         std::array<float, 2> facteurs;
         if(mg.indiceSelecteur == 0){
             facteurs = {scale, 1};
         }else{
             facteurs = {1, scale};
         }
+        // On dessine les 4 cartes (2 visibles + 2 cachées)
         dessinerDosCarte(mg, mg.emplacementsChoixVisible[0], facteurs[0]);
         dessinerCarte(mg, cartePioche, mg.emplacementsChoixVisible[0], facteurs[0]);
         dessinerDosCarte(mg, mg.emplacementsChoixVisible[1], facteurs[1]);
         dessinerCarte(mg, carteGrille, mg.emplacementsChoixVisible[1], facteurs[1]);
-    }else if(mg.espaceSelecteur == "Grille"){
+    }
+    // Sinon si on est en train de choisir un emplacement dans la grille
+    else if(mg.espaceSelecteur == "Grille"){
+        // On dessine un dos de carte ou est le selecteur
         dessinerDosCarte(mg, mg.emplacementsGrille[mg.partie.prochainJoueur][mg.indiceSelecteur]-mg.decalageDos, scale);
     }
 
     mettreAJourPositionSelecteur(mg);
-    mg.window->draw(*mg.selecteur); 
+    mg.window->draw(*mg.selecteur);
 }
 
 void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre, float facteurTaille){
@@ -198,17 +213,22 @@ void dessinerDosCarte(MoteurGraphique& mg, sf::Vector2f centre, float facteurTai
 }
 
 void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
+    float facteurCartes;
+    if(mg.partie.prochainJoueur == joueur)
+        facteurCartes = 1;
+    else
+        facteurCartes = 0.8;
     // On dessine les cartes de la grille du joueur
     const Joueur& j = mg.partie.joueurs[joueur];
     for(unsigned int i = 0; i < 9; ++i){
         Carte* carteVisible = j.grilleDeJeu[i].faceVisible;
         Carte* carteCachee = j.grilleDeJeu[i].faceCachee;
         if(carteVisible == nullptr and carteCachee != nullptr)
-            dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]-mg.decalageDos, 1);
+            dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i]-mg.decalageDos, facteurCartes);
         else{
             if(carteCachee != nullptr)
-                dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i], 1);
-            dessinerCarte(mg, carteVisible, mg.emplacementsGrille[joueur][i], 1);
+                dessinerDosCarte(mg, mg.emplacementsGrille[joueur][i], facteurCartes);
+            dessinerCarte(mg, carteVisible, mg.emplacementsGrille[joueur][i], facteurCartes);
         }
     }
     // Dessin du nom et des points du joueur 
@@ -535,8 +555,12 @@ void gererFinDeCoup(MoteurGraphique& mg){
         // Si c'est la fin de la dernière manche
         if(mg.partie.numeroManche == 3)
         {
-            supprimerDefausse(mg.partie.defausse);
-            supprimerBoite(mg.partie.boite);
+            // On fait tout ça pour pas que ça crash mais l'app va se fermer direct de toute manière
+            melanger(mg.partie.defausse);
+            remplirPioche(mg.partie.pioche, mg.partie.defausse);
+            changerEspaceSelecteur(mg, "Pioche");
+            // On remet le prochain coup vide
+            mg.coupActuel = "";
         }
         // Sinon
         else{

@@ -5,7 +5,6 @@
 
 #include "Partie.hpp"
 
-
 struct MoteurGraphique{
     sf::RenderWindow* window;
     Partie partie;
@@ -34,7 +33,6 @@ struct MoteurGraphique{
     unsigned int nbSpritesCartes;
 
     sf::Vector2f decalageDos; // Le décalage des cartes face cachée par rapport à celle face visible
-    
     
     // L'emplacement du texte pioche
     sf::Vector2f txtPiochePosition;

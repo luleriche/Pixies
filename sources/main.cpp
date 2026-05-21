@@ -6,10 +6,11 @@ int main(int argc, char **argv)
 {
     srand(time(nullptr));
     if(argc == 2){
+        // On créer un partie
         Partie partie;
-        lireFichierPartie(argv[1], partie);
-        jouerCoupOrdiEtEcrire(partie, argv[1]);
-        supprimerDefausse(partie.defausse);
+        lireFichierPartie(argv[1], partie); // On lit la partie du fichier
+        jouerCoupOrdiEtEcrire(partie, argv[1]); // On écrit le coup dans le fichier
+        supprimerDefausse(partie.defausse); // On désalloue les emplacements mémoire
         supprimerBoite(partie.boite);
     }
     else if(argc == 1){
@@ -20,22 +21,6 @@ int main(int argc, char **argv)
             lancerJeu();
         else
             lancerPartieConsole();
-    }
-    // Si il y a trois agruments
-    else{
-        // On répète 50 fois
-        for(unsigned int i = 0; i < 50; ++i){
-            // On écrit une partie aléatoire dans le fichier
-            ecrirePartieAlea("test"+std::to_string(i)+".txt");
-            // On simule une lecture de cette partie et l'écriture d'un coup
-            Partie partie;
-            lireFichierPartie("test"+std::to_string(i)+".txt", partie);
-            afficher(partie);
-            jouerCoupOrdiEtEcrire(partie, "test"+std::to_string(i)+".txt");
-            supprimerDefausse(partie.defausse);
-            supprimerBoite(partie.boite);
-        }
-        
     }
     return 0;
 }
