@@ -9,7 +9,7 @@ void initEmplacement(emplacementGrille & emplGrille){
     emplGrille.faceVisible = nullptr;
 }
 
-void afficher(emplacementGrille emplGrille){
+void afficher(const emplacementGrille& emplGrille){
     if(emplGrille.faceCachee == nullptr)
         std::cout << "     ";
     else
@@ -22,13 +22,13 @@ void afficher(emplacementGrille emplGrille){
     std::cout<<std::endl;
 }
 
-void initGrille(Grille & g){
+void initGrille(Grille& g){
     for( int i = 0; i<9; ++i){
         initEmplacement(g[i]);
     }
 }
 
-void afficherGrille(Grille g){
+void afficherGrille(const Grille& g){
     std::cout << std::endl;
     std::cout << "------------------------------------" << std::endl;
 
@@ -101,14 +101,14 @@ void ajouterCarte(Grille& g, Carte* c){
     }
 }
 
-bool finJeu(Grille g){
+bool finJeu(const Grille& g){
     unsigned int i = 0;
     while(i < 9 and (g[i].faceCachee != nullptr or g[i].faceVisible != nullptr))
         ++i;
     return i == 9;
 }
 
-int comptePoints(Grille g, unsigned int numeroManche){
+int comptePoints(const Grille& g, const unsigned int numeroManche){
     int points = 0;
 
     // Addition des spriales et des croix
@@ -121,7 +121,7 @@ int comptePoints(Grille g, unsigned int numeroManche){
     return points;
 }
 
-int compteSpirales(Grille g){
+int compteSpirales(const Grille& g){
     int points = 0;
     for(int i = 0; i < 9; ++i){
         // Si il y a une carte face visible
@@ -136,7 +136,7 @@ int compteSpirales(Grille g){
     return points;
 }
 
-unsigned int compteCarteCouleur(Grille g, char couleur){
+unsigned int compteCarteCouleur(const Grille& g, const char couleur){
     unsigned int nombre = 0;
     // On parcourts les cartes de la grille
     for(int i = 0; i<9; ++i){
@@ -147,7 +147,7 @@ unsigned int compteCarteCouleur(Grille g, char couleur){
     return nombre;
 }
 
-unsigned int comptePointsAvecValidation(Grille g){
+unsigned int comptePointsAvecValidation(const Grille& g){
     unsigned int points = 0;
     for(int i = 0; i<9; ++i){
         if(g[i].faceVisible != nullptr and g[i].faceCachee != nullptr)
@@ -156,7 +156,7 @@ unsigned int comptePointsAvecValidation(Grille g){
     return points;
 }
 
-unsigned int comptePointsZone(Grille g, unsigned int numManche){
+unsigned int comptePointsZone(const Grille& g, const unsigned int numManche){
     // Création d'un tableau de caractères qui représente les couleurs à la grille
     std::array<std::array<char, 3>, 3> tCouleurs;
     // Création d'un tableau qui va garder la position des cartes multicolores
@@ -214,7 +214,7 @@ unsigned int comptePointsZone(Grille g, unsigned int numManche){
         return 0;
 }
 
-unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleurs, std::array<std::array<bool, 3>, 3>& dejaVisite, int col, int ligne, char couleur){
+unsigned int tailleExpansionCouleur(const std::array<std::array<char, 3>, 3>& tabCouleurs, std::array<std::array<bool, 3>, 3>& dejaVisite, int col, int ligne, char couleur){
     // Si la case de départ est hors grille, 
     // OU Si la case a deja été visitée
     // OU Si la couleur de la case de départ n'est pas celle demandée et qu'elle n'est pas multicolore
@@ -234,10 +234,10 @@ unsigned int tailleExpansionCouleur(std::array<std::array<char, 3>, 3> tabCouleu
    
 }
 
-bool emplacementEstValide(Grille g, unsigned int indice){
+bool emplacementEstValide(const Grille& g, const unsigned int indice){
     return g[indice].faceCachee != nullptr and g[indice].faceVisible != nullptr;
 }
 
-bool estVideEmplacement(Grille g, unsigned int indice){
+bool estVideEmplacement(const Grille& g, const unsigned int indice){
     return g[indice].faceCachee == nullptr and g[indice].faceVisible == nullptr;
 }
