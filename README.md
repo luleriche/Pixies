@@ -59,16 +59,24 @@ AppleClang  | 12
 
 ### Guide de compilation
 1. Cloner le dépot git sur votre ordinateur.
-2. Créer un dossier build dans le dépot. Et aller dedans.
-3. Générer les fichiers de configuration.
+   ```bash
+    git clone https://github.com/luleriche/Pixies
+    cd Pixies
+    ```
+3. Créer un dossier build dans le dépot. Et aller dedans.
+   ```bash
+    mkdir build
+    cd build
+    ```
+4. Générer les fichiers de configuration.
     ```bash
     cmake ..
     ```
-4. Compiler le projet.
+5. Compiler le projet.
     ```bash
     make
     ```
-5. Lancer votre executable.
+6. Lancer votre executable.
     ```bash
     ./Pixies
     ```
