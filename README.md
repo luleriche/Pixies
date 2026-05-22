@@ -1,4 +1,64 @@
-# COMMENT JOUER A PIXIES
+# Comment compiler le projet
+
+* __Le projet a été conçu pour se compiler sur Linux, vous pourriez faire face à des problèmes de compatibilité si vous êtes sur un autre système d'exploitation. Cela reste plus facile sur macOS que sur Windows.__
+
+### Prérequis 
+1. L'un des __compilateurs C++__ ci-dessous, pour être compatible avec SFML 3, sur Linux utilisez GCC 64 bits.
+
+Compilateur | Version minimum
+------------|-------------
+MSVC        | 16 (VS 2019)
+GCC         | 9
+Clang       | 9
+AppleClang  | 12
+
+2. __Cmake__ dans sa version 3.18 ou plus récente.
+
+3. Avoir téléchargé et décompressé SFML 3.0.2 pour Linux accessible via [ce lien](https://www.sfml-dev.org/download/sfml/3.0.2/#linux)
+
+3. SFML peut aussi avoir besoin de certaines dépendences externes. Pour voir la liste de ce que vous devez avoir d'installé [cliquez ici](https://www.sfml-dev.org/faq/general/#dependencies).
+
+### Guide de compilation
+1. Cloner le dépôt git sur votre ordinateur.
+   ```bash
+    git clone https://github.com/luleriche/Pixies
+    cd Pixies
+    ```
+
+2. Créer un dossier "Graphics" dans le dépôt. Mettez dedans le dossier SFML 3.0.2 téléchargé précédemment. Veillez à ce qu'il se nomme bien "SFML-3.0.2" si vous êtes sur Linux, et "SFML-3.0.2-macos" si vous êtes sur macOS. __Si vous ne souhaitez pas faire cette étape, il vous faudra modifier le CMakeLists.txt__
+   ```bash
+    mkdir Graphics
+    mv chemin/vers/SFML-3.0.2 Graphics/
+    ``` 
+
+3. Créer un dossier "build" dans le dépôt. Aller dedans.
+   ```bash
+    mkdir build
+    cd build
+    ```
+4. Générer les fichiers de configuration.
+    ```bash
+    cmake ..
+    ```
+5. Compiler le projet.
+    ```bash
+    make
+    ```
+6. Lancer votre exécutable.
+    ```bash
+    ./Pixies
+    ```
+
+### Prise en main
+Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
+Pour déplacer le sélecteur utilisez les flèches, et pour valider votre choix appuyez sur Entrée.
+
+## Extras
+Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executable) pour y ajouter le meilleur coup à celui-ci.
+__Attention l'exécutable doit toujours avoir à ses côtés le dossier assets pour lire les cartes du jeu.__
+
+
+# Comment jouer à Pixies
 
 ## Règles du jeu
 L'objectif premier de ce jeu est de finir la partie avec le plus de points. 
@@ -41,57 +101,3 @@ __Règles de décompte des points__
 _Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur et comptent aussi pour les cartes à spirale spéciale._
 
 
-# Comment compiler le projet
-
-* __Le projet a été conçu pour se compiler sur Linux, vous pourriez faire face à des problèmes de compatibilité si vous êtes sur un autre système d'exploitation. Cela reste plus facile sur macOS que sur Windows.__
-
-### Prérequis 
-1. L'un des __compilateurs C++__ ci-dessous, pour être compatible avec SFML 3, sur Linux utilisez GCC 64 bits.
-
-Compilateur | Version minimum
-------------|-------------
-MSVC        | 16 (VS 2019)
-GCC         | 9
-Clang       | 9
-AppleClang  | 12
-
-2. __Cmake__ dans sa version 3.18 ou plus récente.
-
-3. Avoir téléchargé et décompressé SFML 3.0.2 pour Linux accessible via [ce lien](https://www.sfml-dev.org/download/sfml/3.0.2/#linux)
-
-3. SFML peut aussi avoir besoin de certaines dépendences externes. Pour voir la liste de ce que vous devez avoir d'installé [cliquez ici](https://www.sfml-dev.org/faq/general/#dependencies).
-
-### Guide de compilation
-1. Cloner le dépôt git sur votre ordinateur.
-   ```bash
-    git clone https://github.com/luleriche/Pixies
-    cd Pixies
-    ```
-
-2. Créer un dossier "Graphics" dans le dépôt. Mettez dedans le dossier SFML 3.0.2 téléchargé précédemment. Renommer le dossier de SFML "SFML-3.0.2" si vous êtes sur Linux, si vous êtes sur macOS "SFML-3.0.2-macos". __Si vous ne souhaitez pas faire cette étape, il vous faudra modifier le CMakeLists.txt__
-
-3. Créer un dossier "build" dans le dépôt. Aller dedans.
-   ```bash
-    mkdir build
-    cd build
-    ```
-4. Générer les fichiers de configuration.
-    ```bash
-    cmake ..
-    ```
-5. Compiler le projet.
-    ```bash
-    make
-    ```
-6. Lancer votre exécutable.
-    ```bash
-    ./Pixies
-    ```
-
-### Prise en main
-Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
-Pour déplacer le sélecteur utilisez les flèches, et pour valider votre choix appuyez sur Entrée.
-
-## Extras
-Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executable) pour y ajouter le meilleur coup à celui-ci.
-__Attention l'exécutable doit toujours avoir à ses côtés le dossier assets pour lire les cartes du jeu.__
