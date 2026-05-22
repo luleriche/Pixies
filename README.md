@@ -25,7 +25,7 @@ AppleClang  | 12
     cd Pixies
     ```
 
-2. Créer un dossier "Graphics" dans le dépôt. Mettez dedans le dossier SFML 3.0.2 téléchargé précédemment. Veillez à ce qu'il se nomme bien "SFML-3.0.2" si vous êtes sur Linux, et "SFML-3.0.2-macos" si vous êtes sur macOS. __Si vous ne souhaitez pas déplacer ce fichier ou compiler sur Windows, il vous faudra modifier le CMakeLists.txt__
+2. Créer un dossier "Graphics" dans le dépôt. Mettez dedans le dossier SFML 3.0.2 téléchargé précédemment. Veillez à ce qu'il se nomme bien "SFML-3.0.2" si vous êtes sur Linux, et "SFML-3.0.2-macos" si vous êtes sur macOS. __Si vous ne souhaitez pas déplacer ce dossier ou compiler sur Windows, il vous faudra modifier le CMakeLists.txt__
    ```bash
     mkdir Graphics
     mv chemin/vers/SFML-3.0.2 Graphics/
