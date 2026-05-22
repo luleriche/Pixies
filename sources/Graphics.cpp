@@ -46,7 +46,7 @@ void lancerJeu(){
     mg.window = new sf::RenderWindow(sf::VideoMode({1280, 720}), "Pixies");
     mg.window->setFramerateLimit(60);
     
-    // Tant que la fenêtre est ouverte et que la partie n'est pas finie
+    // Boucle de jeu tant que la fenêtre est ouverte et que la partie n'est pas finie
     while (mg.window->isOpen() and not (mg.partie.estMancheFinie and mg.partie.numeroManche == 3))
     {      
         // On regarde pour les input
@@ -55,6 +55,7 @@ void lancerJeu(){
             if (event->is<sf::Event::Closed>()){
                 mg.window->close();
             }
+            // Si l'evenement était l'appuie sur une touche
             else if(const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->code == sf::Keyboard::Key::Right) {
                     decalerSelecteur(mg, 1);
@@ -79,7 +80,7 @@ void lancerJeu(){
         }
         
     }
-    // Ensuite quand la partie est finie
+    // Ensuite quand la partie est finie, on lance la boucle qui affiche les scores
     while(mg.window->isOpen()){
         // On ferme la fenêtre si on appuie sur entrer ou sur la croix.
         while (const std::optional event = mg.window->pollEvent())
@@ -93,14 +94,15 @@ void lancerJeu(){
                 }
             }
         }
-        // On dessine les scores
+        // Nettoie la fenêtre
         mg.window->clear(sf::Color::Black);
-        // Affichage du fond
+        // On dessine le fond en bois
         sf::RectangleShape fond({1280, 720});
         fond.setTexture(&mg.textureFond);
         mg.window->draw(fond);
-        // Pour chaque joueurs
+        // Pour chaque joueur
         for(unsigned int i = 0; i < mg.partie.nombreJoueurs; ++i){
+            // On écrit son nom et son score
             std::string string = mg.partie.joueurs[i].surnom + " " + std::to_string(mg.partie.joueurs[i].nbPoints) + "pts";
             sf::Text joueurText(mg.font, string, 40);
             sf::Rect rect = joueurText.getLocalBounds();
@@ -108,21 +110,16 @@ void lancerJeu(){
             joueurText.setPosition({640.f, 320.f + 60*i});
             mg.window->draw(joueurText);
         }
-        // Dessin du texte pour quitter
+        // On écrit aussi un texte pour expliquer comment quitter
         sf::Text quitterText(mg.font, "Appuyer sur ENTRER pour quitter", 40);
         sf::Rect rect = quitterText.getLocalBounds();
         quitterText.setOrigin(rect.position + rect.size / 2.f);
         quitterText.setPosition({640.f, 320.f + 60*mg.partie.nombreJoueurs});
         mg.window->draw(quitterText);
-        // Mettre a jour l'affichage
+        // On met à jour l'affichage
         mg.window->display();
     }
-    // Quand on quite on affiche les points dans la console
-    std::cout << "La partie est terminée. Voici les scores :" << std::endl;
-    for(unsigned int i = 0; i < mg.partie.nombreJoueurs; ++i){
-        std::cout << mg.partie.joueurs[i].surnom << "  " << mg.partie.joueurs[i].nbPoints <<"pts" << std::endl;
-    }
-    // On libère la mémoire
+    // Quand on quite on libère la mémoire, les seuls new sont fait dans la boite et la défausse.
     supprimerDefausse(mg.partie.defausse);
     supprimerBoite(mg.partie.boite);
 }
@@ -171,8 +168,8 @@ void initialiserTexturesEtSprites(MoteurGraphique& mg){
     changerEspaceSelecteur(mg, "Pioche");
 
     // On initialise le fond quand l'ordi réfléchi
-    mg.fondOrdi = sf::RectangleShape({400.f, 200.f});
-    mg.fondOrdi.setOrigin({200.f, 100.f});
+    mg.fondOrdi = sf::RectangleShape({550.f, 200.f});
+    mg.fondOrdi.setOrigin({275.f, 100.f});
     mg.fondOrdi.setPosition({640.f, 360.f});
     mg.fondOrdi.setFillColor(sf::Color(50, 50, 50, 200));
     mg.fondOrdi.setOutlineColor(sf::Color::White);
@@ -248,7 +245,7 @@ void dessinerTout(MoteurGraphique& mg){
     // Si le prochain jouer est un ordi
     if(mg.partie.joueurs[mg.partie.prochainJoueur].estOrdi){
         // On ecrit que l'ordi réflchi
-        sf::Text ordiAttente(mg.font, "Attente du coup de l'ordi.", 43);
+        sf::Text ordiAttente(mg.font, "Attente du coup de " + mg.partie.joueurs[mg.partie.prochainJoueur].surnom, 36);
         sf::Rect txtRect = ordiAttente.getLocalBounds();
         ordiAttente.setFillColor(sf::Color::Red);
         ordiAttente.setOrigin(txtRect.position + txtRect.size /2.f);
@@ -337,6 +334,8 @@ void dessinerJoueur(MoteurGraphique& mg, unsigned int joueur){
 }
 
 void initialiserDispositionEcran(MoteurGraphique& mg){
+    // Initialisation des emplacements des cartes et du selecteur
+    // Pas beacuoup de commentaires car ce sont juste des positions.
     mg.emplacementsChoixVisible = {sf::Vector2f(540.f, 360.f), sf::Vector2f(740.f, 360.f)};
     if(mg.partie.nombreJoueurs == 2){
         for(unsigned int i = 0; i < 4; ++i){
@@ -397,10 +396,8 @@ void initialiserDispositionEcran(MoteurGraphique& mg){
             mg.emplacementsPioche[i] = {350.f + i * (t.x + ecartCarte.x), 140.f};
         }
 
-        // 4 grilles alignées verticalement au même niveau (Y = 450)
         sf::Vector2f centre;
         for(unsigned int j = 0; j < 4; ++j){
-            // On espace les centres de 300 pixels sur l'axe X
             centre = {140.f + j * 330.f, 500.f};
 
             for(int empl = 0; empl < 9; ++empl){
@@ -431,7 +428,6 @@ void initialiserDispositionEcran(MoteurGraphique& mg){
             }
         }
         centre = {1060.f, 180.f};
-
         for(int empl = 0; empl < 9; ++empl){
             sf::Vector2f decalage = {(-1 + empl % 3) * (t.x + ecartCarte.x), (-1 + empl / 3) * (t.y + ecartCarte.y)};
             mg.emplacementsGrille[4][empl] = {centre + decalage};
@@ -599,11 +595,15 @@ void changerEspaceSelecteur(MoteurGraphique &mg, std::string espace){
 }
 
 void mettreAJourPositionSelecteur(MoteurGraphique&mg){
+    // Si le selecteur est en mouvement
     if(mg.selecteurEnMouvement){
         float distance = std::sqrt(std::pow(mg.selecteur->getPosition().x - mg.positionViseeSelecteur.x, 2) + std::pow(mg.selecteur->getPosition().y - mg.positionViseeSelecteur.y, 2));
+        // Si il est a plus de 1à pixels de sa destination
         if(distance > 10)
+            // On le rapproche de 30 pourcents
             mg.selecteur->setPosition(mg.selecteur->getPosition() + (mg.positionViseeSelecteur-mg.selecteur->getPosition())*0.3f);
         else{
+            // Sinon on le met à sa position visée et plus en mouvement
             mg.selecteur->setPosition(mg.positionViseeSelecteur);
             mg.selecteurEnMouvement = false;
         }
