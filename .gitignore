@@ -1,4 +1,5 @@
 build/
+Graphics/
 
 .DS_Store               # Fichiers invisibles macOS
 Thumbs.db               # Fichiers invisibles Windows apparement

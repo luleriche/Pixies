@@ -43,10 +43,10 @@ _Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur 
 
 # Comment compiler le projet
 
-* __Le projet n'a pas été conçu pour se compiler sur Windows, vous pourriez faire face à des problèmes de compatibilité__
+* __Le projet a été conçu pour se compiler sur Linux, vous pourriez faire face à des problèmes de compatibilité si vous êtes sur un autre système d'exploitation. Cela reste plus facile sur macOS que sur Windows.__
 
 ### Prérequis 
-1. L'un des __compilateurs C++__ ci-dessous, pour être compatible avec SFML 3.0.2
+1. L'un des __compilateurs C++__ ci-dessous, pour être compatible avec SFML 3, sur Linux utilisez GCC 64 bits.
 
 Compilateur | Version minimum
 ------------|-------------
@@ -57,6 +57,8 @@ AppleClang  | 12
 
 2. __Cmake__ dans sa version 3.18 ou plus récente.
 
+3. Avoir téléchargé et décompressé SFML 3.0.2 pour Linux accessible via [ce lien](https://www.sfml-dev.org/download/sfml/3.0.2/#linux)
+
 3. SFML peut aussi avoir besoin de certaines dépendences externes. Pour voir la liste de ce que vous devez avoir d'installé [cliquez ici](https://www.sfml-dev.org/faq/general/#dependencies).
 
 ### Guide de compilation
@@ -65,7 +67,10 @@ AppleClang  | 12
     git clone https://github.com/luleriche/Pixies
     cd Pixies
     ```
-3. Créer un dossier build dans le dépôt. Et aller dedans.
+
+2. Créer un dossier "Graphics" dans le dépôt. Mettez dedans le dossier SFML 3.0.2 téléchargé précédemment. Renommer le dossier de SFML "SFML-3.0.2" si vous êtes sur Linux, si vous êtes sur macOS "SFML-3.0.2-macos".
+
+3. Créer un dossier "build" dans le dépôt. Aller dedans.
    ```bash
     mkdir build
     cd build
