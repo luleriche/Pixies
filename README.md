@@ -57,6 +57,8 @@ AppleClang  | 12
 
 2. __Cmake__ dans sa version 3.18 ou plus récente.
 
+3. SFML peut aussi avoir besoin de certaines dépendences externes. Pour voir la liste de ce que vous devez avoir d'installé (cliquez ici)[https://www.sfml-dev.org/faq/general/#dependencies].
+
 ### Guide de compilation
 1. Cloner le dépôt git sur votre ordinateur.
    ```bash
