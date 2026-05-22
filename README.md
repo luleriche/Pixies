@@ -65,7 +65,7 @@ L'objectif premier de ce jeu est de finir la partie avec le plus de points.
 Pour cela placez intelligemment vos cartes dans votre grille de jeu. 
 Celles-ci vous rapportent des points en fonction de leur chiffre, de leur couleur et des symboles présents dessus.
 
-Les règles du jeu sont disponibles en détail ici -> [Règles du Pixies](https://www.nos-jeux-de-societe.fr/wp-content/uploads/2024/03/PIXIES-regles-du-jeu-FR-www.nos-jeux-de-societe.fr_.pdf).
+Les règles du jeu sont disponibles en détail ici -> [Règles du Pixies](https://www.nos-jeux-de-societe.fr/wp-content/uploads/2024/03/PIXIES-regles-du-jeu-FR-www.nos-jeux-de-societe.fr_.pdf) ou directement dans le dépôt.
 
 __Déroulement d'une manche__
 
