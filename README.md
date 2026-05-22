@@ -43,7 +43,7 @@ _Les cartes spéciales peuvent faire partie de n'importe quelle zone de couleur 
 
 # Comment compiler le projet
 
-* __Le Projet n'a pas été réalisé pour se compiler sur Windows__
+* __Le Projet n'a pas été réalisé pour se compiler sur Windows, vous pourrez faire face à des problèmes de compatibilités__
 
 ### Prérequis 
 1. Un des __compilateur C++__ ci-dessous, pour être compatible avec SFML 3.0.2
@@ -75,6 +75,7 @@ AppleClang  | 12
 
 ### Prise en main
 Au début de l'exécution, suivez les instructions. Vous n'aurez pas à utiliser votre souris.
+Pour déplacer le sélecteur utilisez les flèches, et pour valider votre choix appuyer sur entrée.
 
 ## Extras
 Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executable) pour rajouter le meilleur coup à celui-ci.
