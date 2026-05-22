@@ -87,3 +87,4 @@ Pour déplacer le sélecteur utilisez les flèches, et pour valider votre choix 
 
 ## Extras
 Ajouter en argument le nom d'un fichier de partie (qui doit se trouver aux côtés de l'executable) pour rajouter le meilleur coup à celui-ci.
+__Attention l'executable doit toujours avoir à ses côtés le dossier assets pour lire les cartes du jeu.__
