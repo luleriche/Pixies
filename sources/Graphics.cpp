@@ -73,21 +73,49 @@ void lancerJeu(){
         mg.window->display();
         // Tant que c'est à l'ordi de jouer après
         if(mg.partie.joueurs[mg.partie.prochainJoueur].estOrdi and not mg.partie.estMancheFinie){
-            // On ecrit que l'ordi réflchi
-            sf::Text ordiAttente(mg.font, "Attente du coup de l'ordi.", 43);
-            sf::Rect txtRect = ordiAttente.getLocalBounds();
-            ordiAttente.setFillColor(sf::Color::Red);
-            ordiAttente.setOrigin(txtRect.position + txtRect.size /2.f);
-            ordiAttente.setPosition({640.f, 360.f});
-            dessinerTout(mg);
-            mg.window->draw(mg.fondOrdi);
-            mg.window->draw(ordiAttente);
-            mg.window->display();
             // On fait jouer le prochain joueur en mode ordi
             jouerCoup(mg.partie, recupMeilleurCoup(mg.partie, 40, 400));
             gererFinDeCoup(mg);
         }
         
+    }
+    // Ensuite quand la partie est finie
+    while(mg.window->isOpen()){
+        // On ferme la fenêtre si on appuie sur entrer ou sur la croix.
+        while (const std::optional event = mg.window->pollEvent())
+        {
+            if (event->is<sf::Event::Closed>()){
+                mg.window->close();
+            }
+            else if(const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                if (keyPressed->code == sf::Keyboard::Key::Enter) {
+                    mg.window->close();
+                }
+            }
+        }
+        // On dessine les scores
+        mg.window->clear(sf::Color::Black);
+        // Affichage du fond
+        sf::RectangleShape fond({1280, 720});
+        fond.setTexture(&mg.textureFond);
+        mg.window->draw(fond);
+        // Pour chaque joueurs
+        for(unsigned int i = 0; i < mg.partie.nombreJoueurs; ++i){
+            std::string string = mg.partie.joueurs[i].surnom + " " + std::to_string(mg.partie.joueurs[i].nbPoints) + "pts";
+            sf::Text joueurText(mg.font, string, 40);
+            sf::Rect rect = joueurText.getLocalBounds();
+            joueurText.setOrigin(rect.position + rect.size / 2.f);
+            joueurText.setPosition({640.f, 320.f + 60*i});
+            mg.window->draw(joueurText);
+        }
+        // Dessin du texte pour quitter
+        sf::Text quitterText(mg.font, "Appuyer sur ENTRER pour quitter", 40);
+        sf::Rect rect = quitterText.getLocalBounds();
+        quitterText.setOrigin(rect.position + rect.size / 2.f);
+        quitterText.setPosition({640.f, 320.f + 60*mg.partie.nombreJoueurs});
+        mg.window->draw(quitterText);
+        // Mettre a jour l'affichage
+        mg.window->display();
     }
     // Quand on quite on affiche les points dans la console
     std::cout << "La partie est terminée. Voici les scores :" << std::endl;
@@ -216,6 +244,18 @@ void dessinerTout(MoteurGraphique& mg){
 
     mettreAJourPositionSelecteur(mg);
     mg.window->draw(*mg.selecteur);
+
+    // Si le prochain jouer est un ordi
+    if(mg.partie.joueurs[mg.partie.prochainJoueur].estOrdi){
+        // On ecrit que l'ordi réflchi
+        sf::Text ordiAttente(mg.font, "Attente du coup de l'ordi.", 43);
+        sf::Rect txtRect = ordiAttente.getLocalBounds();
+        ordiAttente.setFillColor(sf::Color::Red);
+        ordiAttente.setOrigin(txtRect.position + txtRect.size /2.f);
+        ordiAttente.setPosition({640.f, 360.f});
+        mg.window->draw(mg.fondOrdi);
+        mg.window->draw(ordiAttente);
+    }
 }
 
 void dessinerCarte(MoteurGraphique& mg, Carte* c, sf::Vector2f centre, float facteurTaille){
