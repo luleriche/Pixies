@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+    <meta name="author" content="Lucas Leriche">
+    <meta name="description" content="Page d'accueil">
+    <title>Accueil Pixies</title>
+</head>
+<body>
+    <header>
+        <h1>Projet Pixies</h1>
+    </header>
+    <nav>
+        <p>Pixies</p>
+        <ul>
+            <li><a href="accueil.html">Accueil</a></li>
+            <li><a href="projet.html">Le Projet</a></li>
+            <li><a href="nous.html">Qui sommes-nous</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="colonne_principale">
+        <p>Sur cette page est détaillé le fonctionnement de notre projet.</p>
+        <ul>
+            <li>La structure du jeu</li>
+            <li>Le fonctionnement de l'IA</li>
+        </ul>
+
+        <h2>La structure du jeu</h2>
+        <p>Une partie de jeu est représentée par la structure <b>Partie</b>. Celle-ci contient d'autres structures comme Joueur, Grille ou encore Pioche.</p>
+        <p>Les <b>deux fonctions indispensables</b> pour avancer dans la partie et changer son état sont les suivantes :</p>
+        
+        <ul>
+            <li><b>demanderCoup</b></li>
+            <li><b>jouerCoup</b></li>
+        </ul>
+
+        <h3>La fonction demanderCoup</h3>
+        <p>Cette fonction demande différentes informations à l'utilisateur <b>via la console</b>, comme la carte qu'il veut jouer ou l'endroit où il veut la mettre. Cette fonction permet de récupérer les envies du joueur et de les <b>traduire</b> dans un format que le jeu comprendra...</p>
+    
+        <h3>La fonction jouerCoup</h3>
+        <p>Cette fonction prend en paramètre <b>un coup</b>et une partie sur laquelle le <b>jouer.</b></p>
+        <p>Ce coup est supposé valide, l'algorithme ne le vérifie pas. Il faut ainsi faire bien attention à ce que la partie soit dans <b>le bon état</b> avant de jouer un coup.</p>
+        <p>Cette fonction change l'état de la partie, cela permet de pouvoir l'appeler <b>plusieurs fois à la suite</b>. Ainsi, à la fin de sa définition, jouerCoup peut <b>remplir la pioche</b> ou mettre la partie comme terminée si c'est le cas.</p>
+        
+        <h3>Le codage des coups</h3>
+        <p>Un coup est représenté par seulement <b>4 caractères.</b></p>
+        <p>Chacun d'eux représente une information <b>nécéssaire</b> et <b>différente</b> des autres.</p>
+        <ul>
+            <li>Le premier est <b>l'indice du joueur</b> qui joue le coup, les joueurs étant stockés dans une liste dont l'ordre ne change jamais.</li>
+            <li>Le second est <b>l'indice de la carte</b> que veut jouer le joueur dans la pioche. Si le joueur prends la carte dans le premier emplacement de la pioche, alors ce sera un 0.</li>
+            <li>Le troisième est <b>le type du coup</b>. Il y en a 4 différents :
+                <ul>
+                    <li>d : si la carte est mise directement dans son emplacement, sans choix préalable.</li>
+                    <li>v ou c : si la carte est mise face visible ou cachée, après avoir dû faire un choix.</li>
+                    <li>m : si la carte est mise face cachée dans un autre emplacement bjque le sien.</li>
+                </ul>
+            </li>
+            <li>Le dernier est <b>l'indice de l'emplacement où est placé la carte</b>. Pour les coups d, v, et c c'est le chiffre de la carte moins un.</li>
+        </ul>
+        <p>Par exemple le coup 03c7 représente le premier joueur qui prend la quatrième carte de la pioche et décide de la mettre face caché, cette carte était un 8.</p>
+
+
+        <h3>La boîte</h3>
+        <p class="important">La boîte est l'une des structures <b>les plus importantes d'une partie</b>. Sans boîte il n'y a pas de jeu.</p>
+        <p>Au début de chaque partie, une boîte est initialisée à partir d'un <b>fichier</b> où sont listées les cartes.</p>
+        <p>C'est à ce moment là que toutes les cartes sont <b>créées</b>. Après cela, plus aucune carte n'est créée.</p>
+        <p>Les différents éléments du jeu (grille des joueurs, pioche...) ne s'échangent que des <b>pointeurs</b> vers ces cartes.</p>
+        <p>Cela a deux avantages principaux :</p>
+        <ul>
+            <li><b>Éviter la perte définitive des cartes dans la mémoire</b>. La boîte garde toujours les pointeurs initiaux vers les cartes. La place mémoire est allouée au début et libérée quand la partie est terminée.</li>
+            <li><b>Alléger les différents objets de la partie</b>. Grâce à ce système les grilles des joueurs ou la pioche ne contiennt pas des dizaines de cartes mais uniquements des pointeurs. Les cartes ne sont jamais copiées et cela améliore la rapidité d'exécution.</li>
+        </ul>
+
+        <h2>Le fonctionnement de l'IA</h2>
+        <p>Ce projet contient sa propre <b>"IA"</b> qui peut jouer le <b>meilleur coup possible</b> à n'importe quel moment de la partie grâce à la fonction recupMeilleurCoup.</p>
+        <p>Cette fonction utilise un algorithme qui se base sur un <b>MCTS</b> (Monte Carlo Tree Search). Cet algorithme simule des centaines de parties et retient le coup qui amène <b>le plus souvent à la victoire</b>.</p>
+        <p>On l'utilise habituellement dans les jeux déterministes et d'information parfaite, c'est à dire les jeux où <b>il n'y a pas de hasard</b>, et où <b>tous les joueurs ont les mêmes informations</b> sur l'état du jeu. (Comme les échecs, les dames ou le mopion)</p>
+        <p>Sauf que ce n'est pas le cas du Pixies car les cartes sont mélangées au début de la partie, le tirage dans la pioche est donc aléatoire.</p>
+        <p>Il a donc fallu adapter cet algorithme à notre problème.</p>
+        <p>Mais avant d'expliquer comment, voici un courte explication du MCTS.</p>
+
+        <p>Un MCTS utilise un <b>arbre de recherche</b>. La force de cette méthode est qu'elle ne nécéssite pas de fonction qui <b>évalue un état de partie.</b> </p> 
+        <p>Pas besoin d'être fort au jeu, ou de connaître les stratégies optimales. </p>
+        <p>Il suffit seulement de <b>connaître les règles</b> et les conditions de fin du jeu.</p>
+        <p>L'algorithme modélise la partie sous la forme d'un arbre dynamique où  </p>
+        <ul>
+            <li>Chaque noeud représente <b>un état spécifique</b> du jeu.</li>
+            <li>Chaque noeud stocke deux statistiques : le <b>nombre de visites</b> et le <b>nombre de victoire</b> pour chaque joueur à partir de celui-ci.</li>
+            <li>Chaque arrête (branche qui relie deux noeuds) représente le <b>coup</b> qu'il faut jouer pour descendre dans le noeud enfant.</li>
+        </ul>
+
+        <p>Pour déterminer le meilleur coup à jouer depuis un état initial, le MCTS exécute en boucle <b>quatre phases distinctes</b> autant de fois qu'on lui permets.</p>
+        <ol>
+            <li>
+                <b>La sélection.</b>En partant du noeud racine, l'algorithme descend de noeud en noeud jusqu'à atteindre un noeud "feuille" (où tous les enfants n'ont pas été créés).
+                Le choix du chemin se fait selon une formule mathématique qui optimise l'exploration (découvrir des coups) et l'exploitation (améliorer la précision des prédictions).
+            </li>
+            <li>
+                <b>L'expansion.</b>Si le noeud atteint n'est pas un état final de la partie, l'algorithme sélectionne un coup pas encore exploré. Il crée alors un nouveau noeud enfant, l'initialise à zéro victoire et zéro visite.
+            </li>
+            <li>
+                <b>La simulation.</b>A partir de ce nouveau noeud, l'algorithme simule une fin de partie aléatoire. Aucun noeud n'est créée pendant cette phase, l'objectif est juste de savoir qui à l'avatage au début de la simulation.
+                Car si en jouant aléatoirement on gagne 70 fois sur 100 on avait surement une meilleure position au départ.
+            </li>
+            <li>
+                <b>La backpropagation.</b>Une fois le résultat de la simulation obtenu, l'algorithme remonte le long de l'arbre et pour chaque noeud croisé, il incrémente le compteur de visites et de victoires pour celui qui a gagné la simulation.
+            </li>
+        </ol>
+
+        <p>Voici une explication en images (via <a href="https://medium.com/data-science-collective/beyond-the-game-board-how-monte-carlo-tree-search-is-powering-the-next-generation-of-ai-a796994e2743">Medium.com</a>)</p>
+        <img src="https://miro.medium.com/v2/resize:fit:1400/1*v0lsALwRW4jKGRHzkrVuLg.gif" width="700" height="300" alt="Image expliquant un MCTS">
+        
+        <p>Enfin pour trouver le meilleur coup, il suffit de prendre le noeud enfant de la racine qui a fait gagné le prohain joueur <b>le plus souvent.</b></p>
+    
+    
+        <p>Maintenant que cette explication courte du MCTS est passée, expliquons comment nous avons réglé le problème de la <b>pioche aléatoire</b> dans Pixies.</p>
+        <p>En effet les coups joués <b>dépendent</b> au bout d'un certain temps <b>des cartes tirées de la pioche</b>, donc le MCTS renvoie le meilleur coup pour un ordre de celle-ci bien précis.</p>
+        <p>Or on souhaite savoir le coup optimale, <b>peu importe l'ordre des cartes dans la pioche.</b> </p>
+        <p>Pour régler ce problème, on fait ce qui s'apparente à <b>plusieurs recherche MCTS succéssives</b>, avec plusieurs pioche aléatoire succéssives. </p>
+        <p>Mais au lieu de créer un nouvel arbre à chaque fois, <b>on garde les noeuds qui ne dépendents pas des cartes révélés.</b></p>
+        <p>Par exemple, on prend une pioche aléatoire et réalisons 200 descentes sur celle-ci. </p>
+        <p>Ensuite on supprime tous les noeud qui sont après le premier tirage de carte. </p>
+        <p>Ainsi, toutes les feuilles qui restent dans l’arbre sont atteignables avec n’importe quelle pioche car ils dépends uniquement des cartes présentes dans la zone de pioche, et on peut donc refaire 200 descentes.</p>
+        <p>Les paramètres de la fonction recupererMeilleurCoup sont le <b>nombre de pioche différentes</b> que l’on teste ainsi que le <b>nombre de descentes à chaque fois.</b></p>
+        <p>Après plusieurs tests, <b>effectuer 300 descentes sur 30 pioches différentes </b>semble donner de bons résultats.</p>
+    
+        </div>
+    </main>
+    <footer>
+        <p>@ 2026 Leriche & Grosse</p>
+    </footer>
+</body>
+</html>
